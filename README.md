@@ -8,7 +8,7 @@ These macros must be written in scripting languages like PowerShell. Subsequentl
 
 We use a scripting language to create macros that when inserted into any text will transform it into HTML for example.
 
-![Bracketext logo](https://github.com/Preferencesoft/Bracketext/b1.png)
+![Bracketext logo](https://github.com/Preferencesoft/Bracketext/blob/master/b1.png)
 
 Let's give an example. If we declare in the file ``macros.txt``:
 

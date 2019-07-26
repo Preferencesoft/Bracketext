@@ -8,7 +8,9 @@ These macros must be written in scripting languages like PowerShell. Subsequentl
 
 We use a scripting language to create macros that when inserted into any text will transform it into HTML for example.
 
-Let's give an example. If we declare in the file ``macro.txt``:
+![Bracketext logo](https://github.com/Preferencesoft/Bracketext/b1.png)
+
+Let's give an example. If we declare in the file ``macros.txt``:
 
     # <<<<<<
     # ||||||2|h1|/h1
@@ -36,7 +38,7 @@ The general syntax of a macro is as follows...
 
 [MacroName1|param_1_1|param_1_2| ... |param_1_N1] Text1 [MacroName2|param_2_1|param_2_2| ... |param_2_N2] Text2 [MacroName3|param_3_1|param_3_2| ... |param_3_N3] ...
 
-We suppose that MacroName1, MacroName2 and MacroName3 are linked in the macrot.txt file:
+We suppose that MacroName1, MacroName2 and MacroName3 are linked in the macros.txt file:
 
     # <<<<<<
     # ||||||3|MacroName1|MacroName2|MacroName3
@@ -57,8 +59,8 @@ This tree is then transformed into a call to the MacroName1 function whose param
 
 function Function1($param, $arg)
 
-$param is of type string[][] 
-$arg is of type string[]
+* $param is of type string[][]
+* $arg is of type string[]
 
 Let's give a simple example:
 
@@ -78,7 +80,7 @@ in the file macro.txt:
     }
     # >>>>>>
 
-	The result:
+The result:
 
 <span style="color: blue;">X the world is blue </span>
 

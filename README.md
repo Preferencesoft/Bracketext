@@ -45,15 +45,11 @@ The number 3 indicates that MacroName2 can be repeated between MacroName1 and Ma
 
 Such a macro is represented by Bracketext as a tree and transformed into a call to a PowerShell function:
 
-MacroName1
-
-   |                          \        \             \
-
- param1                     param2    param3       arguments
-
-   /|\                        /|\      /|\        /    |    \
-
-param_1_1 ... param_1_N       ...       ...     text1 text1 text3
+ MacroName1
+      |                        \        \           \
+    param1                    param2   param3     arguments
+      |        |    \          /|\      /|\       /   |   \
+    param_1_1 ... param_1_N    ...      ...    text1 text1 text3
 
 So MacroName2 and MacroName3 disappear, they have a delimiter role to the macro MacroName1, the text placed between the tags is found as an argument of MacroName1 and the possible parameters of MacroName1, MacroName2 and MacroName3 are grouped together.
 
@@ -63,6 +59,37 @@ function Function1($param, $arg)
 
 $param is of type string[][] 
 $arg is of type string[]
+
+Let's give a simple example:
+
+   bla1 [color|blue] the world is blue [color-|X] bla2
+
+in the file macro.txt:
+
+    # <<<<<<
+    # ||||||2|color|color-
+    function Color($param, $arg) {
+    $p=[string[][]]$param;
+    $a=[string[]]$arg;
+	$col=$p[0][0];
+	$x=$p[1][0];
+    $text=$a[0];
+	"<span style=""color: $col;"">$x$text</span>"
+    }
+    # >>>>>>
+
+	The result:
+
+<span style="color: blue;">X the world is blue </span>
+
+The representation in memory:
+
+    color    
+      |                 \                   \
+    param block 1    param block 2        arguments
+      |                   |                  |
+    blue                 X            the world is blue 
+
 
 ## Compilation
 

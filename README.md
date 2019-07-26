@@ -45,11 +45,11 @@ The number 3 indicates that MacroName2 can be repeated between MacroName1 and Ma
 
 Such a macro is represented by Bracketext as a tree and transformed into a call to a PowerShell function:
 
- MacroName1
-      |                        \        \           \
-    param1                    param2   param3     arguments
-      |        |    \          /|\      /|\       /   |   \
-    param_1_1 ... param_1_N    ...      ...    text1 text1 text3
+    MacroName1
+        |                        \        \           \
+      param1                    param2   param3     arguments
+        |      |    \            /|\      /|\       /   |   \
+    param_1_1 ... param_1_N      ...      ...    text1 text1 text3
 
 So MacroName2 and MacroName3 disappear, they have a delimiter role to the macro MacroName1, the text placed between the tags is found as an argument of MacroName1 and the possible parameters of MacroName1, MacroName2 and MacroName3 are grouped together.
 
@@ -88,7 +88,7 @@ The representation in memory:
       |                 \                   \
     param block 1    param block 2        arguments
       |                   |                  |
-    blue                 X            the world is blue 
+    blue                  X            the world is blue 
 
 
 ## Compilation

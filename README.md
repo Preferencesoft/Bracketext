@@ -2,7 +2,7 @@
 
 ## Text macros language
 
-Bracketext is a macro language using only 4 symbols [ | ] and ' acting on the text in which the macros are placed when they are interpreted.
+Bracketext is a macro language using only 4 symbols [ | ] and \' acting on the text in which the macros are placed when they are interpreted.
 
 These macros must be written in scripting languages like PowerShell. Subsequently, another scripting language may be added to avoid Powershell automation, which causes versioning problems with .NET Core 2.2.
 
@@ -26,11 +26,11 @@ bla [h1] Title [/h1] bla
 
 This text will be transformed into ``HTML`` as 
 
-<h1>  Title </h1>
+    bla <h1>  Title </h1> bla
 
 Inverse quote inhibits the effect of other symbols [ | ] in the text when it precedes them.
 
-For example ``[Example``] will produce the text [example]
+For example \`[Example\`] will produce the text [example]
 
 The general syntax of a macro is as follows... 
 
@@ -46,9 +46,13 @@ The number 3 indicates that MacroName2 can be repeated between MacroName1 and Ma
 Such a macro is represented by Bracketext as a tree and transformed into a call to a PowerShell function:
 
 MacroName1
-   /                           |        \             \
+
+   |                          \        \             \
+
  param1                     param2    param3       arguments
-/|\                           /|\       /|\        /    |    \
+
+   /|\                        /|\      /|\        /    |    \
+
 param_1_1 ... param_1_N       ...       ...     text1 text1 text3
 
 So MacroName2 and MacroName3 disappear, they have a delimiter role to the macro MacroName1, the text placed between the tags is found as an argument of MacroName1 and the possible parameters of MacroName1, MacroName2 and MacroName3 are grouped together.
@@ -60,3 +64,16 @@ function Function1($param, $arg)
 $param is of type string[][] 
 $arg is of type string[]
 
+## Compilation
+
+This first version works. 
+
+To compile the project, you need ``Visual Studio`` and install the ``NugetMicrosoft.PowerShell.5.ReferenceAssemblies`` Nuget.
+
+## To Do
+
+There are still some improvements to be made to Bracketext's command line call options.
+
+It also lacks predefined macros (to declare global variables, ...)
+
+It lacks macro files (other than those of the ``BBcode``) some converters to ``Markdown`` for example.

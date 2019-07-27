@@ -99,6 +99,14 @@ This first version works.
 
 To compile the project, you need ``Visual Studio`` and install the ``NugetMicrosoft.PowerShell.5.ReferenceAssemblies`` Nuget.
 
+## Use
+
+Locate a macro file and in a command shell type:
+
+    path_to_Bracketext\Bracketext.exe -m path_to_macros\macros.txt -f path_to_input_text_file\input.txt -o path_to_output_text_file\output.txt
+
+The required options `-m` `-f` `-o` specify the location of the macro, text input, and output files.
+
 ## To Do
 
 There are still some improvements to be made to Bracketext's command line call options.

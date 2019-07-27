@@ -331,7 +331,7 @@ namespace Bracketext
             return ' ';
         }
 
-        // Delete or replace tab characters
+        // Delete CR characters
         public string CleanTag(string t)
         {
             return t;

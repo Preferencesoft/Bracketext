@@ -305,7 +305,7 @@ $a=[string[]]$arg;
 $n=$a.Length;$e="";
 $dd=$p[0][0];
 For ($i=0; $i -lt $n; $i++) 
-{$e=$a[$i];$li += "<li>$e</li>\n";}
+{$e=$a[$i];$li += "<li>$e</li>`n";}
 If ($p[0].Length -gt 0) {
 If ($p[0][0] -eq "1") 
 {"<ol style=""list-style-type: decimal"">$li</ol>";}
@@ -343,5 +343,21 @@ $x=$a[0];$y="Verdana";
 If ($p[0].Count -gt 0)
 {$y=$p[0][0];}
 "<span style=""font-family: $y;"">$x</span>"
+}
+# >>>>>>
+# <<<<<<
+# ||||||3|btable|C|/btable
+function Out-Btable($param, $arg) {
+$p=[string[][]]$param;
+$a=[string[]]$arg;
+$n=$a.Length;$r="";
+$cn=$p[0][0];If ($cn -eq "") {$cn=1;};$rn=$n/$cn;$t="<table class=""table table-bordered"">";
+$t+="<thead><tr>";
+For ($j=0; $j -lt $cn; $j++){$e=$a[$j];$r += "<th scope=""col"">$e</th>"}
+$t+=$r+"</tr></thead><tbody>";$r="";
+For ($i=1; $i -lt $rn; $i++){$t+="<tr>";
+For ($k=0; $k -lt $cn; $k++){$e=$a[$j++];$t+="<td>$e</td>"}$t+="</tr>"}
+$t+="</tbody>`n</table>";
+$t
 }
 # >>>>>>

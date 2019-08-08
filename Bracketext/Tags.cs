@@ -29,7 +29,8 @@ namespace Bracketext
         public const int nGroup = -9; // groups together successions of tags and strings (without [ | ])
         public const int nTag = -6; // tag
         public const int nMATag = -11; // tag argument to complete
-        // we do not define a tag when the parameters are note complete
+        // we do not define a tag when the parameters are not complete
+        public const int nResult = -12; // during a conversion, certain character strings should only be converted once.
 
         public struct Entity
         {
@@ -102,7 +103,7 @@ namespace Bracketext
         public void LoadMacros(string psFileName)
         {
             // provisionally, we load the entire text.
-            string[] text = File.ReadAllText(psFileName, Encoding.UTF8).Split('\n');
+            string[] text = File.ReadAllText(psFileName, Encoding.Unicode).Split('\n');
             int state = 0;
             StringBuilder sb = new StringBuilder();
             // 0 no function
@@ -808,20 +809,47 @@ namespace Bracketext
                 case nMATag:
                     return "[not recognized tag]";
             }
-            return "[error]";
+            return string.Format("[error] {0}", e.tagNumber);
+        }
+
+        private List<Entity> ToStringList(List<Entity> le)
+        {
+            List<Entity> res = new List<Entity>();
+            foreach (Entity e in le)
+            {
+                if (e.tagNumber==nResult)
+                {
+                    res.Add(new Entity()
+                    {
+                        tagNumber = nResult,
+                        str = e.str,
+                        entityList = null
+                    });
+                }
+                else
+                {
+                    res.Add(new Entity()
+                    {
+                        tagNumber = nString,
+                        str = TagToString(e),
+                        entityList = null
+                    });
+                }
+            }
+            return res;
         }
 
         public struct ParamtersStruct
         {
-            public string[][] param;
-            public string[] arg;
+            public Entity[][][] param;
+            public Entity[][] arg;
         };
-
 
         public ParamtersStruct GetParameters(Entity tag)
         {
-            List<string> args = new List<string>();
-            List<string[]> pars = new List<string[]>();
+            List<Entity[]> args = new List<Entity[]>();
+            List<Entity[][]> pars = new List<Entity[][]>();
+            List<Entity[]> par = new List<Entity[]>();
             if (tag.tagNumber == nTag)
             {
                 List<Entity> pList = tag.entityList[0].entityList;
@@ -831,20 +859,14 @@ namespace Bracketext
                     {
                         if (pa.entityList != null)
                         {
-                            List<string> ls = new List<string>();
+                            // List<string> ls = new List<string>();
+                            par.Clear();
                             foreach (Entity grp in pa.entityList)
                             {
-                                StringBuilder sb = new StringBuilder();
                                 if (grp.entityList != null)
-                                {
-                                    foreach (Entity ee in grp.entityList)
-                                    {
-                                        sb.Append(TagToString(ee));
-                                    }
-                                }
-                                ls.Add(sb.ToString());
+                                    par.Add(ToStringList(grp.entityList).ToArray());
                             }
-                            pars.Add(ls.ToArray());
+                            pars.Add(par.ToArray());
                         }
                     }
                     if (pa.tagNumber == nArguments)
@@ -854,12 +876,7 @@ namespace Bracketext
                             foreach (Entity gra in pa.entityList)
                             {
                                 if (gra.entityList == null) continue;
-                                StringBuilder sb = new StringBuilder();
-                                foreach (Entity ee in gra.entityList)
-                                {
-                                    sb.Append(TagToString(ee));
-                                }
-                                args.Add(sb.ToString());
+                                args.Add(ToStringList(gra.entityList).ToArray());
                             }
                         }
                     }
@@ -882,8 +899,59 @@ namespace Bracketext
             return sb.ToString();
         }
 
-        // Replace symbol tag ([, |, ]) by a <string>
-        void SymbolTagToString(List<Entity> eList, int pos)
+        private string HTMLEntities(string s)
+        {
+            int n = s.Length;
+            string str = "";
+            for (int i = 0; i < n; i++)
+            {
+                var res = s[i].ToString();
+                switch (s[i])
+                {
+                    case ' ':
+                        res = " ";
+                        break;
+                    case '<':
+                        res = "&lt;";
+                        break;
+                    case '>':
+                        res = "&gt;";
+                        break;
+                    case '&':
+                        res = "&amp;";
+                        break;
+                    case '"':
+                        res = "&quot;";
+                        break;
+                    case '\'':
+                        res = "&apos;";
+                        break;
+                    case '¢':
+                        res = "&cent;";
+                        break;
+                    case '£':
+                        res = "&pound;";
+                        break;
+                    case '¥':
+                        res = "&yen;";
+                        break;
+                    case '€':
+                        res = "&euro;";
+                        break;
+                    case '©':
+                        res = "&copy;";
+                        break;
+                    case '®':
+                        res = "&reg;";
+                        break;
+                }
+                str += res;
+            }
+            return str;
+        }
+
+            // Replace symbol tag ([, |, ]) by a <string>
+            void SymbolTagToString(List<Entity> eList, int pos)
         {
             switch (eList[pos].tagNumber)
             {
@@ -894,6 +962,32 @@ namespace Bracketext
                     {
                         tagNumber = nString,
                         str = TagNumberToChar(eList[pos].tagNumber).ToString(),
+                        entityList = null
+                    };
+                    break;
+            }
+        }
+
+        void SymbolTagToHTML(List<Entity> eList, int pos)
+        {
+            switch (eList[pos].tagNumber)
+            {
+                case nStraightLine:
+                case nOpenBracket:
+                case nClosedBracket:
+                    eList[pos] = new Entity()
+                    {
+                        tagNumber = nString,
+                        str = TagNumberToChar(eList[pos].tagNumber).ToString(),
+                        entityList = null
+                    };
+                    break;
+                case nString:
+                case nResult:
+                    eList[pos] = new Entity()
+                    {
+                        tagNumber = nString,
+                        str = HTMLEntities(eList[pos].str),
                         entityList = null
                     };
                     break;
@@ -965,6 +1059,27 @@ namespace Bracketext
             public List<Entity> list;
             public int index;
         };
+
+        string globalScript = @"function To-HTML($s) {
+            $n = $s.Length;$str="""";
+            For ($i=0; $i -lt $n; $i++) { $r=$s[$i];
+                switch($r) {
+                    case "" "" {$r="" "";}
+                    case ""<"" {$r=""&lt;"";}
+                    case "">"" {$r=""&gt;"";}
+                    case ""&"" {$r=""&amp;"";}
+                    case """""" {$r=""&quot;"";}
+                    case ""'"" {$r=""&apos;"";}
+                    case ""¢"" {$r=""&cent;"";}
+                    case ""£"" {$r=""&pound;"";}
+                    case ""¥"" {$r=""&yen;"";}
+                    case ""€"" {$r=""&euro;"";}
+                    case ""©"" {$r=""&copy;"";}
+                    case ""®"" {$r=""&reg;"";}
+               } $str+=$r;
+              $str;
+}";
+       
 
         public void EvalTree()
         {
@@ -1047,6 +1162,7 @@ namespace Bracketext
                                                         });
                                                 else
                                                     SymbolTagToString(gra.entityList, l);
+                                                //SymbolTagToHTML(gra.entityList, l);
                                             }
                                         }
                                     }
@@ -1069,6 +1185,7 @@ namespace Bracketext
 
                 foreach (List<Position> pList in tagListList)
                 {
+                    pList.Reverse();
                     foreach (Position p in pList)
                     {
                         var tagNum = p.list[p.index].entityList[0];
@@ -1078,15 +1195,35 @@ namespace Bracketext
                         if (tag.tagNumber == nTag)
                         {
                             powershell.AddCommand(functionNameList[entry])
-                                .AddParameter("param", (Object[])GetParameters(tag).param)
-                                .AddParameter("arg", (Object[])GetParameters(tag).arg);
+                                .AddParameter("param", GetParameters(tag).param)
+                                .AddParameter("arg", GetParameters(tag).arg);
+                            /*
+                            powershell.AddCommand(functionNameList[entry])
+                                  .AddParameter("param", tag.entityList[0].entityList)
+                                  .AddParameter("arg", GetParameters(tag).arg);
+                                  */
                             var res = powershell.Invoke();
-                            p.list[p.index] = new Entity()
+                            List<Entity> le = new List<Entity>();
+                            for (int i=0; i<res.Count; i++)
                             {
-                                tagNumber = nString,
-                                str = res[0].ToString(),
-                                entityList = null
-                            };
+                                if (res[i] != null)
+                                {
+                                    try
+                                    {
+                                        le.Add(new Entity()
+                                        {
+                                            tagNumber = (int)res[i].Members["tagNumber"].Value,
+                                            str = res[i].Members["str"].Value.ToString(),
+                                            entityList = null
+                                        });
+                                    } catch
+                                    {
+                                        Console.WriteLine("error in "+ functionNameList[entry]);
+                                    }
+                                }
+                            }
+                            p.list.RemoveAt(p.index);
+                            p.list.InsertRange(p.index, le);
                         }
                         else
                         {
@@ -1174,7 +1311,7 @@ namespace Bracketext
         }
         public void ScanFile(string fileName)
         {
-            string text = File.ReadAllText(fileName, Encoding.UTF8);
+            string text = File.ReadAllText(fileName, Encoding.Unicode);
             Console.WriteLine(text);
             int textLength = text.Length;
             StringBuilder sb = new StringBuilder();

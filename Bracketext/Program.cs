@@ -68,7 +68,7 @@ namespace Bracketext
             bb.ScanFile(inputFile);
             bb.BBCodeToTree();
             bb.EvalTree();
-            TextWriter txt = new StreamWriter(outputFile);
+            TextWriter txt = new StreamWriter(outputFile, false, System.Text.Encoding.Unicode);
             txt.Write(bb.DocumentToHTML());
             txt.Close();
         }

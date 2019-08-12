@@ -85,8 +85,15 @@ namespace Bracketext
         };
         */
         List<string[]> tagInfoList = new List<string[]>();
-        List<string> scriptList = new List<string>();
+        // list of information about tags
+        // list of information about tags
+        List<string> commandList = new List<string>();
+        // list of commands associated with tags
         List<string> functionNameList = new List<string>();
+        // command name list
+
+        readonly List<string> scriptList = new List<string>();
+        // list of functions of global scope
 
         int[][] tagAssociationList;
         string[] tagList;
@@ -127,8 +134,24 @@ namespace Bracketext
                             continue;
                         header = header.Substring(8);
                         var entry = header.Split('|');
-                        tagInfoList.Add(entry);
-                        state++;
+                        bool isGlobal = false;
+                        if (entry.Length > 0)
+                        {
+                            if (entry[0] == "g")
+                                isGlobal = true;
+                        }
+                        if (isGlobal)
+                        {
+                            sb.Clear();
+                            state = 4;
+                            // pass 2 and 3
+                        }
+                        else
+                        {
+                            tagInfoList.Add(entry);
+                            state++;
+                            // goto 2
+                        }
                     }
                     else
                     {
@@ -157,8 +180,23 @@ namespace Bracketext
                                 }
                                 else
                                 {
-                                    scriptList.Add(sb.ToString());
+                                    commandList.Add(sb.ToString());
                                     state = 0;
+                                }
+                            } else
+                            {
+                                if (state == 4)
+                                {
+                                    if (text[i].Trim() != "# >>>>>>")
+                                    {
+                                        sb.Append(text[i].Trim());
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        scriptList.Add(sb.ToString());
+                                        state = 0;
+                                    }
                                 }
                             }
                         }
@@ -1060,27 +1098,6 @@ namespace Bracketext
             public int index;
         };
 
-        string globalScript = @"function To-HTML($s) {
-            $n = $s.Length;$str="""";
-            For ($i=0; $i -lt $n; $i++) { $r=$s[$i];
-                switch($r) {
-                    case "" "" {$r="" "";}
-                    case ""<"" {$r=""&lt;"";}
-                    case "">"" {$r=""&gt;"";}
-                    case ""&"" {$r=""&amp;"";}
-                    case """""" {$r=""&quot;"";}
-                    case ""'"" {$r=""&apos;"";}
-                    case ""¢"" {$r=""&cent;"";}
-                    case ""£"" {$r=""&pound;"";}
-                    case ""¥"" {$r=""&yen;"";}
-                    case ""€"" {$r=""&euro;"";}
-                    case ""©"" {$r=""&copy;"";}
-                    case ""®"" {$r=""&reg;"";}
-               } $str+=$r;
-              $str;
-}";
-       
-
         public void EvalTree()
         {
             List<List<Position>> tagListList = new List<List<Position>>();
@@ -1176,7 +1193,12 @@ namespace Bracketext
             List<string> results = new List<string>();
             using (var powershell = PowerShell.Create())
             {
+                // all global script are in scriptList
                 foreach (string script in scriptList)
+                {
+                    powershell.AddScript(script, false);
+                }
+                foreach (string script in commandList)
                 {
                     powershell.AddScript(script, false);
                 }

@@ -15,10 +15,15 @@ Let's give an example. If we declare in the file ``macros.txt``:
     # <<<<<<
     # ||||||2|h1|/h1
     function Out-H1($param, $arg) {
-    $p=[string[][]]$param;
-    $a=[string[]]$arg;
-    $x=$a[0];
-    "<h1>$x</h1>"
+    $a=$arg[0];
+    $oList = @();
+    $oList += new-Object PsObject -property @{tagNumber=-12; str="<h1>" };
+    ForEach ($s in $a){
+    $str=$s.str;If ($s.tagNumber -eq -2){$str=To-HTML($str);}
+    $o=new-Object PsObject -property @{tagNumber=-12; str=$str };
+    $oList += $o;}
+    $oList += new-Object PsObject -property @{tagNumber=-12; str="</h1>" };
+    $oList
     }
     # >>>>>>
 
@@ -59,8 +64,8 @@ This tree is then transformed into a call to the MacroName1 function whose param
 
 function Function1($param, $arg)
 
-* $param is of type string[][]
-* $arg is of type string[]
+* $param is of type entity[][]
+* $arg is of type entity[]
 
 Let's give a simple example:
 
@@ -69,14 +74,18 @@ Let's give a simple example:
 in the file macro.txt:
 
     # <<<<<<
-    # ||||||2|color|color-
-    function Color($param, $arg) {
-    $p=[string[][]]$param;
-    $a=[string[]]$arg;
-	$col=$p[0][0];
-	$x=$p[1][0];
-    $text=$a[0];
-	"<span style=""color: $col;"">$x$text</span>"
+    # ||||||2|color|/color
+    function Out-Color($param, $arg) {
+    $a=$arg[0];$col="verdana";
+    If ($param[0].Count -gt 0) {If ($param[0][0].Count -gt 0){$col=To-String($param[0][0])}}
+    $oList = @();
+    $oList += new-Object PsObject -property @{tagNumber=-12; str="<span style=""color: $col;"">" };
+    ForEach ($s in $a){
+    $str=$s.str;If ($s.tagNumber -eq -2){$str=To-HTML($str);}
+    $o=new-Object PsObject -property @{tagNumber=-12; str=$str };
+    $oList += $o;}
+    $oList += new-Object PsObject -property @{tagNumber=-12; str="</span>" };
+    $oList
     }
     # >>>>>>
 
@@ -109,7 +118,7 @@ The required options `-m` `-f` `-o` specify the location of the macro, text inpu
 
 ## To Do
 
-There are still some improvements to be made to Bracketext's command line call options.
+I will definitely replace the `PowerShell` language with `Schemy` since `PowerShell` automation does not work in ASP.NET Core. In addition Schemy is much lighter.
 
 It also lacks predefined macros (to declare global variables, ...)
 

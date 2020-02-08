@@ -4,7 +4,7 @@
 
 Bracketext is a macro language using only 4 symbols [ | ] and \' acting on the text in which the macros are placed when they are interpreted.
 
-These macros must be written in scripting languages like PowerShell. Subsequently, another scripting language may be added to avoid Powershell automation, which causes versioning problems with .NET Core 2.2.
+These macros must be written in scripting languages like **JavaScript**. To write macros, you need to use *JavaScript* programming language. The project uses **JavaScriptEngineSwitcher**.
 
 We use a scripting language to create macros that when inserted into any text will transform it into HTML for example.
 
@@ -14,16 +14,22 @@ Let's give an example. If we declare in the file ``macros.txt``:
 
     # <<<<<<
     # ||||||2|h1|/h1
-    function Out-H1($param, $arg) {
-    $a=$arg[0];
-    $oList = @();
-    $oList += new-Object PsObject -property @{tagNumber=-12; str="<h1>" };
-    ForEach ($s in $a){
-    $str=$s.str;If ($s.tagNumber -eq -2){$str=To-HTML($str);}
-    $o=new-Object PsObject -property @{tagNumber=-12; str=$str };
-    $oList += $o;}
-    $oList += new-Object PsObject -property @{tagNumber=-12; str="</h1>" };
-    $oList
+    function outH1($param, $arg) {
+    var p = getParameters(params);
+    var a=p[1][0];
+    var oList = [];
+    oList.push('-12');
+    oList.push('<h1>');
+    var len=a.length;
+    for (var i=0; i<len; i+=2) {
+    var str=a[i+1];
+    if (a[i] == '-2'){str=toHTML(str);}
+    oList.push('-12');
+    oList.push(str);
+    }
+    oList.push('-12');
+    oList.push('</h1>');
+    return stringListToXML(oList);
     }
     # >>>>>>
 
@@ -73,21 +79,28 @@ Let's give a simple example:
 
 in the file macro.txt:
 
-    # <<<<<<
-    # ||||||2|color|/color
-    function Out-Color($param, $arg) {
-    $a=$arg[0];$col="verdana";
-    If ($param[0].Count -gt 0) {If ($param[0][0].Count -gt 0){$col=To-String($param[0][0])}}
-    $oList = @();
-    $oList += new-Object PsObject -property @{tagNumber=-12; str="<span style=""color: $col;"">" };
-    ForEach ($s in $a){
-    $str=$s.str;If ($s.tagNumber -eq -2){$str=To-HTML($str);}
-    $o=new-Object PsObject -property @{tagNumber=-12; str=$str };
-    $oList += $o;}
-    $oList += new-Object PsObject -property @{tagNumber=-12; str="</span>" };
-    $oList
+    // <<<<<<
+    // ||||||2|color|/color
+    function outColor(...params) {
+    var p = getParameters(params);
+    var a=p[1][0];
+    var oList = [];
+    var col="verdana";
+    if (p[0][0].length > 0){if (p[0][0][0].length > 0){col=toString(p[0][0][0]);}}
+    oList.push('-12');
+    oList.push('<span style="color: '+col+';">');
+    var len=a.length;
+    for (var i=0; i<len; i+=2) {
+    var str=a[i+1];
+    if (a[i] === '-2'){str=toHTML(str);}
+    oList.push('-12');
+    oList.push(str);
     }
-    # >>>>>>
+    oList.push('-12');
+    oList.push('</span>');
+    return stringListToXML(oList);
+    }
+    // >>>>>>
 
 The result:
 
@@ -117,8 +130,6 @@ Locate a macro file and in a command shell type:
 The required options `-m` `-f` `-o` specify the location of the macro, text input, and output files.
 
 ## To Do
-
-I will definitely replace the `PowerShell` language with `Schemy` since `PowerShell` automation does not work in ASP.NET Core. In addition Schemy is much lighter.
 
 It also lacks predefined macros (to declare global variables, ...)
 

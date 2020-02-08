@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Text;
+
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.Core.Resources;
+using JavaScriptEngineSwitcher.Core.Helpers;
+using JavaScriptEngineSwitcher.ChakraCore;
 
 namespace Bracketext
 {
@@ -120,7 +124,7 @@ namespace Bracketext
             {
                 if (state == 0)
                 {
-                    if (text[i].Trim() != "# <<<<<<")
+                    if (text[i].Trim() != "// <<<<<<")
                         continue;
                     state++;
                 }
@@ -130,9 +134,9 @@ namespace Bracketext
                     {
                         // beginning of a function
                         string header = text[i].Trim();
-                        if (header.Substring(0, 8) != "# ||||||")
+                        if (header.Substring(0, 9) != "// ||||||")
                             continue;
-                        header = header.Substring(8);
+                        header = header.Substring(9);
                         var entry = header.Split('|');
                         bool isGlobal = false;
                         if (entry.Length > 0)
@@ -173,7 +177,7 @@ namespace Bracketext
                         {
                             if (state == 3)
                             {
-                                if (text[i].Trim() != "# >>>>>>")
+                                if (text[i].Trim() != "// >>>>>>")
                                 {
                                     sb.Append(text[i].Trim());
                                     continue;
@@ -187,7 +191,7 @@ namespace Bracketext
                             {
                                 if (state == 4)
                                 {
-                                    if (text[i].Trim() != "# >>>>>>")
+                                    if (text[i].Trim() != "// >>>>>>")
                                     {
                                         sb.Append(text[i].Trim());
                                         continue;
@@ -271,31 +275,6 @@ namespace Bracketext
                 Console.WriteLine(results[0]);
             }
         }
-
-        /*
-        public void Scheme()
-        {
-            var slp = ScriptDomainManager.CurrentManager.GetLanguageProvider(typeof(IronSchemeLanguageProvider));
-            var se = slp.GetEngine();
-
-            se.Evaluate(@"
-(define (foo x y) 
-  (let ((x (string-append x (string-append y ""\n""))))
-    (display x)
-  )
-(get-universal-time)
-)
-");
-            var foo = se.Evaluate("foo") as Callable;
-            var result = foo.Call("hello world", "y");
-            Console.Write(result);
-
-            // this should become quite funky in C# 4.0  :)
-
-            var bar = se.Evaluate("(lambda x (for-each display (reverse x))(newline))") as Callable;
-            bar.Call(1, 2, 3, 4, 5);
-        }
-        */
 
         /*
          // [? 1
@@ -850,61 +829,67 @@ namespace Bracketext
             return string.Format("[error] {0}", e.tagNumber);
         }
 
-        private List<Entity> ToStringList(List<Entity> le)
+        private List<string> ToStringArrayList(List<Entity> le, int[] index)
         {
-            List<Entity> res = new List<Entity>();
+            List<string> res = new List<string>();
+            int i = -1;
+            string str = "";
+            if (index.Length>0) str = index[0].ToString();
+            for (int j = 1; j < index.Length; j++)
+                str += "," + index[j].ToString();
             foreach (Entity e in le)
             {
                 if (e.tagNumber==nResult)
                 {
-                    res.Add(new Entity()
-                    {
-                        tagNumber = nResult,
-                        str = e.str,
-                        entityList = null
-                    });
+                    i++;
+                    res.Add(str+ "," + i.ToString());
+                    res.Add(nResult.ToString());
+                    i++;
+                    res.Add(str+ "," + i.ToString());
+                    res.Add(e.str);
                 }
                 else
                 {
-                    res.Add(new Entity()
-                    {
-                        tagNumber = nString,
-                        str = TagToString(e),
-                        entityList = null
-                    });
+                    i++;
+                    res.Add(str + "," + i.ToString());
+                    res.Add(nString.ToString());
+                    i++;
+                    res.Add(str + "," + i.ToString());
+                    res.Add(TagToString(e));       
                 }
             }
             return res;
         }
 
-        public struct ParamtersStruct
+        public string[] GetParameters(Entity tag)
         {
-            public Entity[][][] param;
-            public Entity[][] arg;
-        };
-
-        public ParamtersStruct GetParameters(Entity tag)
-        {
-            List<Entity[]> args = new List<Entity[]>();
-            List<Entity[][]> pars = new List<Entity[][]>();
-            List<Entity[]> par = new List<Entity[]>();
+            List<string> args = new List<string>{ };
+            //List<string[][]> args = new List<string[][]>();
+            List<string> pars = new List<string>();
+            List<string> par = new List<string>();
             if (tag.tagNumber == nTag)
             {
                 List<Entity> pList = tag.entityList[0].entityList;
+                int[] indexP = new int[3] { 0, -1, -1 };
+                int[] indexA = new int[2] { 1, -1 };
                 foreach (Entity pa in pList)
                 {
                     if (pa.tagNumber == nParameterBlocks)
                     {
                         if (pa.entityList != null)
                         {
+                            indexP[1]++;
                             // List<string> ls = new List<string>();
                             par.Clear();
                             foreach (Entity grp in pa.entityList)
                             {
                                 if (grp.entityList != null)
-                                    par.Add(ToStringList(grp.entityList).ToArray());
+                                {
+                                    indexP[2]++;
+                                    par.AddRange(ToStringArrayList(grp.entityList, indexP));
+                                }
                             }
-                            pars.Add(par.ToArray());
+                            pars.AddRange(par.ToArray());
                         }
                     }
                     if (pa.tagNumber == nArguments)
@@ -914,17 +899,14 @@ namespace Bracketext
                             foreach (Entity gra in pa.entityList)
                             {
                                 if (gra.entityList == null) continue;
-                                args.Add(ToStringList(gra.entityList).ToArray());
+                                indexA[1]++;
+                                pars.AddRange(ToStringArrayList(gra.entityList, indexA));
                             }
                         }
                     }
                 }
             }
-            return new ParamtersStruct
-            {
-                param = pars.ToArray(),
-                arg = args.ToArray()
-            };
+            return pars.ToArray();
         }
 
         public string DocumentToHTML()
@@ -1098,8 +1080,13 @@ namespace Bracketext
             public int index;
         };
 
+
+
+
         public void EvalTree()
         {
+            IJsEngineSwitcher engineSwitcher = JsEngineSwitcher.Current;
+
             List<List<Position>> tagListList = new List<List<Position>>();
             int level = 0;
             tagListList.Add(new List<Position>());
@@ -1191,78 +1178,170 @@ namespace Bracketext
             }
             tagListList.Reverse();
             List<string> results = new List<string>();
-            using (var powershell = PowerShell.Create())
+            string bigScript = "";
+            foreach (string script in scriptList)
             {
-                // all global script are in scriptList
-                foreach (string script in scriptList)
-                {
-                    powershell.AddScript(script, false);
-                }
-                foreach (string script in commandList)
-                {
-                    powershell.AddScript(script, false);
-                }
-                powershell.Invoke();
-                powershell.Commands.Clear();
+                bigScript += script + "\n";
+            }
+            foreach (string script in commandList)
+            {
+                bigScript += script + "\n";
+            }
 
-                foreach (List<Position> pList in tagListList)
+            engineSwitcher.EngineFactories.AddChakraCore();
+            engineSwitcher = JsEngineSwitcher.Current;
+            engineSwitcher.DefaultEngineName = ChakraCoreJsEngine.EngineName;
+            // engineSwitcher.EngineFactories.Add(new ChakraCoreJsEngineFactory());
+            // IPrecompiledScript precompiledCode = null;
+            using (var engine = engineSwitcher.CreateDefaultEngine())
+            {
+                if (!engine.SupportsScriptPrecompilation)
                 {
-                    pList.Reverse();
-                    foreach (Position p in pList)
+                    Console.WriteLine("{0} версии {1} не поддерживает " +
+                        "предварительную компиляцию скриптов!",
+                        engine.Name, engine.Version);
+                    return;
+                }
+                try
+                {
+                    // precompiledCode = engine.Precompile(bigScript);
+                    engine.Execute(bigScript);
+                    foreach (List<Position> pList in tagListList)
                     {
-                        var tagNum = p.list[p.index].entityList[0];
-                        int entry = tagEntryList[tagNum.tagNumber];
-                        powershell.Commands.Clear();
-                        var tag = p.list[p.index];
-                        if (tag.tagNumber == nTag)
+                        pList.Reverse();
+                        foreach (Position p in pList)
                         {
-                            powershell.AddCommand(functionNameList[entry])
-                                .AddParameter("param", GetParameters(tag).param)
-                                .AddParameter("arg", GetParameters(tag).arg);
-                            /*
-                            powershell.AddCommand(functionNameList[entry])
-                                  .AddParameter("param", tag.entityList[0].entityList)
-                                  .AddParameter("arg", GetParameters(tag).arg);
-                                  */
-                            var res = powershell.Invoke();
-                            List<Entity> le = new List<Entity>();
-                            for (int i=0; i<res.Count; i++)
+                            var tagNum = p.list[p.index].entityList[0];
+                            int entry = tagEntryList[tagNum.tagNumber];
+                            var tag = p.list[p.index];
+                            if (tag.tagNumber == nTag)
                             {
-                                if (res[i] != null)
+                                string[] args = GetParameters(tag);
+                                var d = new Data();
+                                var res0=engine.CallFunction(functionNameList[entry], args);
+                                var r = d.Deserialize((string)res0);
+                                // post execution?
+                                // deals with load instruction 
+                                if (r.Count > 1)
                                 {
-                                    try
+                                    if (r[0] == nNone.ToString() 
+                                        && string.IsNullOrEmpty(r[1]))
                                     {
-                                        le.Add(new Entity()
+                                        int c = r.Count;
+                                        for (int ind=2; ind<c; ind +=2)
                                         {
-                                            tagNumber = (int)res[i].Members["tagNumber"].Value,
-                                            str = res[i].Members["str"].Value.ToString(),
-                                            entityList = null
-                                        });
-                                    } catch
-                                    {
-                                        Console.WriteLine("error in "+ functionNameList[entry]);
+                                            if (ind + 3 < c)
+                                            {
+                                                if (r[ind] == nNone.ToString()
+                                            && r[ind + 1] == "load")
+                                                {
+                                                    string text = System.IO.File.ReadAllText(r[ind + 3]);
+                                                    r[ind] = nResult.ToString();
+                                                    r[ind + 1] = text;
+                                                    r.RemoveAt(ind + 2);
+                                                    r.RemoveAt(ind + 2);
+                                                    c -= 2;
+                                                }
+                                            }
+                                        }
+                                        r.RemoveAt(0);
+                                        r.RemoveAt(0);
                                     }
                                 }
+                                List<Entity> res1 = new List<Entity>();
+                                for (int i = 0; i < r.Count; i+=2)
+                                {
+                                    res1.Add(
+                                        new Entity()
+                                        {
+                                            tagNumber = int.Parse(r[i]),
+                                            str = r[i + 1]
+                                        });
+                                }
+                                var res = res1.ToArray();
+                                    /*
+                                        powershell.AddCommand(functionNameList[entry])
+                                            .AddParameter("param", GetParameters(tag).param)
+                                            .AddParameter("arg", GetParameters(tag).arg);
+                                      */
+                                    /*
+                                       powershell.AddCommand(functionNameList[entry])
+                                             .AddParameter("param", tag.entityList[0].entityList)
+                                             .AddParameter("arg", GetParameters(tag).arg);
+                                             */
+                                    // var res = powershell.Invoke();
+                                    List<Entity> le = new List<Entity>();
+                                for (int i = 0; i < res.Length; i++)
+                                {
+                                    // if (res[i] != null)
+                                    {
+                                        try
+                                        {
+                                            le.Add(new Entity()
+                                            {
+                                                tagNumber = res[i].tagNumber,
+                                                str = res[i].str.ToString(),
+                                                entityList = null
+                                            });
+                                        }
+                                        catch
+                                        {
+                                            Console.WriteLine("error in " + functionNameList[entry]);
+                                        }
+                                    }
+                                }
+                                p.list.RemoveAt(p.index);
+                                p.list.InsertRange(p.index, le);
+                                /*
+                                    for (int i=0; i<res.Count; i++)
+                                    {
+                                        if (res[i] != null)
+                                        {
+                                            try
+                                            {
+                                                le.Add(new Entity()
+                                                {
+                                                    tagNumber = (int)res[i].Members["tagNumber"].Value,
+                                                    str = res[i].Members["str"].Value.ToString(),
+                                                    entityList = null
+                                                });
+                                            } catch
+                                            {
+                                                Console.WriteLine("error in "+ functionNameList[entry]);
+                                            }
+                                        }
+                                    }
+                                    p.list.RemoveAt(p.index);
+                                    p.list.InsertRange(p.index, le);
+                                    */
                             }
-                            p.list.RemoveAt(p.index);
-                            p.list.InsertRange(p.index, le);
-                        }
-                        else
-                        {
-                            // nMATag
-                            p.list[p.index] = new Entity()
+                            else
                             {
-                                tagNumber = nString,
-                                str = StringifyMATag(tag),
-                                entityList = null
-                            };
-                        }
-                        // DisplayEntity(document);
-                    }
+                                // nMATag
+                                p.list[p.index] = new Entity()
+                                {
+                                    tagNumber = nString,
+                                    str = StringifyMATag(tag),
+                                    entityList = null
+                                };
+                            }
 
+                            // DisplayEntity(document);
+                        }
+
+                    }
                 }
+                catch (JsException e)
+                {
+                    Console.WriteLine("Во время работы JavaScript-движка произошла " +
+                        "ошибка!");
+                    Console.WriteLine();
+                    Console.WriteLine(JsErrorHelpers.GenerateErrorDetails(e));
+                    return;
+                }
+
+                // DisplayEntity(document);
             }
-            // DisplayEntity(document);
         }
         public void DisplayEntity(List<Entity> document)
         {

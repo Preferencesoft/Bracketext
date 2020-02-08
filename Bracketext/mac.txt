@@ -1,0 +1,321 @@
+﻿// <<<<<<
+// ||||||g|
+function stringListToXML(s) {
+    var n = s.length;
+    var str = "";
+    var beginArrayOfString='<?xml version="1.0" encoding="utf-16"?>\n<ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
+    var beginString = '<string>';
+	var endString = '</string>';
+    var endArrayOfString = '</ArrayOfString>';
+	for (var i=0;i<n;i++) {
+		str += beginString+toXML(s[i])+endString;
+	}
+    return beginArrayOfString+str+endArrayOfString;
+}
+// >>>>>>
+// <<<<<<
+// ||||||g|
+function toXML(s) {
+    var n = s.length;
+    var str = "";
+    for (var i = 0; i < n; i++) {
+        var r = s[i];
+        switch (r) {
+            case " ":
+                r = " ";
+                break;
+            case "<":
+                r = "&lt;";
+                break;
+            case ">":
+                r = "&gt;";
+                break;
+            case "&":
+                r = "&amp;";
+                break;
+            case '"':
+                r = "&quot;";
+                break;
+            case "'":
+                r = "&apos;";
+                break;
+        }
+        str += r;
+    }
+    return str;
+}
+// >>>>>>
+// <<<<<<
+// ||||||g|
+function toHTML(s) {
+    var n = s.length;
+    var str = "";
+    for (var i = 0; i < n; i++) {
+        var r = s[i];
+        switch (r) {
+            case " ":
+                r = " ";
+                break;
+            case "<":
+                r = "&lt;";
+                break;
+            case ">":
+                r = "&gt;";
+                break;
+            case "&":
+                r = "&amp;";
+                break;
+            case '"':
+                r = " & quot; ";
+                break;
+            case "'":
+                r = "&apos;";
+                break;
+            case "¢":
+                r = "&cent;";
+                break;
+            case "£":
+                r = "&pound;";
+                break;
+            case "¥":
+                r = "&yen;";
+                break;
+            case "€":
+                r = "&euro;";
+                break;
+            case "©":
+                r = "&copy;";
+                break;
+            case "®":
+                r = "&reg;";
+                break;
+        }
+        str += r;
+    }
+    return str;
+}
+// >>>>>>
+// <<<<<<
+// ||||||g|
+function getParameters(sl) {
+var t=[];
+for (var j = 0; j < sl.length; j++) {
+    if (j % 2 === 0) {
+        var v = sl[j].split(',');
+        var l = v.length;
+        var subs = t;
+        var pred;
+        var val;
+        for (var k = 0; k < l; k++) {
+            val = parseInt(v[k], 10);
+            while (subs.length <= val) {
+                    subs.push([]);
+            }
+            pred = subs;
+            subs = subs[val];
+        }
+        pred[val] = sl[j + 1];
+    }
+}
+return t;
+}
+// >>>>>>
+// <<<<<<
+// ||||||g|
+function toString(strList) {
+	var str='';
+	var len=strList.length;
+	for (var i=1; i<len; i+=2) {
+	str +=  strList[i];
+	}
+    return str;
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|include
+function outInclude(...params) {
+var p = getParameters(params);
+var x='';
+if (p[0][0].length > 0){if (p[0][0][0].length > 0){
+var path=p[0][0][0];
+var len=path.length;
+for (var i=0; i<len; i+=2){
+x+=path[i+1]}
+}}
+return stringListToXML(['-1','','-1','load','-12',x]);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|b|/b
+function outB(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<strong>');
+var n = a.length;
+for (var i=0; i<n; i+=2){
+var str=a[i+1];
+var tagNumber=a[i];
+if (tagNumber === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</strong>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|title|/title
+function OutTitle(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var x='1';
+if (p[0].length > 0){if (p[0][0].length > 0){x=toString(p[0][0]);}}
+var num = '123456';
+if (num.indexOf(x) < 0){x='1';}
+var oList = [];
+oList.push('-12');
+oList.push('<h'+x+'>');
+var len = a.length;
+for (var i=0; i<len; i+=2){
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</h'+x+'>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|u|/u
+function outU(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<span style=\"text-decoration: underline;\">');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|i|/i
+function outI(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<em>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</em>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|s|/s
+function outS(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<del>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</del>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|br
+function outBr(...params) {
+var oList = [];
+oList.push('-12');
+oList.push('<br />');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|doc|/doc
+function outDoc(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+return stringListToXML(oList);
+}
+// >>>>>>
+
+
+// <<<<<<
+// ||||||2|p|/p
+function outP(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<p>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var s=a[i+1];
+var str=s;
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);};
+oList.push('-12');
+oList.push('</p>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|color|/color
+function outColor(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+var col="verdana";
+if (p[0][0].length > 0){if (p[0][0][0].length > 0){col=toString(p[0][0][0]);}}
+oList.push('-12');
+oList.push('<span style="color: '+col+';">');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>

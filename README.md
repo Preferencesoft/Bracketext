@@ -12,9 +12,10 @@ We use a scripting language to create macros that when inserted into any text wi
 
 Let's give an example. If we declare in the file ``macros.txt``:
 
+   
     # <<<<<<
     # ||||||2|h1|/h1
-    function outH1($param, $arg) {
+    function outH1(...params) {
     var p = getParameters(params);
     var a=p[1][0];
     var oList = [];

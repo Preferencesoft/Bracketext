@@ -172,7 +172,7 @@ function OutTitle(...params) {
 var p = getParameters(params);
 var a=p[1][0];
 var x='1';
-if (p[0].length > 0){if (p[0][0].length > 0){x=toString(p[0][0]);}}
+if (p[0].length > 0){if (p[0][0].length > 0){if (p[0][0][0].length > 0){x=toString(p[0][0][0]);}}}
 var num = '123456';
 if (num.indexOf(x) < 0){x='1';}
 var oList = [];
@@ -275,8 +275,6 @@ oList.push(str);
 return stringListToXML(oList);
 }
 // >>>>>>
-
-
 // <<<<<<
 // ||||||2|p|/p
 function outP(...params) {
@@ -287,8 +285,7 @@ oList.push('-12');
 oList.push('<p>');
 var len=a.length;
 for (var i=0; i<len; i+=2) {
-var s=a[i+1];
-var str=s;
+var str=a[i+1];
 if (a[i] === '-2'){str=toHTML(str);}
 oList.push('-12');
 oList.push(str);};
@@ -316,6 +313,363 @@ oList.push(str);
 }
 oList.push('-12');
 oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|size|/size
+function outSize(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var pa=p[0][0][0];
+var y='16px';
+if (pa.length > 0){
+y=toString(pa);
+if (y[y.length-1].match(/\d/)) {
+y += '%';}}
+var x=toString(a);
+oList=[];
+oList.push('-12');
+oList.push('<span style="font-size:'+y+';">'+x+'</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|quote|/quote
+function outQuote(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<blockquote class="bg-gray primary">');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</blockquote>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|url|/url
+function outURL(...params) {
+var pa = getParameters(params);
+var a=pa[1][0];
+var p=pa[0][0];
+var oList = [];
+var ae=false;
+var pe=false;
+if (p.length > 0){if (p[0].length > 0){
+pe=true;p=p[0];}}
+if (a.length > 0){ae=true;}
+var e=ae || pe;
+if (ae && !pe){p=a;}
+if (!ae && pe){a=p;}
+if (e) {
+oList.push('-12');
+oList.push('<a href="');
+var len=p.length;
+for (var i=0; i<len; i+=2) {
+oList.push('-12');
+oList.push(p[i+1]);
+}
+oList.push('-12');
+oList.push('">');
+len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if(a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</a>');
+} else {
+oList.push('-12');
+oList.push('<a href="">');
+oList.push('-12');
+oList.push('</a>');
+}
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|nofollow|/nofollow
+function outNofollow(...params) {
+var pa = getParameters(params);
+var a=pa[1][0];
+var p=pa[0][0];
+var oList = [];
+var ae=false;
+var pe=false;
+if (p.length > 0){if (p[0].length > 0){
+pe=true;p=p[0];}}
+if (a.length > 0){ae=true;}
+e=ae || pe;
+if (ae && !pe){p=a;};
+if (!ae && pe){a=p;};
+if (e) {
+oList.push('-12');
+oList.push('<a href="');
+var len=p.length;
+for (var i=0; i<len; i+=2) {
+oList.push('-12');
+oList.push(p[i+1]);}
+oList.push('-12');
+oList.push('" rel="nofollow">');
+len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if(a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);}
+oList.push('-12');
+oList.push('</a>');
+} else {
+oList.push('-12');
+oList.push('<a href="" rel="nofollow">');
+oList.push('-12');
+oList.push('</a>');
+}
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|img
+function outImg(...params) {
+var pa = getParameters(params);
+var p=pa[0][0];
+var oList = [];
+oList.push('-12');
+oList.push('<img src="');
+if (p.length > 1){
+var src=p[0];
+var alt=p[1];
+var len=src.length;
+for (var i=0; i<len; i+=2) {
+oList.push('-12');
+oList.push(src[i+1]);}
+oList.push('-12');
+oList.push('" alt="');
+len=alt.length;
+for (var i=0; i<len; i+=2) {
+oList.push('-12');
+oList.push(alt[i+1]);}
+oList.push('-12');
+oList.push('" />');
+} else {
+oList.push('-12');
+oList.push('<img src="" alr=""/>');
+}
+return stringListToXML(oList);
+}
+// >>>>>>
+
+
+// <<<<<<
+// ||||||2|ul|/ul
+function outUl(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<ul>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</ul>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|ol|/ol
+function outOl(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<ol>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</ol>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|li|/li
+function outLi(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<li>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</li>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|code|/code
+function outCode(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<code>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</code>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|table|/table
+function outTable(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<table>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</table>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|tr|/tr
+function outTr(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<tr>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str)};
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</tr>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|th|/th
+function outTh(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<th>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</th>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||2|td|/td
+function outTd(...params) {
+var p = getParameters(params);
+var a=p[1][0];
+var oList = [];
+oList.push('-12');
+oList.push('<td>');
+var len=a.length;
+for (var i=0; i<len; i+=2) {
+var str=a[i+1];
+if (a[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</td>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||3|list|*|/list
+function outList(...params) {
+var pa = getParameters(params);
+var a=pa[1];
+var p=pa[0];
+var oList = [];
+var b='<ul>';
+var e='</ul>';
+var x='';
+if (p.length > 0) {if (p[0].length > 0) {if (p[0][0].length > 0) {
+var len=p[0][0].length;
+for (var i=0; i<len; i+=2) {
+x+=p[0][0][i+1];}}}}
+if (x === '1'){
+b='<ol style="list-style-type: decimal">';
+e='</ol>';
+} else {
+if (x === 'a'){
+b='<ol style="list-style-type: lower-alpha">';
+e='</ol>';
+} else {
+b='<ul>';e='</ul>';}};
+oList.push('-12');
+oList.push(b);
+var lena=a.length;
+for (var i=0; i<lena; i++) {
+oList.push('-12');
+oList.push('<li>');
+var lenaa=a[i].length;
+for (var j=0; j<lenaa; j+=2) {
+var str=a[i][j+1];
+if (a[i][j] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}
+oList.push('-12');
+oList.push('</li>');}
+oList.push('-12');
+oList.push(e);
 return stringListToXML(oList);
 }
 // >>>>>>

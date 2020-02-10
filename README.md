@@ -13,8 +13,8 @@ We use a scripting language to create macros that when inserted into any text wi
 Let's give an example. If we declare in the file ``macros.txt``:
 
    
-    # <<<<<<
-    # ||||||2|h1|/h1
+    // <<<<<<
+    // ||||||2|h1|/h1
     function outH1(...params) {
     var p = getParameters(params);
     var a=p[1][0];
@@ -32,7 +32,7 @@ Let's give an example. If we declare in the file ``macros.txt``:
     oList.push('</h1>');
     return stringListToXML(oList);
     }
-    # >>>>>>
+    // >>>>>>
 
 In the text, we can write:
 
@@ -52,8 +52,8 @@ The general syntax of a macro is as follows...
 
 We suppose that MacroName1, MacroName2 and MacroName3 are linked in the macros.txt file:
 
-    # <<<<<<
-    # ||||||3|MacroName1|MacroName2|MacroName3
+    // <<<<<<
+    // ||||||3|MacroName1|MacroName2|MacroName3
 
 The number 3 indicates that MacroName2 can be repeated between MacroName1 and MacroName3.
 
@@ -120,7 +120,7 @@ The representation in memory:
 
 This first version works. 
 
-To compile the project, you need ``Visual Studio`` and install the ``NugetMicrosoft.PowerShell.5.ReferenceAssemblies`` Nuget.
+To compile the project, you need ``Visual Studio`` and install the ``JavaScriptEngineSwitcher`` and ``ChakraCore`` Nugets.
 
 ## Use
 

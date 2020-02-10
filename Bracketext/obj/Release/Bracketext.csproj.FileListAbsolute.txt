@@ -21,3 +21,4 @@ C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\Bracketext.csproj.
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\Bracketext.csproj.CopyComplete
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\Bracketext.exe
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\Bracketext.pdb
+C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\Bracketext.csprojAssemblyReference.cache

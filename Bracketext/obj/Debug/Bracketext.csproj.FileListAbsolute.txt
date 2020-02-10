@@ -4,7 +4,6 @@ C:\Users\prefe\source\repos\Bracketext\Bracketext\bin\Debug\Bracketext.pdb
 C:\Users\prefe\source\repos\Bracketext\Bracketext\bin\Debug\System.Management.Automation.dll
 C:\Users\prefe\source\repos\Bracketext\Bracketext\bin\Debug\Microsoft.Management.Infrastructure.dll
 C:\Users\prefe\source\repos\Bracketext\Bracketext\bin\Debug\System.Management.Automation.xml
-C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Debug\Bracketext.csprojAssemblyReference.cache
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Debug\Bracketext.csproj.CoreCompileInputs.cache
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Debug\Bracketext.csproj.CopyComplete
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Debug\Bracketext.exe

@@ -12,8 +12,8 @@ namespace Bracketext
         {
             string inputFile = "", outputFile = "", macroFile = "";
             int n = args.Length;
-            /*
             Dictionary<string, string> dic = new Dictionary<string, string>();
+            bool error = false;
             if (n > 1)
             {
                 for (int i = 0; i < args.Length; i++)
@@ -61,11 +61,7 @@ namespace Bracketext
             inputFile = dic["input"];
             outputFile = dic["output"];
             macroFile = dic["macros"];
-  */
 
-            inputFile = @"C:\Users\prefe\source\repos\Bracketext\Bracketext\example.txt";
-            outputFile = @"C:\Users\prefe\source\repos\Bracketext\Bracketext\exampleout.txt";
-            macroFile = @"C:\Users\prefe\source\repos\Bracketext\Bracketext\mac.txt";
             var bb = new Tags();
             bb.LoadMacros(macroFile);
             bb.Init();

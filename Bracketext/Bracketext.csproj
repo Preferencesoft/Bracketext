@@ -137,6 +137,7 @@
     <Content Include="macros.txt" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Test.docx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bbcodeexample.txt" />

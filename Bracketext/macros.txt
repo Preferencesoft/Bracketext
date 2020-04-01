@@ -785,51 +785,60 @@ var pa = getParameters(params);
 var a=pa[1];
 var p=pa[0];
 var oList = [];
-if (a.length > 0){a=a[0];} else {a=[];}
 var n=a.length;
 var nrow=1;
-var ncol=parseInt(n);
+var ncol=n;
 if (p.length > 0){if (p[0].length > 1){
 p=p[0];
 nrow=parseInt(toString(p[0]));
 ncol=parseInt(toString(p[1]));}}
+var lena=a.length;
 var oList = [];
-var i=0;
-var j=0;
+var k=0;
 oList.push('-12');
 oList.push('<table class="table table-bordered">');
-var lena=a.length;
-for (var k=0; k<lena; k++) {
-if ((i % ncol === 0) && (i < ncol)){
 oList.push('-12');
-oList.push('<thead>');}
-if(i < ncol){
+oList.push('<thead">');
+oList.push('-12');
+oList.push('<tr>');
+for (var j=0; j<ncol; j++) {
 oList.push('-12');
 oList.push('<th>');
-} else { 
-oList.push('-12');
-oList.push('<td>');}
+if (k<lena) {
 var len=a[k].length;
-for (var l=0; l<len; l+=2) {
+for (var l=0; l+1<len; l+=2) {
 var str=a[k][l+1];
 if (a[k][l] === '-2'){str=toHTML(str);}
 oList.push('-12');
 oList.push(str);}
-if(i < ncol){
 oList.push('-12');
 oList.push('</th>');
-} else { 
+}k++;}
 oList.push('-12');
-oList.push('</td>');}
-if ((i+1) % ncol === 0){
+oList.push('</tr>');
 oList.push('-12');
-oList.push('</tr>');}
-if (((i+1) % ncol === 0) && (i < ncol)){
+oList.push('</thead">');
 oList.push('-12');
-oList.push('</thead>');}
+oList.push('<tbody">');
+for (var i=1; i<nrow; i++) {
 oList.push('-12');
-oList.push('<tbody>');
-i++;
+oList.push('<tr>');
+for (var j=0; j<ncol; j++) {
+oList.push('-12');
+oList.push('<td>');
+if (k<lena) {
+var len=a[k].length;
+for (var l=0; l+1<len; l+=2) {
+var str=a[k][l+1];
+if (a[k][l] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);}
+k++;}
+oList.push('-12');
+oList.push('</td>');
+}
+oList.push('-12');
+oList.push('</tr>');
 }
 oList.push('-12');
 oList.push('</tbody>');
@@ -885,6 +894,28 @@ return stringListToXML(oList);
 // <<<<<<
 // ||||||1|file
 function outFile(...params) {
+var pa = getParameters(params);
+var p=pa[0];
+var oList = [];
+oList.push('-12');
+oList.push('<span class="file">');
+if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
+p=p[0][0];
+var lenp=p.length;
+for (var i=0; i<lenp; i+=2){
+var str=p[i+1];
+if (p[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}}}}
+oList.push('-12');
+oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|extension
+function outExtension(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
@@ -1015,6 +1046,50 @@ return stringListToXML(oList);
 }
 // >>>>>>
 // <<<<<<
+// ||||||1|example
+function outExample(...params) {
+var pa = getParameters(params);
+var p=pa[0];
+var oList = [];
+oList.push('-12');
+oList.push('<span class="definition">');
+if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
+p=p[0][0];
+var lenp=p.length;
+for (var i=0; i<lenp; i+=2){
+var str=p[i+1];
+if (p[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}}}}
+oList.push('-12');
+oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|definition
+function outDefinition(...params) {
+var pa = getParameters(params);
+var p=pa[0];
+var oList = [];
+oList.push('-12');
+oList.push('<span class="definition">');
+if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
+p=p[0][0];
+var lenp=p.length;
+for (var i=0; i<lenp; i+=2){
+var str=p[i+1];
+if (p[i] === '-2'){str=toHTML(str);}
+oList.push('-12');
+oList.push(str);
+}}}}
+oList.push('-12');
+oList.push('</span>');
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
 // ||||||1|output
 function outOutput(...params) {
 var pa = getParameters(params);
@@ -1125,8 +1200,8 @@ return stringListToXML(oList);
 }
 // >>>>>>
 // <<<<<<
-// ||||||2|definition|/definition
-function outDefinition(...params) {
+// ||||||2|definition-box|/definition-box
+function outDefinitionBox(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
@@ -1276,6 +1351,23 @@ oList.push('-12');
 oList.push('<a class="lead text-purple" href="">');
 oList.push('-12');
 oList.push('</a>');
+}
+return stringListToXML(oList);
+}
+// >>>>>>
+// <<<<<<
+// ||||||1|sp
+function outSp(...params) {
+var pa = getParameters(params);
+var p=pa[0];
+var oList = [];
+var x=1;
+if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
+p=p[0][0];
+x=toString(p);}}}
+for (var i=0; i<x; i+=2) {
+oList.push('-12');
+oList.push('&nbsp;');
 }
 return stringListToXML(oList);
 }

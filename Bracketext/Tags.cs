@@ -1,10 +1,11 @@
-﻿using System;
+﻿using JavaScriptEngineSwitcher.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Management.Automation;
+// using System.Management.Automation;
 using System.Text;
 
-using JavaScriptEngineSwitcher.Core;
+// using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Core.Resources;
 using JavaScriptEngineSwitcher.Core.Helpers;
 using JavaScriptEngineSwitcher.ChakraCore;
@@ -257,7 +258,7 @@ namespace Bracketext
 
       
 
-
+        /*
         readonly string script = @"function Test-Me($param1) {$w=[string[][]]$param1;$x=$w[0][2];""Hello from Test-Me with , $x"" }";
         public void PS()
         {
@@ -275,6 +276,7 @@ namespace Bracketext
                 Console.WriteLine(results[0]);
             }
         }
+        */
 
         /*
          // [? 1

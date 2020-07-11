@@ -130,8 +130,14 @@ Locate a macro file and in a command shell type:
 
 The required options `-m` `-f` `-o` specify the location of the macro, text input, and output files.
 
+It should be noted that all paths must be absolute.
+
 ## To Do
 
-It also lacks predefined macros (to declare global variables, ...)
+* More macro files (``BBcode``)
 
-It lacks macro files (other than those of the ``BBcode``) some converters to ``Markdown`` for example.
+* HTML Templates
+
+* Calls to external JavaScript libraries 
+
+* some converters to ``Markdown`` for example.

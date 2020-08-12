@@ -12,25 +12,28 @@ We use a scripting language to create macros that when inserted into any text wi
 
 Let's give an example. If we declare in the file ``macros.txt``:
 
-   
     // <<<<<<
     // ||||||2|h1|/h1
     function outH1(...params) {
-    var p = getParameters(params);
-    var a=p[1][0];
-    var oList = [];
-    oList.push('-12');
-    oList.push('<h1>');
-    var len=a.length;
-    for (var i=0; i<len; i+=2) {
-    var str=a[i+1];
-    if (a[i] == '-2'){str=toHTML(str);}
-    oList.push('-12');
-    oList.push(str);
-    }
-    oList.push('-12');
-    oList.push('</h1>');
-    return stringListToXML(oList);
+       var pa = getParameters(params);
+       var a=pa[1];
+       var t=pa[2];
+       var oList = [];
+       oList.push('-2');
+       oList.push('<h1>');
+       if (a.length>0) {if (a[0].length>0){
+          a=a[0];
+          var len=a.length;
+          for (var i=0; i<len; i+=2) {
+             var str=a[i+1];
+             var tagNumber=a[i];
+             if (tagNumber === '-1'){str=toHTML(str);}
+                oList.push('-2');
+             oList.push(str);
+       }}}
+       oList.push('-2');
+       oList.push('</h1>');
+       return stringListToXML(oList);
     }
     // >>>>>>
 
@@ -69,10 +72,16 @@ So MacroName2 and MacroName3 disappear, they have a delimiter role to the macro 
 
 This tree is then transformed into a call to the MacroName1 function whose parameters are strings:
 
-function Function1($param, $arg)
+    function Function1(...params)
+    
+    var pa = getParameters(params);
+    var p=p[0];
+    var a=p[1];
+    var t=p[2];
 
-* $param is of type entity[][]
-* $arg is of type entity[]
+* p is of type string[][][]
+* a is of type string[][]
+* t is of type string[]
 
 Let's give a simple example:
 
@@ -88,16 +97,16 @@ in the file macro.txt:
     var oList = [];
     var col="verdana";
     if (p[0][0].length > 0){if (p[0][0][0].length > 0){col=toString(p[0][0][0]);}}
-    oList.push('-12');
+    oList.push('-2');
     oList.push('<span style="color: '+col+';">');
     var len=a.length;
     for (var i=0; i<len; i+=2) {
     var str=a[i+1];
-    if (a[i] === '-2'){str=toHTML(str);}
-    oList.push('-12');
+    if (a[i] === '-1'){str=toHTML(str);}
+    oList.push('-2');
     oList.push(str);
     }
-    oList.push('-12');
+    oList.push('-2');
     oList.push('</span>');
     return stringListToXML(oList);
     }

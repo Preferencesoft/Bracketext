@@ -6,10 +6,36 @@ namespace Bracketext
 {
     class Program
     {
-      
+      static void Test()
+        {
+            
+            var bb = new Tags();
+            bb.LoadMacros(@"C:\Users\prefe\source\repos\Bracketext\Bracketext\testmacros.txt");
+            bb.Init();
+            /*
+            {
+                //bb.ScanFile(CommandLine["f"]);
+                // bb.ScanFile(@"C:\Users\prefe\source\repos\BBMacro\BBMacro\bbcodeexample.txt");
+                bb.BBCodeToTree();
+                bb.EvalTree();
+                // Console.Write(bb.DocumentToHTML());
+                //TextWriter txt = new StreamWriter(CommandLine["o"]);
+                txt.Write(bb.DocumentToHTML());
+                txt.Close();
+            }
+            */
+
+            bb.ScanFile(@"C:\Users\prefe\source\repos\Bracketext\Bracketext\bbcodeexample.txt");
+            bb.BBCodeToTree();
+            bb.EvalTree();
+            Console.Write(bb.DocumentToHTML());
+            Console.Read();
+        }
       
         static void Main(string[] args)
         {
+            // Test();
+            // return;
             string inputFile = "", outputFile = "", macroFile = "";
             int n = args.Length;
             Dictionary<string, string> dic = new Dictionary<string, string>();

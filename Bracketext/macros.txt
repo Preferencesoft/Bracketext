@@ -142,7 +142,7 @@ var len=path.length;
 for (var i=0; i<len; i+=2){
 x+=path[i+1]}
 }}
-return stringListToXML(['-1','','-1','load','-12',x]);
+return stringListToXML(['-1','','-1','load','-2',x]);
 }
 // >>>>>>
 // <<<<<<
@@ -151,7 +151,7 @@ function outB(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<strong>');
 if (a.length>0) {if (a[0].length>0){
 a=a[0];
@@ -159,11 +159,11 @@ var n = a.length;
 for (var i=0; i<n; i+=2){
 var str=a[i+1];
 var tagNumber=a[i];
-if (tagNumber === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (tagNumber === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</strong>');
 return stringListToXML(oList);
 }
@@ -180,18 +180,18 @@ if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 x=toString(p[0][0]);
 var num = '123456';
 if (num.indexOf(x) < 0){x='1';}}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('<h'+x+'>');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len = a.length;
 for (var i=0; i<len; i+=2){
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</h'+x+'>');
 return stringListToXML(oList);
 }
@@ -202,18 +202,18 @@ function outU(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span style=\"text-decoration: underline;\">');
 if (a.length>0){ if (a[0].length>0) {
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -224,18 +224,18 @@ function outI(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<em>');
 if (a.length>0){if (a[0].length>0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</em>');
 return stringListToXML(oList);
 }
@@ -246,18 +246,18 @@ function outS(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<del>');
 if (a.length>0){if (a[0].length>0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</del>');
 return stringListToXML(oList);
 }
@@ -266,7 +266,7 @@ return stringListToXML(oList);
 // ||||||1|br
 function outBr(...params) {
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<br />');
 return stringListToXML(oList);
 }
@@ -282,8 +282,8 @@ a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}
 return stringListToXML(oList);
@@ -295,17 +295,17 @@ function outP(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<p>');
 if (a.length>0){if (a[0].length>0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</p>');
 return stringListToXML(oList);
 }
@@ -320,18 +320,18 @@ var oList = [];
 var col="verdana";
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 col=toString(p[0][0]);}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('<span style="color: '+col+';">');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}}}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}}}
+oList.push('-2');
 oList.push(str);
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -351,7 +351,7 @@ var x="";
 if (a.length > 0){if (a[0].length > 0){
 x=toString(a[0]);}}
 oList=[];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span style="font-size:'+y+';">'+x+'</span>');
 return stringListToXML(oList);
 }
@@ -362,18 +362,18 @@ function outQuote(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<blockquote class="bg-gray primary">');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</blockquote>');
 return stringListToXML(oList);
 }
@@ -394,28 +394,28 @@ var e=ae || pe;
 if (ae && !pe){p=a;}
 if (!ae && pe){a=p;}
 if (e) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="');
 var len=p.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(p[i+1]);
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('">');
 len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if(a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if(a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 } else {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="">');
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 }
 return stringListToXML(oList);
@@ -437,26 +437,26 @@ e=ae || pe;
 if (ae && !pe){p=a;};
 if (!ae && pe){a=p;};
 if (e) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="');
 var len=p.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(p[i+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('" rel="nofollow">');
 len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if(a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if(a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);}
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 } else {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="" rel="nofollow">');
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 }
 return stringListToXML(oList);
@@ -468,25 +468,25 @@ function outImg(...params) {
 var pa = getParameters(params);
 var p=pa[0][0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<img src="');
 if (p.length > 1){
 var src=p[0];
 var alt=p[1];
 var len=src.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(src[i+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('" alt="');
 len=alt.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(alt[i+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('" />');
 } else {
-oList.push('-12');
+oList.push('-2');
 oList.push('<img src="" alr=""/>');
 }
 return stringListToXML(oList);
@@ -498,7 +498,7 @@ function outBimg(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<img class="img-fluid" src="');
 if (p.length > 0) { if (p[0].length > 1){
 p=p[0];
@@ -506,16 +506,16 @@ var src=p[0];
 var alt=p[1];
 var len = src.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(src[i+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('" alt="');
 len = alt.length;
 for (var i=0; i<len; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(alt[i+1]);}
 }}
-oList.push('-12');
+oList.push('-2');
 oList.push('" />');
 return stringListToXML(oList);
 }
@@ -526,18 +526,18 @@ function outUl(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<ul>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</ul>');
 return stringListToXML(oList);
 }
@@ -548,18 +548,18 @@ function outOl(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<ol>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</ol>');
 return stringListToXML(oList);
 }
@@ -570,18 +570,18 @@ function outLi(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<li>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</li>');
 return stringListToXML(oList);
 }
@@ -592,18 +592,18 @@ function outCode(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<code>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</code>');
 return stringListToXML(oList);
 }
@@ -619,7 +619,7 @@ a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-oList.push('-12');
+oList.push('-2');
 oList.push(str);
 }}}
 return stringListToXML(oList);
@@ -631,16 +631,16 @@ function outTable(...params) {
 var pa = getParameters(params);
 var a=pa[1][0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<table>');
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</table>');
 return stringListToXML(oList);
 }
@@ -651,18 +651,18 @@ function outTr(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<tr>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str)};
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str)};
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</tr>');
 return stringListToXML(oList);
 }
@@ -673,18 +673,18 @@ function outTh(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<th>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</th>');
 return stringListToXML(oList);
 }
@@ -695,18 +695,18 @@ function outTd(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<td>');
 if (a.length > 0) { if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</td>');
 return stringListToXML(oList);
 }
@@ -734,22 +734,22 @@ b='<ol style="list-style-type: lower-alpha">';
 e='</ol>';
 } else {
 b='<ul>';e='</ul>';}};
-oList.push('-12');
+oList.push('-2');
 oList.push(b);
 var lena=a.length;
 for (var i=0; i<lena; i++) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<li>');
 var lenaa=a[i].length;
 for (var j=0; j<lenaa; j+=2) {
 var str=a[i][j+1];
-if (a[i][j] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i][j] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</li>');}
-oList.push('-12');
+oList.push('-2');
 oList.push(e);
 return stringListToXML(oList);
 }
@@ -770,26 +770,26 @@ e=ae || pe;
 if (ae && !pe){p=a;};
 if (!ae && pe){a=p;};
 if (e) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="mailto:');
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(p[i+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('">');
 var lena=a.length;
 for (var i=0; i<lena; i+=2) {
 var str=a[i+1];
-if(a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if(a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);}
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 } else {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a href="mailto:">');
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 }
 return stringListToXML(oList);
@@ -812,54 +812,54 @@ ncol=parseInt(toString(p[1]));}}
 var lena=a.length;
 var oList = [];
 var k=0;
-oList.push('-12');
+oList.push('-2');
 oList.push('<table class="table table-striped table-bordered">');
-oList.push('-12');
+oList.push('-2');
 oList.push('<thead>');
-oList.push('-12');
+oList.push('-2');
 oList.push('<tr>');
 for (var j=0; j<ncol; j++) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<th>');
 if (k<lena) {
 var len=a[k].length;
 for (var l=0; l+1<len; l+=2) {
 var str=a[k][l+1];
-if (a[k][l] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[k][l] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);}
-oList.push('-12');
+oList.push('-2');
 oList.push('</th>');
 }k++;}
-oList.push('-12');
+oList.push('-2');
 oList.push('</tr>');
-oList.push('-12');
+oList.push('-2');
 oList.push('</thead>');
-oList.push('-12');
+oList.push('-2');
 oList.push('<tbody>');
 for (var i=1; i<nrow; i++) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<tr>');
 for (var j=0; j<ncol; j++) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<td>');
 if (k<lena) {
 var len=a[k].length;
 for (var l=0; l+1<len; l+=2) {
 var str=a[k][l+1];
-if (a[k][l] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[k][l] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);}
 k++;}
-oList.push('-12');
+oList.push('-2');
 oList.push('</td>');
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</tr>');
 }
-oList.push('-12');
+oList.push('-2');
 oList.push('</tbody>');
-oList.push('-12');
+oList.push('-2');
 oList.push('</table>');
 return stringListToXML(oList);
 }
@@ -870,18 +870,18 @@ function outCommand(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="command">');
 if (p.length > 0){if (p[0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -892,18 +892,18 @@ function outLanguage(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="language">');
 if (p.length > 0){if (p[0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -914,18 +914,18 @@ function outFile(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="file">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -936,18 +936,18 @@ function outExtension(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="file">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -958,18 +958,18 @@ function outDirectory(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="directory">');
 if (p.length > 0){if (p[0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -980,18 +980,18 @@ function outPath(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="path">');
 if (p.length > 0){if (p[0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1002,18 +1002,18 @@ function outTrademark(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="trademark">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1024,18 +1024,18 @@ function outItem(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="item">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1046,18 +1046,18 @@ function outIurl(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="url">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1068,18 +1068,18 @@ function outExample(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="definition">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1090,18 +1090,18 @@ function outDefinition(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="definition">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1112,18 +1112,18 @@ function outOutput(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="output">');
 if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1134,18 +1134,18 @@ function outOutputBox(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<div class="output-box">');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var lena=a.length;
 for (var i=0; i<lena; i+=2){
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</div>');
 return stringListToXML(oList);
 }
@@ -1156,18 +1156,18 @@ function outInput(...params) {
 var pa = getParameters(params);
 var p=pa[0];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<span class="input">');
 if (p.length > 0){if (p[0].length > 0){
 p=p[0][0];
 var lenp=p.length;
 for (var i=0; i<lenp; i+=2){
 var str=p[i+1];
-if (p[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (p[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</span>');
 return stringListToXML(oList);
 }
@@ -1178,18 +1178,18 @@ function outInputBox(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<div class="input-box">');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var lena=a.length;
 for (var i=0; i<lena; i+=2){
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</div>');
 return stringListToXML(oList);
 }
@@ -1200,18 +1200,18 @@ function outCode(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<code>');
 if (a.length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}
-oList.push('-12');
+oList.push('-2');
 oList.push('</code>');
 return stringListToXML(oList);
 }
@@ -1222,18 +1222,18 @@ function outDefinitionBox(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<div class="definition">');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</div>');
 return stringListToXML(oList);
 }
@@ -1244,18 +1244,18 @@ function outSup(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<sup>');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</sup>');
 return stringListToXML(oList);
 }
@@ -1266,18 +1266,18 @@ function outSub(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<sub>');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</sub>');
 return stringListToXML(oList);
 }
@@ -1285,7 +1285,7 @@ return stringListToXML(oList);
 // <<<<<<
 // ||||||1|hr
 function outHr(...params) {
-return stringListToXML(['-12', '<hr />']);
+return stringListToXML(['-2', '<hr />']);
 }
 // >>>>>>
 // <<<<<<
@@ -1294,18 +1294,18 @@ function outEm(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<em>');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</em>');
 return stringListToXML(oList);
 }
@@ -1316,18 +1316,18 @@ function outStrong(...params) {
 var pa = getParameters(params);
 var a=pa[1];
 var oList = [];
-oList.push('-12');
+oList.push('-2');
 oList.push('<strong>');
 if (a.length > 0){if (a[0].length > 0){
 a=a[0];
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if (a[i] === '-2'){str=toHTML(str);}
-oList.push('-12');
+if (a[i] === '-1'){str=toHTML(str);}
+oList.push('-2');
 oList.push(str);
 }}}
-oList.push('-12');
+oList.push('-2');
 oList.push('</strong>');
 return stringListToXML(oList);
 }
@@ -1347,26 +1347,26 @@ var e=ae || pe;
 if (ae && !pe){p=a;};
 if (!ae & pe){a=p;};
 if (e) {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a class="lead text-purple" href="');
 var lenp=p.length;
 for (var k=0; k<lenp; k+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push(p[k+1]);}
-oList.push('-12');
+oList.push('-2');
 oList.push('">');
 var len=a.length;
 for (var i=0; i<len; i+=2) {
 var str=a[i+1];
-if(a[i] === '-2'){str=toHTML(str);};
-oList.push('-12');
+if(a[i] === '-1'){str=toHTML(str);};
+oList.push('-2');
 oList.push(str);};
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 } else {
-oList.push('-12');
+oList.push('-2');
 oList.push('<a class="lead text-purple" href="">');
-oList.push('-12');
+oList.push('-2');
 oList.push('</a>');
 }
 return stringListToXML(oList);
@@ -1383,7 +1383,7 @@ if (p.length > 0){if (p[0].length > 0){if (p[0][0].length > 0){
 p=p[0][0];
 x=toString(p);}}}
 for (var i=0; i<x; i+=2) {
-oList.push('-12');
+oList.push('-2');
 oList.push('&nbsp;');
 }
 return stringListToXML(oList);

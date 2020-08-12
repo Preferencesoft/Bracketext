@@ -24,8 +24,8 @@ namespace Bracketext
 
         */
 
-        public const int nNone = -1;
-        public const int nString = -2; // string in parameters
+        public const int nString = -1; // string in parameters
+        public const int nResult = -2; // during a conversion, certain character strings should only be converted once
         public const int nOpenBracket = -3;
         public const int nClosedBracket = -4;
         public const int nStraightLine = -5;
@@ -34,8 +34,8 @@ namespace Bracketext
         public const int nGroup = -9; // groups together successions of tags and strings (without [ | ])
         public const int nTag = -6; // tag
         public const int nMATag = -11; // tag argument to complete
+        public const int nNone = -12;
         // we do not define a tag when the parameters are not complete
-        public const int nResult = -12; // during a conversion, certain character strings should only be converted once.
 
         public struct Entity
         {
@@ -45,14 +45,33 @@ namespace Bracketext
             public List<Entity> entityList;
         }
 
-
+        // Tag association table
         // 0 undefined
         // 1 SINGLE (macro or function)
         // 2 BEGIN_END
         // 3 BEGIN_MIDDLE_END (deleted)
         // 4 BEGIN_REPEATED_MIDDLE_END
         // 5 BEGIN_REPEATED_AT_LEAST_ONCE_MIDDLE_END
+        // (not yet implemented)
+
+        const int TUndefined = 0;
+        const int TSingle = 1;
+        const int TBeginEnd = 2;
+        const int TBeginMiddleEnd = 3;
+        const int TBeginRepeatedMiddleEnd = 4;
+
+        // Tag types in the same association.
+        // "/" Beginning
+        // "1", ..., "9" from 1 to 9 intermediate tag number
+        // only "1" and "2" are currently being used
+        // "." end
+
+        const string TB = "/"; 
+        const string TE = ".";
+
         /*
+         * List that was originally used for testing.
+         * 
         List<string[]> tagInfoList = new List<string[]>
         {
             new string[]{ "1", "Hello"},
@@ -352,13 +371,15 @@ namespace Bracketext
         }
 
         // Delete CR characters
+        // but actually does nothing.
         public string CleanTag(string t)
         {
             return t;
         }
+
         public void BBCodeToTree()
         {
-            // search for the tags without parameters
+            // search for the tags without parameters [command]
             for (int i = 0; i < document.Count - 2; i++)
             {
                 if (document[i].tagNumber == nOpenBracket
@@ -386,7 +407,7 @@ namespace Bracketext
                                         new Entity()
                                         {
                                             tagNumber = nParameterBlocks,
-                                            str = null,
+                                            str = TE,
                                             entityList = null
                                         }
                                     }
@@ -405,6 +426,7 @@ namespace Bracketext
             {
                 notEnded = false;
                 // grouping inside parameters |...| or |...] or ]...]
+                // We group together packets made up exclusively of nTag, nString and nGroup
                 bool modified = true;
                 while (modified)
                 {
@@ -512,7 +534,8 @@ namespace Bracketext
                                             new Entity()
                                             {
                                                 tagNumber = nParameterBlocks,
-                                                str = null,
+                                                str = TE,
+                                                // By default, the first parameter block is defined as terminal TE
                                                 entityList = new List<Entity>()
                                             }
                                         }
@@ -520,9 +543,7 @@ namespace Bracketext
                                 }
                             };
                             for (int k = ii + 3; k < j; k += 2)
-                            {
                                 e.entityList[0].entityList[0].entityList.Add(document[k]);
-                            }
                             for (int k = ii + 1; k < j; k++)
                                 document.RemoveAt(ii + 1);
                             document[ii] = e;
@@ -532,7 +553,7 @@ namespace Bracketext
                 }
                 // DisplayEntity(document);
 
-                // scan [begin] ... [end]
+                // Search for complete associated tags [begin] ... [end] and others
                 modified = true;
                 while (modified)
                 {
@@ -547,6 +568,7 @@ namespace Bracketext
                             //string s = tagList[tag.tagNumber];
                             if (position == 1)
                             {
+                                // When the position equals 1, we have a starting tag [begin]
                                 int entry = tagEntryList[tag.tagNumber];
                                 int type = tagTypeList[entry];
                                 int[] asso = tagAssociationList[entry];
@@ -554,7 +576,8 @@ namespace Bracketext
                                 bool f = false;
                                 switch (type)
                                 {
-                                    case 1:
+                                    // See the tag association table, above.
+                                    case TSingle:
                                         {
                                             modified = true;
                                             notEnded = true;
@@ -563,6 +586,7 @@ namespace Bracketext
                                                 tagNumber = nTag,
                                                 str = null,
                                                 entityList = document[ii].entityList
+                                                // We're retrieving the parameter block from the current tag.
                                             };
                                             newTag.entityList[0].entityList.Add(
                                                 new Entity()
@@ -571,11 +595,11 @@ namespace Bracketext
                                                     str = null,
                                                     entityList = new List<Entity>()
                                                 });
- 
+                                            // No argument here
                                             document[ii] = newTag;
                                         }
                                         break;
-                                    case 2:
+                                    case TBeginEnd:
                                         {
                                             int j;
                                             for (j = ii + 1; j < document.Count; j++)
@@ -603,8 +627,8 @@ namespace Bracketext
                                             }
                                         }
                                         break;
-                                    case 3:
-                                    case 4:
+                                    case TBeginMiddleEnd:
+                                    case TBeginRepeatedMiddleEnd:
                                         {
                                             int count = 0;
                                             int j;
@@ -627,7 +651,7 @@ namespace Bracketext
                                                     if (tn != nString && tn != nTag)
                                                     break;
                                             }
-                                            if (type == 4 && count == 0)
+                                            if (type == TBeginRepeatedMiddleEnd && count == 0)
                                                 f = false;
                                             if (f)
                                             {
@@ -653,7 +677,7 @@ namespace Bracketext
             // DisplayEntity(document);
         }
 
-
+        // Reduced to form a group.
         public void ReductionG(ref int i, int j, out bool modified)
         {
             modified = false;
@@ -706,6 +730,7 @@ namespace Bracketext
 
         public void Reduction1(int ii, int j)
         {
+            // The argument is removed
             Entity argumentGroup = new Entity()
             {
                 tagNumber = nGroup,
@@ -716,6 +741,7 @@ namespace Bracketext
                 argumentGroup.entityList.Add(document[k]);
             for (int k = ii + 1; k < j; k++)
                 document.RemoveAt(ii + 1);
+            // The parameters of the two tags
             Entity newTag = new Entity()
             {
                 tagNumber = nTag,
@@ -732,10 +758,25 @@ namespace Bracketext
             };
             List<Entity> param = document[ii].entityList[0].entityList;
             if (param != null)
-                newTag.entityList[0].entityList.AddRange(param);
+            {
+                // newTag.entityList[0].entityList.AddRange(param);
+                newTag.entityList[0].entityList.Add(new Entity
+                {
+                    tagNumber = nParameterBlocks,
+                    str = TB,
+                    entityList = param[0].entityList
+                });
+                // The first block is of the beginning type.
+            }
             param = document[ii + 1].entityList[0].entityList;
             if (param != null)
-                newTag.entityList[0].entityList.AddRange(param);
+                // newTag.entityList[0].entityList.AddRange(param);
+                newTag.entityList[0].entityList.Add(new Entity
+                {
+                    tagNumber = nParameterBlocks,
+                    str = TE,
+                    entityList = param[0].entityList
+                });
             newTag.entityList[0].entityList.Add(
                 new Entity
                 {
@@ -774,18 +815,45 @@ namespace Bracketext
                 entityList = new List<Entity>()
             };
             if (document[ii].entityList[0].entityList != null)
-                newTag.entityList[0].entityList.AddRange(document[ii].entityList[0].entityList);
+            {
+                newTag.entityList[0].entityList.Add(new Entity
+                {
+                    tagNumber = nParameterBlocks,
+                    str = TB,
+                    entityList = document[ii].entityList[0].entityList[0].entityList
+                });
+                // The first block is of the beginning type.
+            }
             for (int k = ii + 1; k <= j; k++)
             {
                 int tn = document[k].tagNumber;
                 if (tn == nMATag)
                 {
                     var tg = document[k].entityList[0].tagNumber;
-                    if (tg == asso[last - 1]
-                        || tg == asso[last])
+                    bool isIntermediateTag = false;
+                    string tagType = TE;
+                    if (tg == asso[last - 1])
+                    {
+                        tagType = "1";
+                        isIntermediateTag = true;
+                    }
+                    else
+                    {
+                        if (tg == asso[last])
+                            isIntermediateTag = true;
+                    }
+                    if (isIntermediateTag)
                     {
                         if (document[k].entityList[0].entityList != null)
-                            newTag.entityList[0].entityList.AddRange(document[k].entityList[0].entityList);
+                        {
+                            // newTag.entityList[0].entityList.AddRange(document[k].entityList[0].entityList);
+                            newTag.entityList[0].entityList.Add(new Entity
+                            {
+                                tagNumber = nParameterBlocks,
+                                str = tagType,
+                                entityList = document[k].entityList[0].entityList[0].entityList
+                            });
+                        }
                         argumentList.Add(subGroup);
                         subGroup = new Entity()
                         {
@@ -873,11 +941,18 @@ namespace Bracketext
             {
                 List<Entity> pList = tag.entityList[0].entityList;
                 int[] indexP = new int[3] { 0, -1, -1 };
+                // parameter indexes
                 int[] indexA = new int[2] { 1, -1 };
+                // argument indexes
+                int indexT = -1;
+                // type index
                 foreach (Entity pa in pList)
                 {
                     if (pa.tagNumber == nParameterBlocks)
                     {
+                        indexT++;
+                        pars.Add(string.Format("2,{0}", indexT));
+                        pars.Add(string.Format("{0}", pa.str));
                         if (pa.entityList != null)
                         {
                             indexP[1]++;
@@ -910,6 +985,7 @@ namespace Bracketext
             }
             return pars.ToArray();
         }
+
 
         public string DocumentToHTML()
         {

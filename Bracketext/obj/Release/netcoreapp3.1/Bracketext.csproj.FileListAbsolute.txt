@@ -21,4 +21,3 @@ C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\netcoreapp3.1\Brac
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\netcoreapp3.1\Bracketext.dll
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\netcoreapp3.1\Bracketext.pdb
 C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\netcoreapp3.1\Bracketext.genruntimeconfig.cache
-C:\Users\prefe\source\repos\Bracketext\Bracketext\obj\Release\netcoreapp3.1\Bracketext.csprojAssemblyReference.cache

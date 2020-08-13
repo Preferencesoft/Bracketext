@@ -4,6 +4,20 @@
 
 Bracketext is a macro language using only 4 symbols [ | ] and \' acting on the text in which the macros are placed when they are interpreted.
 
+These symbols are used to form tags. These are always in the form:
+
+[tag_name] or [tag_name|param1|...|param_n].
+
+A macro can be defined by a single tag or by a sequence of several tags (as before) in the form:
+
+[begin] or [begin] ... [end]
+
+or more generally:
+
+[begin]       [t1]      [t2]       [tn]       [end]
+
+The ti tags can be repeated; the parts of text placed between each tag are considered the arguments of the macro. If the macro consists of only one tag, it will have no arguments.
+
 These macros must be written in scripting languages like **JavaScript**. To write macros, you need to use *JavaScript* programming language. The project uses **JavaScriptEngineSwitcher**.
 
 We use a scripting language to create macros that when inserted into any text will transform it into HTML for example.
@@ -79,9 +93,18 @@ This tree is then transformed into a call to the MacroName1 function whose param
     var a=p[1];
     var t=p[2];
 
-* p is of type string[][][]
-* a is of type string[][]
-* t is of type string[]
+* p is of type string[][][]; it represents the list of groups of parameters for each tag, each parameter being represented by a list of text parts.
+* a is of type string[][]; it represents the list of arguments of the macro. Each argument is a list of text parts
+* t is of type string[]; corresponds to the list of tag types of the macro (useful when the macro consists of several intermediate tags)
+
+The list of text parts is passed to the JavaScript functions in the form:
+
+"-1", "characters_1", "-2", "characters_2", "-1", "characters_3", ..., "-2", "characters_n".
+
+* "-1" means that the following characters have not yet been processed. 
+* "-2" means the opposite to avoid applying the same conversion (to HTML for example) several times.
+
+All is said for the representation of the parameters.
 
 Let's give a simple example:
 

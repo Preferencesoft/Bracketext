@@ -53,12 +53,15 @@ namespace Bracketext
         // 4 BEGIN_REPEATED_MIDDLE_END
         // 5 BEGIN_REPEATED_AT_LEAST_ONCE_MIDDLE_END
         // (not yet implemented)
+        // 6 MULTIPLE_REPEATED_MIDDLE_BLOCKS
 
         const int TUndefined = 0;
         const int TSingle = 1;
         const int TBeginEnd = 2;
         const int TBeginMiddleEnd = 3;
         const int TBeginRepeatedMiddleEnd = 4;
+
+        const int TMultipleRepeatedMiddleBlocks = 6;
 
         // Tag types in the same association.
         // "/" Beginning
@@ -644,15 +647,60 @@ namespace Bracketext
                                                     }
                                                     else
                                                         if (document[j].entityList[0].tagNumber != asso[last - 1])
+                                                            break;
+                                                        else count++;
+                                                }
+                                                else
+                                                    if (tn != nString && tn != nTag)
                                                         break;
-                                                    else count++;
+                                            }
+                                            if (type == TBeginRepeatedMiddleEnd && count == 0)
+                                                f = false;
+                                            if (f)
+                                            {
+                                                modified = true;
+                                                notEnded = true;
+                                                if (count == 0)
+                                                    Reduction1(ii, j);
+                                                else
+                                                    Reduction2(ii, j, last, asso);
+                                            }
+                                        }
+                                        break;
+                                    case TMultipleRepeatedMiddleBlocks:
+                                        {
+                                            int count = 0;
+                                            int j;
+                                            for (j = ii + 1; j < document.Count; j++)
+                                            {
+                                                int tn = document[j].tagNumber;
+                                                if (tn == nMATag)
+                                                {
+                                                    if (document[j].entityList[0].tagNumber == asso[last])
+                                                    {
+                                                        f = true;
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        bool isIntermediateTag = false;
+                                                        for (int k = 1; k < last; k++)
+                                                        {
+                                                            if (document[j].entityList[0].tagNumber == asso[k])
+                                                            {
+                                                                isIntermediateTag = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (!isIntermediateTag)
+                                                            break;
+                                                        else count++;
+                                                    }
                                                 }
                                                 else
                                                     if (tn != nString && tn != nTag)
                                                     break;
                                             }
-                                            if (type == TBeginRepeatedMiddleEnd && count == 0)
-                                                f = false;
                                             if (f)
                                             {
                                                 modified = true;
@@ -832,15 +880,19 @@ namespace Bracketext
                     var tg = document[k].entityList[0].tagNumber;
                     bool isIntermediateTag = false;
                     string tagType = TE;
-                    if (tg == asso[last - 1])
-                    {
-                        tagType = "1";
+                    if (tg == asso[last])
                         isIntermediateTag = true;
-                    }
                     else
                     {
-                        if (tg == asso[last])
-                            isIntermediateTag = true;
+                        for (int a = last - 1; a > 0; a--)
+                        {
+                            if (tg == asso[a])
+                            {
+                                tagType = ((char)(a+48)).ToString();
+                                isIntermediateTag = true;
+                                break;
+                            }
+                        }
                     }
                     if (isIntermediateTag)
                     {
@@ -878,6 +930,8 @@ namespace Bracketext
             document[ii] = newTag;
             //document.RemoveAt(ii + 1);
         }
+
+
 
 
 

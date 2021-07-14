@@ -34,9 +34,9 @@ namespace Bracketext
       
         static void Main(string[] args)
         {
-            // Test();
-            // return;
-            string inputFile = "", outputFile = "", macroFile = "";
+        // Test();
+        // return;
+        string inputFile = "", outputFile = "", macroFile = "";
             int n = args.Length;
             Dictionary<string, string> dic = new Dictionary<string, string>();
             bool error = false;

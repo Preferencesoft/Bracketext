@@ -232,8 +232,16 @@ e='</ol>';
 if (x === 'a'){
 b='<ol style="list-style-type: lower-alpha">';
 e='</ol>';
+} else { 
+if (x === 'I'){
+b='<ol style="list-style-type: upper-roman">';
+e='</ol>';
 } else {
-b='<ul>';e='</ul>';}};
+if (x === 'i'){
+b='<ol style="list-style-type: lower-roman">';
+e='</ol>';
+} else {
+b='<ul>';e='</ul>';}}}};
 oList.push('-2');
 oList.push(b);
 var lena=a.length;

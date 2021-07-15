@@ -1,0 +1,20 @@
+﻿[doc]
+lkjljlk
+<img src="src" alt="alt" />
+<a href="mailto:hhhhhhhhhhh">是是是是是是是eeeeeeeeeeee</a>
+<ol style="list-style-type: decimal"><li>qsdqsd</li><li>sdfdsfsdf</li></ol>
+<code>465x4v6 sdfsdf</code>
+<strong>dfgfdgfd</strong>
+[h1]ddkljdqsk qdjlkqsjdlq[/h1]
+<h2>essai qqqqqqq</h2>
+<blockquote class="bg-gray primary">dfgdfg dfgdfgd</blockquote>
+<a href="PP" rel="nofollow">AAAA</a>
+<br />
+<span style="text-decoration: underline;">aaaaaaaaaaaa ffffffffffffffff</span>
+<del>ssssssssssssss</del>
+<em>iiiiiiiiiiiiiiiii</em>
+<span style="color: green;">ddddddddddddd</span>
+loadC:\Users\user1\source\repos\Bracketext\Bracketext\macros.txt
+<span style="font-size:12px;">qsdqsd</span>
+lhjlh
+[/doc]

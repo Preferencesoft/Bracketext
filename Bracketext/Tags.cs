@@ -137,7 +137,7 @@ namespace Bracketext
         public void LoadMacros(string psFileName)
         {
             // provisionally, we load the entire text.
-            string[] text = File.ReadAllText(psFileName, Encoding.Unicode).Split('\n');
+            string[] text = File.ReadAllText(psFileName, Encoding.UTF8).Split('\n');
             int state = 0;
             StringBuilder sb = new StringBuilder();
             // 0 no function
@@ -1544,7 +1544,7 @@ namespace Bracketext
         }
         public void ScanFile(string fileName)
         {
-            string text = File.ReadAllText(fileName, Encoding.Unicode);
+            string text = File.ReadAllText(fileName, Encoding.UTF8);
             Console.WriteLine(text);
             int textLength = text.Length;
             StringBuilder sb = new StringBuilder();

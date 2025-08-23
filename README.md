@@ -2,8 +2,10 @@
 
 ## Text macros language
 
-Bracketext is a macro language using only 4 symbols [ | ] and \' acting on the text in which the macros are placed when they are interpreted.
+The Bracketext software has been rewritten in C++ and no longer uses JavaScript but Lua for macros. However, I still need to complete the macros. For now, Bracketext only generates HTML, but it will be able to generate Latex, for example, without any problems. The disadvantage of Bracketext is that a text must be accompanied by the macro file in order to be converted, and it is not a standardized language like SGML, HTML, etc.
 
+Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
+efl
 These symbols are used to form tags. These are always in the form:
 
 [tag_name] or [tag_name|param1|...|param_n].

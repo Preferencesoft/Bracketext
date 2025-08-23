@@ -118,10 +118,18 @@ jobs:
 
     - name: List generated packages
       run: |
-        ls -la build/*.deb build/*.tar.gz build/*.zip
+        echo "=== Generated packages ==="
+        ls -la build/*.* 2>/dev/null || echo "No files found with simple pattern"
+        echo "=== All files in build directory ==="
+        find build/ -type f -name "*.*" | head -10
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: package-${{ github.sha }}
-        path: build/*.deb build/*.tar.gz build/*.zip
+        path: |
+          build/*.tar.gz
+          build/*.tgz
+          build/*.deb
+          build/*.zip
+          build/*.rpm

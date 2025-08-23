@@ -62,12 +62,17 @@ jobs:
       run: |
         ctest -C ${{ matrix.build_type }} --output-on-failure --parallel $(nproc)
 
-    - name: Code Coverage (Debug only)
-      if: matrix.build_type == 'Debug'
-      run: |
-        lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' --output-file coverage.info
-        lcov --list coverage.info
+- name: Configure CMake for Debug with Coverage
+    run: |
+      cmake -B build-debug \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -O0 -g" \
+        -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -O0 -g" \
+        -DCMAKE_EXE_LINKER_FLAGS="-lgcov"
+
+- name: Build Debug
+    run: |
+      cmake --build build-debug --parallel 4
 
   code-quality:
     runs-on: ubuntu-latest

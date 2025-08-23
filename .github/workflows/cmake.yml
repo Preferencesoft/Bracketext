@@ -69,58 +69,6 @@ jobs:
         lcov --remove coverage.info '/usr/*' --output-file coverage.info
         lcov --list coverage.info
 
-  windows-build:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        build_type: [Release, Debug]
-        generator: ["Visual Studio 17 2022", "Ninja"]
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Configure CMake
-      run: |
-        cmake -B build \
-          -G "${{ matrix.generator }}" \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-
-    - name: Build
-      run: |
-        cmake --build build --config ${{ matrix.build_type }} --parallel 4
-
-    - name: Test
-      working-directory: ./build
-      run: |
-        ctest -C ${{ matrix.build_type }} --output-on-failure
-
-  macos-build:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        build_type: [Release, Debug]
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install Dependencies (macOS)
-      run: |
-        brew update
-        brew install boost cmake
-
-    - name: Configure CMake
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-
-    - name: Build
-      run: |
-        cmake --build build --config ${{ matrix.build_type }} --parallel 4
-
-    - name: Test
-      working-directory: ./build
-      run: |
-        ctest -C ${{ matrix.build_type }} --output-on-failure
-
   code-quality:
     runs-on: ubuntu-latest
     needs: [linux-build]

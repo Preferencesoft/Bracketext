@@ -1,4 +1,0 @@
-/home/jcc/Documents/programming/projects-csharp/Bracketext/build/CMakeFiles/bracketext.dir
-/home/jcc/Documents/programming/projects-csharp/Bracketext/build/CMakeFiles/debug.dir
-/home/jcc/Documents/programming/projects-csharp/Bracketext/build/CMakeFiles/edit_cache.dir
-/home/jcc/Documents/programming/projects-csharp/Bracketext/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,155 @@
+name: C++ CI with CMake
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly builds on Sunday
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+        compiler: [gcc, clang]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install Dependencies (Ubuntu)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libboost-all-dev \
+          libssl-dev \
+          clang-tidy \
+          cppcheck
+
+    - name: Setup ${{ matrix.compiler }}
+      run: |
+        if [ "${{ matrix.compiler }}" = "clang" ]; then
+          sudo apt-get install -y clang
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+        else
+          echo "CC=gcc" >> $GITHUB_ENV
+          echo "CXX=g++" >> $GITHUB_ENV
+        fi
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_CXX_COMPILER=$CXX \
+          -DBUILD_TESTING=ON \
+          -DENABLE_COVERAGE=${{ matrix.build_type == 'Debug' }}
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --parallel $(nproc)
+
+    - name: Run Tests
+      working-directory: ./build
+      run: |
+        ctest -C ${{ matrix.build_type }} --output-on-failure --parallel $(nproc)
+
+    - name: Code Coverage (Debug only)
+      if: matrix.build_type == 'Debug'
+      run: |
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+
+  windows-build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+        generator: ["Visual Studio 17 2022", "Ninja"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -G "${{ matrix.generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --parallel 4
+
+    - name: Test
+      working-directory: ./build
+      run: |
+        ctest -C ${{ matrix.build_type }} --output-on-failure
+
+  macos-build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Dependencies (macOS)
+      run: |
+        brew update
+        brew install boost cmake
+
+    - name: Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --parallel 4
+
+    - name: Test
+      working-directory: ./build
+      run: |
+        ctest -C ${{ matrix.build_type }} --output-on-failure
+
+  code-quality:
+    runs-on: ubuntu-latest
+    needs: [linux-build]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Clang-Tidy
+      run: |
+        sudo apt-get install -y clang-tidy
+        cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        run-clang-tidy -p build -j $(nproc)
+
+    - name: Cppcheck
+      run: |
+        sudo apt-get install -y cppcheck
+        cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem src/ include/
+
+  package:
+    runs-on: ubuntu-latest
+    needs: [linux-build, windows-build, macos-build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Create Package
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --target package
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: package-${{ github.sha }}
+        path: build/*.deb build/*.tar.gz build/*.zip

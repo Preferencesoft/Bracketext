@@ -49,31 +49,35 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 include(GNUInstallDirs)
 include(CPack)
 
-# Installation targets
-install(TARGETS bracketext
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(FILES 
-    README.md 
-    LICENSE
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-)
-
 # Package metadata
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION "Bracket a tex macro language")
-set(CPACK_PACKAGE_VENDOR "Jean-Claude COLETTE")
+set(CPACK_PACKAGE_VENDOR "Preferencesoft")
 set(CPACK_PACKAGE_CONTACT "john@preferencesoft.com")
 
-# Package generators
-set(CPACK_GENERATOR "DEB;ZIP;TGZ")
+# Set package generators (choose one or more)
+set(CPACK_GENERATOR "TGZ")  # Start with just TGZ for testing
+# set(CPACK_GENERATOR "DEB;TGZ;ZIP")  # Multiple formats
 
-# DEB-specific settings
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <john@preferencesoft.com>")
+# For DEB packages (if using)
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your-email@example.com>")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.3-dev")
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 
-# RPM-specific settings
-set(CPACK_RPM_PACKAGE_RELEASE "1")
+# Set the package file name
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
+
+# Installation targets - THESE ARE REQUIRED FOR PACKAGING
+install(TARGETS bracketext
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
+
+# Install documentation files
+install(FILES 
+    README.md 
+    LICENSE
+    DESTINATION share/doc/${PROJECT_NAME}
+)

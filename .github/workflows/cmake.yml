@@ -116,6 +116,10 @@ jobs:
         cmake -B build -DCMAKE_BUILD_TYPE=Release
         cmake --build build --target package
 
+    - name: List generated packages
+      run: |
+        ls -la build/*.deb build/*.tar.gz build/*.zip
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:

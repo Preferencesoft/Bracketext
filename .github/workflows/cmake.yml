@@ -25,7 +25,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y liblua5.3-dev lua5.3
-        sudo apt-get install -y libutf8cpp-dev
+        sudo apt-get install -y libutf8proc-dev
         sudo apt-get install -y \
           libboost-all-dev \
           libssl-dev \

@@ -80,6 +80,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Lua dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y liblua5.3-dev lua5.3
+
     - name: Clang-Tidy
       run: |
         sudo apt-get install -y clang-tidy

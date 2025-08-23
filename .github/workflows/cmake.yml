@@ -24,7 +24,7 @@ jobs:
     - name: Install Dependencies (Ubuntu)
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
+        sudo apt-get install -y liblua5.3-dev lua5.3 \
           libboost-all-dev \
           libssl-dev \
           clang-tidy \

@@ -1,0 +1,243 @@
+-- <<<<<<
+-- ||||||g|
+function HTMLEntities(s)
+    if not s then return "" end
+    
+    local result = {}
+    local entities = {
+        [' '] = "&nbsp;",
+        ['<'] = "&lt;",
+        ['>'] = "&gt;",
+        ['&'] = "&amp;",
+        ['"'] = "&quot;",
+        ["'"] = "&apos;",
+        ['¢'] = "&cent;",
+        ['£'] = "&pound;",
+        ['¥'] = "&yen;",
+        ['€'] = "&euro;",
+        ['©'] = "&copy;",
+        ['®'] = "&reg;",
+    }
+    
+    -- Iterate through each UTF-8 character
+    for _, char in utf8.codes(s) do
+        local utf8_char = utf8.char(char)
+        local replacement = entities[utf8_char]
+        
+        if replacement then
+            table.insert(result, replacement)
+        else
+            table.insert(result, utf8_char)
+        end
+    end
+    
+    return table.concat(result)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toXML(s)
+    local n = #s
+    local str = ""
+    for i = 1, n do
+        local r = s:sub(i,i)
+        if r == "<" then
+            r = "&lt;"
+        elseif r == ">" then
+            r = "&gt;"
+        elseif r == "&" then
+            r = "&amp;"
+        elseif r == '"' then
+            r = "&quot;"
+        elseif r == "'" then
+            r = "&apos;"
+        end
+        str = str .. r
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toHTML(s)
+    local n = #s
+    local str = ""
+    for i = 1, n do
+        local r = s:sub(i,i)
+        if r == "<" then
+            r = "&lt;"
+        elseif r == ">" then
+            r = "&gt;"
+        elseif r == "&" then
+            r = "&amp;"
+        elseif r == '"' then
+            r = "&quot;"
+        elseif r == "'" then
+            r = "&apos;"
+        elseif r == "¢" then
+            r = "&cent;"
+        elseif r == "£" then
+            r = "&pound;"
+        elseif r == "¥" then
+            r = "&yen;"
+        elseif r == "€" then
+            r = "&euro;"
+        elseif r == "©" then
+            r = "&copy;"
+        elseif r == "®" then
+            r = "&reg;"
+        end
+        str = str .. r
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toString(strList)
+    local str = ''
+    local len = #strList
+    for i = 1, len do
+        str = str .. strList[i]
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|b|/b
+function outB(pa, ar)
+ local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<b>')
+table.insert(oList,'\4')
+if #ar>0 then 
+  if #ar[1]>0 then
+    local a=ar[1]
+    local len=#a
+    local i
+    local str = ""
+    for i=1, len do
+      str=str .. a[i]
+    end
+    table.insert(oList,str)  
+  end
+end
+table.insert(oList,'\1')
+table.insert(oList,'</b>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|title|/title
+function outTitle(pa, ar)
+    local p = pa[1]
+    local a = ar[1]
+    local x = '1'
+    local oList = {}
+    if #p > 0 and #p[1] > 0 then
+        x = toString(p[1])
+        local num = '123456'
+        if not num:find(x) then x = '1' end
+    end
+    table.insert(oList,'\1')
+    table.insert(oList, '<h' .. x .. '>')
+    table.insert(oList,'\4')
+    if #a > 0 then
+        local len = #a
+        for i = 1, len do
+            local str = a[i]
+            table.insert(oList, str)
+        end
+    end
+    table.insert(oList,'\1')
+    table.insert(oList, '</h' .. x .. '>')
+    table.insert(oList,'\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|u|/u
+function outU(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<u>')
+table.insert(oList,'\4')
+if #ar>0 then 
+  if #ar[1]>0 then
+    local a=ar[1]
+    local len=#a
+    local i
+    local str = ""
+    for i=1, len do
+      str=str .. a[i]
+    end
+    table.insert(oList,str)  
+  end
+end
+table.insert(oList,'\1')
+table.insert(oList,'</u>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|i|/i
+function outI(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<i>')
+table.insert(oList,'\4')
+if #ar>0 then 
+  if #ar[1]>0 then
+    local a=ar[1]
+    local len=#a
+    local i
+    local str = ""
+    for i=1, len do
+      str=str .. a[i]
+    end
+    table.insert(oList,str)  
+  end
+end
+table.insert(oList,'\1')
+table.insert(oList,'</i>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|s|/s
+function outS(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<del>')
+table.insert(oList,'\4')
+if #ar>0 then 
+  if #ar[1]>0 then
+    local a=ar[1]
+    local len=#a
+    local i
+    local str = ""
+    for i=1, len do
+      str=str .. a[i]
+    end
+    table.insert(oList,str)  
+  end
+end
+table.insert(oList,'\1')
+table.insert(oList,'</del>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|br
+function outBr(pa, ar)
+local oList = {}
+    table.insert(oList,'\1')
+    table.insert(oList, '<br>')
+    table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>

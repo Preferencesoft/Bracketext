@@ -1,0 +1,7 @@
+[command]
+[b]ddddddddddddddd[/b]
+[s]ssssssssssssss[/s]
+lfllfflf
+[s]ttttttttttttttttt[/s]
+[title|2]RRR<<<<<<RRRRRRrrr[/title]
+

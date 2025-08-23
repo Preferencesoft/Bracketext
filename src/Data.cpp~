@@ -1,0 +1,20 @@
+#include "Data.h"
+
+using namespace std;
+
+        std::wstring Data::Serialize(std::vector<std::wstring> sList)
+        {
+            std::wstring StringWriter sw = L"";
+            //XmlSerializer xml = new XmlSerializer(sList.GetType());
+            //xml.Serialize(sw, sList);
+            return sw;
+        }
+		
+        std::vector<std::wstring> Data::Deserialize(std::wstring str)
+        {
+            //XmlSerializer xml = new XmlSerializer(typeof(List<string>));
+            std::vector<std::wstring> sList;// = (List<string>)xml.Deserialize(new StringReader(str));
+            return sList;
+        }
+    
+

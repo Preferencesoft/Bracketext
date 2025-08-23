@@ -1,0 +1,20 @@
+﻿// Bracketext.h : fichier Include pour les fichiers Include système standard,
+// ou les fichiers Include spécifiques aux projets.
+
+#pragma once
+
+
+#include <locale>
+#include <sstream>
+#include <fstream>
+#include <codecvt>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+
+public:
+  static std::wstring Serialize(std::vector<std::wstring> sList);
+  static std::vector<std::wstring> Deserialize(std::wstring str);
+};

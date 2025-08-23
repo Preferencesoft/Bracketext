@@ -1,0 +1,108 @@
+﻿// Bracketext.cpp : définit le point d'entrée de l'application.
+//
+
+#include "Bracketext.h"
+
+using namespace std;
+
+      void Bracketext::Test()
+        {
+           /* 
+            var bb = new Tags();
+            bb.LoadMacros(@"C:\Users\prefe\source\repos\Bracketext\Bracketext\testmacros.txt");
+            bb.Init();
+			*/
+            /*
+            {
+                //bb.ScanFile(CommandLine["f"]);
+                // bb.ScanFile(@"C:\Users\prefe\source\repos\BBMacro\BBMacro\bbcodeexample.txt");
+                bb.BBCodeToTree();
+                bb.EvalTree();
+                // Console.Write(bb.DocumentToHTML());
+                //TextWriter txt = new StreamWriter(CommandLine["o"]);
+                txt.Write(bb.DocumentToHTML());
+                txt.Close();
+            }
+            */
+/*
+            bb.ScanFile(@"C:\Users\prefe\source\repos\Bracketext\Bracketext\bbcodeexample.txt");
+            bb.BBCodeToTree();
+            bb.EvalTree();
+            Console.Write(bb.DocumentToHTML());
+            Console.Read();
+			*/
+        }
+      
+        void Bracketext::Main(int argc, char *argv[])
+        {
+            // Test();
+            // return;
+			
+            std::string inputFile = "", outputFile = "", macroFile = "";
+		
+            int n = argc;
+            //Dictionary<string, string> dic = new Dictionary<string, string>();
+            
+			map<std::string, std::string> dic;
+			bool error = false;
+            if (n > 1)
+            {
+                for (int i = 0; i < argc; i++)
+                {
+                    if (argv[i] == "-f")
+                    {
+						if (i + 1 < argc)
+                                if (true/*!dic.ContainsKey("input")*/)
+                                {
+                                    dic["input"] = argv[i + 1];
+                                }
+                                else error = true;
+                            else error = true;
+					} else
+						 if (argv[i] == "-o") {
+							 if (i + 1 < argc)
+                                if (true/*!dic.ContainsKey("output")*/)
+                                {
+                                    dic["output"] = argv[i + 1];
+                                }
+                                else error = true;
+                            else error = true;
+						 } else
+						if (argv[i] == "-m") {
+							if (i + 1 < argc)
+                                if (true/*!dic.ContainsKey("macros")*/)
+                                {
+                                    dic["macros"] = argv[i + 1];
+                                }
+                                else error = true;
+                            else error = true;
+                            break;
+						}
+                        
+                    if (error) break;
+                }
+                if (true/*dic.Keys.Count != 3*/) error = true;
+            }
+            else error = true;
+            if (error)
+            {
+                std::wcout << "usage: Bracketext.exe -m macro_file -f input_file_path -o output_file_path";
+                return;
+            }
+            inputFile = dic["input"];
+            outputFile = dic["output"];
+            macroFile = dic["macros"];
+			
+            //var bb = new Tags();
+            Tags::LoadMacros(macroFile);
+            Tags::Init();
+            Tags::ScanFile(inputFile);
+            Tags::BBCodeToTree();
+            Tags::EvalTree();
+			std::wstring ws = Tags::DocumentToHTML();
+			/*
+            TextWriter txt = new StreamWriter(outputFile, false, System.Text.Encoding.Unicode);
+            txt.Write(bb.DocumentToHTML());
+            txt.Close();
+			*/
+        }

@@ -80,10 +80,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Lua dependencies
+    - name: Install Lua and utf8-cpp dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y liblua5.3-dev lua5.3
+        sudo apt-get install -y libutfcpp-dev
 
     - name: Clang-Tidy
       run: |
@@ -104,10 +105,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Lua dependencies
+    - name: Install Lua and utf8-cpp dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y liblua5.3-dev lua5.3
+        sudo apt-get install -y libutfcpp-dev
 
     - name: Create Package
       run: |

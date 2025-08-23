@@ -44,3 +44,36 @@ add_custom_target(
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${LUA_LIBRARIES}  # Links liblua5.3.so
 )
+
+# ===== PACKAGING CONFIGURATION =====
+include(GNUInstallDirs)
+include(CPack)
+
+# Installation targets
+install(TARGETS bracketext
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES 
+    README.md 
+    LICENSE
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+)
+
+# Package metadata
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION "Bracket a tex macro language")
+set(CPACK_PACKAGE_VENDOR "Jean-Claude COLETTE")
+set(CPACK_PACKAGE_CONTACT "john@preferencesoft.com")
+
+# Package generators
+set(CPACK_GENERATOR "DEB;ZIP;TGZ")
+
+# DEB-specific settings
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <john@preferencesoft.com>")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.3-dev")
+set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
+
+# RPM-specific settings
+set(CPACK_RPM_PACKAGE_RELEASE "1")

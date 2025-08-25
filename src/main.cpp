@@ -2,10 +2,10 @@
 /*
  * main.cc
  * Copyright (C) 2021 jcc <jcc@pcl>
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
- * are met:
+ * are met:		
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
@@ -14,7 +14,7 @@
  * 3. Neither the name ``jcc'' nor the name of any other
  *    contributor may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- *
+ * 
  * Bracketext IS PROVIDED BY jcc ``AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,40 +28,41 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include "Tags.h"
 #include "Bracketext.h"
 #include "HTMLEntityTransformer.h"
-#include "Tags.h"
-#include <iostream>
 
-int main(int argc, char *argv[]) {
-  int err = Bracketext::Main(argc, argv);
-  // Bracketext::Test();
-  /*
-     HTMLEntityTransformer transformer;
-
-      // Test string with protected zones and various characters
-      std::string test_input = "Price: €100 < 200 & 'special' \1Protected:
-     <>&€\4 © 2023";
-
-      std::string result = transformer.transform(test_input);
-
-      std::cout << "Input: " << test_input << std::endl;
-      std::cout << "Output: " << result << std::endl;
-
-      // Additional test cases
-      std::vector<std::string> test_cases = {
-          "Simple: <>&\"'",
-          "Multiple zones: \1Keep this <>&\4 and transform this <>&",
-          "\1Fully protected\4",
-          "No protection: €100 < 200",
-          "Nested? \1First \1Second\4 First continues\4", // Note: This doesn't
-     handle nesting "Mixed: © & \1<>&\4 & ©"
-      };
-
-      for (const auto& test : test_cases) {
-          std::cout << "\nTest: " << test << std::endl;
-          std::cout << "Result: " << transformer.transform(test) << std::endl;
-      }
-  */
-  return 0;
+int main(int argc, char *argv[])
+{
+	int err = Bracketext::Main(argc, argv);
+        // Bracketext::Test();
+/*
+   HTMLEntityTransformer transformer;
+    
+    // Test string with protected zones and various characters
+    std::string test_input = "Price: €100 < 200 & 'special' \1Protected: <>&€\4 © 2023";
+    
+    std::string result = transformer.transform(test_input);
+    
+    std::cout << "Input: " << test_input << std::endl;
+    std::cout << "Output: " << result << std::endl;
+    
+    // Additional test cases
+    std::vector<std::string> test_cases = {
+        "Simple: <>&\"'",
+        "Multiple zones: \1Keep this <>&\4 and transform this <>&",
+        "\1Fully protected\4",
+        "No protection: €100 < 200",
+        "Nested? \1First \1Second\4 First continues\4", // Note: This doesn't handle nesting
+        "Mixed: © & \1<>&\4 & ©"
+    };
+    
+    for (const auto& test : test_cases) {
+        std::cout << "\nTest: " << test << std::endl;
+        std::cout << "Result: " << transformer.transform(test) << std::endl;
+    }
+*/
+	return 0;
 }
+

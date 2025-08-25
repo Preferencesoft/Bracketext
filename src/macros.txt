@@ -131,19 +131,23 @@ end
 -- <<<<<<
 -- ||||||2|title|/title
 function outTitle(pa, ar)
-    local p = pa[1]
-    local a = ar[1]
-    local x = '1'
     local oList = {}
-    if #p > 0 and #p[1] > 0 then
+    local x = '1'
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "table" and #p[1] > 0 then
+            local innerTable = p[1]
+            if type(innerTable[1]) == "table" then
+                p = innerTable[1]
         x = toString(p[1])
         local num = '123456'
         if not num:find(x) then x = '1' end
-    end
+    end end end
     table.insert(oList,'\1')
     table.insert(oList, '<h' .. x .. '>')
     table.insert(oList,'\4')
-    if #a > 0 then
+    if type(ar) == "table" and #pa > 0 and type(ar[1]) == "table" and #ar[1] > 0 then
+        local a = ar[1]
         local len = #a
         for i = 1, len do
             local str = a[i]
@@ -239,5 +243,1479 @@ local oList = {}
     table.insert(oList, '<br>')
     table.insert(oList,'\4')
 return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|doc|/doc
+function outDoc(pa, ar)
+local oList = {}
+local a=ar[1]
+if #a > 0 then
+  local aa=a[1]
+  local len=#aa
+ local i
+for i=1, len do
+local str=aa[i]
+table.insert(oList,str)
+end
+end
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|p|/p
+function outP(pa, ar)
+local a=pa[1]
+local oList = {}
+table.insert(oList,'<p>')
+if #a>0 then
+  if #a[0]>0 then
+  a=a[0]
+  local len=#a
+  local i
+  for i=1, len do
+  local str=a[i]
+  table.insert(oList,str)
+end
+end
+end
+table.insert(oList,'</p>')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|color|/color
+function outColor(pa, ar)
+local a=pa[1]
+local p=pa[0]
+local oList = {}
+local col="verdana"
+if #p > 0 then
+if #p[0] > 0 then
+if #p[0][0] > 0 then
+col=toString(p[0][0])
+end
+end
+end
+table.insert('<span style="color: '+col+';">')
+if #a > 0 then
+if #a[0] > 0 then
+a=a[0]
+local len=#a
+local i
+for i=1, len do
+local str=a[i]
+table.insert(str)
+end end end
+table.insert('</span>')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|size|/size
+function outSize(pa, ar)
+    local a = pa[1]  -- Lua arrays start at 1, not 0
+    local p = pa[1]   -- Changed from pa[0] to pa[1] (Lua is 1-indexed)
+    local y = '16px'
+    
+    if p and #p > 0 then
+        if p[1] and #p[1] > 0 then
+            if p[1][1] and #p[1][1] > 0 then
+                y = tostring(p[1][1])  -- Fixed: tostring() not toString()
+                
+                -- Check if y contains a digit (y is a string, not table)
+                local hasDigit = string.match(y, "%d") ~= nil
+                if hasDigit then
+                    y = y .. '%'  -- Fixed: use .. for concatenation, not +=
+                end
+            end
+        end
+    end
+    
+    local x = ""
+    if a and #a > 0 then
+        if a[1] and #a[1] > 0 then
+            x = tostring(a[1])  -- Fixed: tostring() not toString()
+        end
+    end
+    
+    oList = {}
+    table.insert(oList, '<span style="font-size:' .. y .. ';">' .. x .. '</span>')  -- Fixed concatenation and table.insert usage
+    
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|quote|/quote
+function outQuote(pa, ar)
+local a=pa[1]
+local oList = {}
+table.insert('<blockquote class="bg-gray primary">')
+if #a > 0 then
+if #a[1] > 0 then
+a=a[1]
+local len=#a
+local i
+for i=1, len do
+local str=a[i]
+table.insert(str)
+end end end
+table.insert('</blockquote>')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|url|/url
+function outURL(pa, ar)
+    local a = ar[1][1]
+    local p = pa[1][1]
+    local oList = {}
+    local ae = false
+    local pe = false
+    -- Check if p has content
+    if p and #p > 0 then
+        if p[1] and #p[1] > 0 then
+            pe = true
+            p = p[1]
+        end
+    end
+    -- Check if a has content
+    if a and #a > 0 then
+        ae = true
+    end
+    local e = ae or pe
+    if e then
+        table.insert(oList, '<a href="')
+        
+        -- Build URL from p
+        if p and #p > 0 then
+            local len = #p
+            for i = 1, len do
+                table.insert(oList, p[i])
+            end
+        end
+        table.insert(oList, '">')
+        -- Build link text from a
+        if a and #a > 0 then
+            local len = #a
+            for i = 1, len do
+                local str = a[i]
+                table.insert(oList, str)
+            end
+        else
+            -- Use p as link text if a is empty
+            if p and #p > 0 then
+                local len = #p
+                for i = 1, len do
+                    table.insert(oList, p[i])
+                end
+            end
+        end 
+        table.insert(oList, '</a>')
+    else
+        -- Empty link if neither has content
+        table.insert(oList, '<a href=""></a>')
+    end
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|nofollow|/nofollow
+function outNofollow(pa, ar)
+    local a = pa[1][1]
+    local p = pa[1][1]
+    local oList = {}
+    local ae = false
+    local pe = false
+
+    if #p > 0 then
+        if #p[1] > 0 then
+            pe = true
+            p = p[1]
+        end
+    end
+
+    if #a > 0 then
+        ae = true
+    end
+
+    local e = ae or pe
+    if ae and not pe then
+        p = a
+    end
+    if not ae and pe then
+        a = p
+    end
+
+    if e then
+        table.insert(oList, '-2')
+        table.insert(oList, '<a href="')
+        local len = #p
+        for i = 1, len, 2 do
+            table.insert(oList, '-2')
+            table.insert(oList, p[i + 1])
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, '" rel="nofollow">')
+        len = #a
+        for i = 1, len, 2 do
+            local str = a[i + 1]
+            if a[i] == '-1' then
+                str = toHTML(str)
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, str)
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    else
+        table.insert(oList, '-2')
+        table.insert(oList, '<a href="" rel="nofollow">')
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    end
+
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|img
+function outImg(pa, ar)
+    local p = pa[1][1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<img src="')
+    
+    if #p > 1 then
+        local src = p[1]
+        local alt = p[2]
+        local len = #src
+        
+        for i = 1, len, 2 do
+            table.insert(oList, '-2')
+            table.insert(oList, src:sub(i + 1, i + 1))
+        end
+        
+        table.insert(oList, '-2')
+        table.insert(oList, '" alt="')
+        len = #alt
+        
+        for i = 1, len, 2 do
+            table.insert(oList, '-2')
+            table.insert(oList, alt:sub(i + 1, i + 1))
+        end
+        
+        table.insert(oList, '-2')
+        table.insert(oList, '" />')
+    else
+        table.insert(oList, '-2')
+        table.insert(oList, '<img src="" alr=""/>')
+    end
+    
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|bimg
+function outBimg(pa, ar)
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<img class="img-fluid" src="')
+    
+    if #p > 0 then 
+        if #p[1] > 1 then
+            p = p[1]
+            local src = p[1]
+            local alt = p[2]
+            local len = #src
+            
+            for i = 1, len, 2 do
+                table.insert(oList, '-2')
+                table.insert(oList, src:sub(i + 1, i + 1))
+            end
+            
+            table.insert(oList, '-2')
+            table.insert(oList, '" alt="')
+            len = #alt
+            
+            for i = 1, len, 2 do
+                table.insert(oList, '-2')
+                table.insert(oList, alt:sub(i + 1, i + 1))
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '" />')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|ul|/ul
+function outUl(pa, ar)
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<ul>')
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    table.insert(oList, '-2')
+    table.insert(oList, '</ul>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|ol|/ol
+function outOl(pa, ar)
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<ol>')
+    
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</ol>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|li|/li
+function outLi(pa, ar)
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<li>')
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    table.insert(oList, '-2')
+    table.insert(oList, '</li>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|code|/code
+function outCode(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<code>')
+    
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</code>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|htm|/htm
+function outHtm(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|table|/table
+function outTable(pa, ar)
+
+    local a = pa[1][1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<table>')
+    local len = #a
+    for i = 1, len, 2 do
+        local str = a[i + 1]
+        if a[i] == '-1' then
+            str = toHTML(str)
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, str)
+    end
+    table.insert(oList, '-2')
+    table.insert(oList, '</table>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|tr|/tr
+function outTr(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<tr>')
+    
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</tr>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|th|/th
+function outTh(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<th>')
+    
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</th>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|td|/td
+function outTd(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<td>')
+    if #a > 0 then 
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    table.insert(oList, '-2')
+    table.insert(oList, '</td>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||3|list|*|/list
+function outList(pa, ar)
+
+    local a = pa[1]
+    local p = pa[0]
+    local oList = {}
+    local b = '<ul>'
+    local e = '</ul>'
+    local x = ''
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                local len = #p[1][1]
+                for i = 1, len, 2 do
+                    x = x .. p[1][1][i + 1]
+                end
+            end
+        end
+    end
+    
+    if x == '1' then
+        b = '<ol style="list-style-type: decimal">'
+        e = '</ol>'
+    elseif x == 'a' then
+        b = '<ol style="list-style-type: lower-alpha">'
+        e = '</ol>'
+    else
+        b = '<ul>'
+        e = '</ul>'
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, b)
+    local lena = #a
+    
+    for i = 1, lena do
+        table.insert(oList, '-2')
+        table.insert(oList, '<li>')
+        local lenaa = #a[i]
+        
+        for j = 1, lenaa, 2 do
+            local str = a[i][j + 1]
+            if a[i][j] == '-1' then
+                str = toHTML(str)
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, str)
+        end
+        
+        table.insert(oList, '-2')
+        table.insert(oList, '</li>')
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, e)
+    
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|email|/email
+function outEmail(pa, ar)
+
+    local a = pa[1]
+    local p = pa[0]
+    local oList = {}
+    local ae = false
+    local pe = false
+
+    if #p > 0 then
+        if #p[1] > 0 then
+            pe = true
+            p = p[1][1]
+        end
+    end
+
+    if #a > 0 then
+        ae = true
+        a = a[1]
+    end
+
+    local e = ae or pe
+
+    if ae and not pe then
+        p = a
+    end
+
+    if not ae and pe then
+        a = p
+    end
+
+    if e then
+        table.insert(oList, '-2')
+        table.insert(oList, '<a href="mailto:')
+        local lenp = #p
+        for i = 1, lenp, 2 do
+            table.insert(oList, '-2')
+            table.insert(oList, p[i + 1])
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, '">')
+        local lena = #a
+        for i = 1, lena, 2 do
+            local str = a[i + 1]
+            if a[i] == '-1' then
+                str = toHTML(str)
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, str)
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    else
+        table.insert(oList, '-2')
+        table.insert(oList, '<a href="mailto:">')
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    end
+
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||3|btable|C|/btable
+function outBtable(pa, ar)
+
+    local a = pa[1]
+    local p = pa[0]
+    local oList = {}
+    local n = #a
+    local nrow = 1
+    local ncol = n
+
+    if #p > 0 then
+        if #p[1] > 1 then
+            p = p[1]
+            nrow = tonumber(tostring(p[1]))
+            ncol = tonumber(tostring(p[2]))
+        end
+    end
+
+    local lena = #a
+    local k = 0
+    table.insert(oList, '-2')
+    table.insert(oList, '<table class="table table-striped table-bordered">')
+    table.insert(oList, '-2')
+    table.insert(oList, '<thead>')
+    table.insert(oList, '-2')
+    table.insert(oList, '<tr>')
+
+    for j = 0, ncol - 1 do
+        table.insert(oList, '-2')
+        table.insert(oList, '<th>')
+        if k < lena then
+            local len = #a[k + 1]
+            for l = 0, len - 1, 2 do
+                local str = a[k + 1][l + 2]
+                if a[k + 1][l + 1] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, '</th>')
+        end
+        k = k + 1
+    end
+
+    table.insert(oList, '-2')
+    table.insert(oList, '</tr>')
+    table.insert(oList, '-2')
+    table.insert(oList, '</thead>')
+    table.insert(oList, '-2')
+    table.insert(oList, '<tbody>')
+
+    for i = 2, nrow do
+        table.insert(oList, '-2')
+        table.insert(oList, '<tr>')
+        for j = 0, ncol - 1 do
+            table.insert(oList, '-2')
+            table.insert(oList, '<td>')
+            if k < lena then
+                local len = #a[k + 1]
+                for l = 0, len - 1, 2 do
+                    local str = a[k + 1][l + 2]
+                    if a[k + 1][l + 1] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+                k = k + 1
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, '</td>')
+        end
+        table.insert(oList, '-2')
+        table.insert(oList, '</tr>')
+    end
+
+    table.insert(oList, '-2')
+    table.insert(oList, '</tbody>')
+    table.insert(oList, '-2')
+    table.insert(oList, '</table>')
+
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|command
+function outCommand(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<span class="command">\4')
+    -- Add comprehensive nil and bounds checking
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "table" and #p[1] > 0 then
+            local innerTable = p[1]
+            if type(innerTable[1]) == "table" then
+                p = innerTable[1]
+                local lenp = #p
+                for i = 1, lenp do
+                        local str = p[i]
+                            -- Make sure toHTML function exists
+                            if type(toHTML) == "function" then
+                                str = toHTML(str)
+                        end
+                        table.insert(oList, str)
+                end
+            end
+        end
+    end
+    table.insert(oList, '\1</span>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|language
+function outLanguage(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="language">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            p = p[1][1]
+            local lenp = #p
+            for i = 1, lenp, 2 do
+                local str = p[i + 1]
+                if p[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|file
+function outFile(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="file">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|extension
+function outExtension(pa, ar)
+
+    p = p[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="file">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|directory
+function outDirectory(pa, ar)
+
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="directory">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            p = p[1][1]
+            local lenp = #p
+            for i = 1, lenp, 2 do
+                local str = p[i + 1]
+                if p[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|path
+function outPath(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="path">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            p = p[1][1]
+            local lenp = #p
+            for i = 1, lenp, 2 do
+                local str = p[i + 1]
+                if p[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|trademark
+function outTrademark(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="trademark">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|item
+function outItem(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="item">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|iurl
+function outIurl(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="url">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|example
+function outExample(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="definition">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|definition
+function outDefinition(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="definition">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|output
+function outOutput(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="output">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            if #p[1][1] > 0 then
+                p = p[1][1]
+                local lenp = #p
+                for i = 1, lenp, 2 do
+                    local str = p[i + 1]
+                    if p[i] == '-1' then
+                        str = toHTML(str)
+                    end
+                    table.insert(oList, '-2')
+                    table.insert(oList, str)
+                end
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|output-box|/output-box
+function outOutputBox(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<div class="output-box">')
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local lena = #a
+            for i = 1, lena, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    table.insert(oList, '-2')
+    table.insert(oList, '</div>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|input
+function outInput(pa, ar)
+
+    local p = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<span class="input">')
+    
+    if #p > 0 then
+        if #p[1] > 0 then
+            p = p[1][1]
+            local lenp = #p
+            for i = 1, lenp, 2 do
+                local str = p[i + 1]
+                if p[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</span>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|input-box|/input-box
+function outInputBox(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<div class="input-box">')
+    
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local lena = #a
+            for i = 1, lena, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</div>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|code|/code
+function outCode(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<code>')
+    
+    if #a > 0 then
+        a = a[1]
+        local len = #a
+        for i = 1, len, 2 do
+            local str = a[i + 1]
+            if a[i] == '-1' then
+                str = toHTML(str)
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, str)
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</code>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|definition-box|/definition-box
+function outDefinitionBox(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<div class="definition">')
+    
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</div>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|sup|/sup
+function outSup(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<sup>')
+    
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</sup>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|sub|/sub
+function outSub(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<sub>')
+    
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</sub>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|hr
+function outHr(pa, ar)
+return stringListToXML({'-2', '<hr />'})
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|em|/em
+function outEm(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    table.insert(oList, '-2')
+    table.insert(oList, '<em>')
+    
+    if #a > 0 then
+        if #a[1] > 0 then
+            a = a[1]
+            local len = #a
+            for i = 1, len, 2 do
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</em>')
+    return stringListToXML(oList)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|strong|/strong
+function outStrong(pa, ar)
+
+    local a = pa[1]
+    local oList = {}
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '<strong>')
+    
+    if a and #a > 0 and a[1] and #a[1] > 0 then
+        a = a[1]
+        local len = #a
+        for i = 1, len, 2 do  -- Lua arrays start at 1, not 0
+            local str = a[i + 1]  -- Equivalent to a[i+1] in JS
+            if a[i] == '-1' then
+                str = toHTML(str)  -- Assuming toHTML function exists
+            end
+            table.insert(oList, '-2')
+            table.insert(oList, str)
+        end
+    end
+    
+    table.insert(oList, '-2')
+    table.insert(oList, '</strong>')
+    
+    return stringListToXML(oList)  -- Assuming stringListToXML function exists
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|burl|/burl
+function outBurl(pa, ar)
+
+    local a = pa[1]
+    local p = pa[1]  -- Changed from pa[0] to pa[1] (Lua is 1-indexed)
+    local oList = {}
+    local ae = false
+    local pe = false
+    
+    -- Check if p has content (Lua is 1-indexed)
+    if p and #p > 0 and p[1] and #p[1] > 0 then
+        pe = true
+        p = p[1][1]
+    end
+    
+    -- Check if a has content
+    if a and #a > 0 then
+        ae = true
+        a = a[1]
+    end
+    
+    local e = ae or pe
+    
+    if ae and not pe then
+        p = a
+    end
+    
+    if not ae and pe then
+        a = p
+    end
+    
+    if e then
+        table.insert(oList, '-2')
+        table.insert(oList, '<a class="lead text-purple" href="')
+        
+        -- Build URL from p
+        if p and #p > 0 then
+            local lenp = #p
+            for k = 1, lenp, 2 do  -- Start at 1, increment by 2
+                table.insert(oList, '-2')
+                table.insert(oList, p[k + 1])  -- p[k+1] equivalent to p[k+1] in JS
+            end
+        end
+        
+        table.insert(oList, '-2')
+        table.insert(oList, '">')
+        
+        -- Build link text from a
+        if a and #a > 0 then
+            local len = #a
+            for i = 1, len, 2 do  -- Start at 1, increment by 2
+                local str = a[i + 1]
+                if a[i] == '-1' then
+                    str = toHTML(str)  -- Assuming toHTML function exists
+                end
+                table.insert(oList, '-2')
+                table.insert(oList, str)
+            end
+        end
+        
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    else
+        table.insert(oList, '-2')
+        table.insert(oList, '<a class="lead text-purple" href="">')
+        table.insert(oList, '-2')
+        table.insert(oList, '</a>')
+    end
+    
+    return stringListToXML(oList)  -- Assuming stringListToXML function exists
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||1|sp
+function outSp(pa, ar)
+
+    local p = pa[1]  -- Changed from pa[0] to pa[1] (Lua is 1-indexed)
+    local oList = {}
+    local x = 1
+    
+    -- Check if p has content (Lua is 1-indexed)
+    if p and #p > 0 and p[1] and #p[1] > 0 and p[1][1] and #p[1][1] > 0 then
+        p = p[1][1]
+        x = tonumber(p) or 1  -- Use tonumber() instead of toString()
+    end
+    
+    -- Add non-breaking spaces
+    for i = 1, x do  -- Start at 1, go up to x
+        table.insert(oList, '-2')
+        table.insert(oList, '&nbsp;')
+    end
+    
+    return stringListToXML(oList)  -- Assuming stringListToXML function exists
 end
 -- >>>>>>

@@ -38,7 +38,7 @@ endif()
 # Find Lua 5.1
 find_package(Lua 5.1 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
+
 # Manual Lua 5.1 setup
 # set(LUA_INCLUDE_DIR /usr/include/lua5.1)
 # set(LUA_LIBRARIES lua5.1)

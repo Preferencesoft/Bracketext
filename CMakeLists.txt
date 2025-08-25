@@ -70,11 +70,11 @@ endif()
 # Add a custom "debug" target (runs gdb automatically)
 # Set individual options with defaults
 set(DEBUG_ARG_M "-m" CACHE STRING "Debug -m option")
-set(DEBUG_ARG_M_VALUE "/home/jcc/Documents/programming/projects-cpp/bracketext/src/macros.txt" CACHE STRING "Debug -m value")
+set(DEBUG_ARG_M_VALUE "src/macros.txt" CACHE STRING "Debug -m value")
 set(DEBUG_ARG_F "-f" CACHE STRING "Debug -f option")  
-set(DEBUG_ARG_F_VALUE "/home/jcc/Documents/programming/projects-cpp/bracketext/src/example.txt" CACHE STRING "Debug -f value")
+set(DEBUG_ARG_F_VALUE "src/example.txt" CACHE STRING "Debug -f value")
 set(DEBUG_ARG_O "-o" CACHE STRING "Debug -o option")
-set(DEBUG_ARG_O_VALUE "/home/jcc/Documents/programming/projects-cpp/bracketext/src/out.txt" CACHE STRING "Debug -o value")
+set(DEBUG_ARG_O_VALUE "src/out.txt" CACHE STRING "Debug -o value")
 
 add_custom_target(
     debug

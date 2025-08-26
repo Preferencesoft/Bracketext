@@ -32,7 +32,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 endif()
 
-find_package(Lua 5.1 EXACT REQUIRED)
+# find_package(Lua 5.1 EXACT REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 # Verify the manual library exists
 find_library(LUA51_LIB lua5.1 REQUIRED)

@@ -1,0 +1,29 @@
+.TH BRACKETEXT 1 "August 2024" "Version 1.0" "Usage"
+.SH NAME
+Bracketext \- is an application that converts a text file containing defined tags in a macro file to HTML format.
+.SH SYNOPSIS
+.B bracketext
+\fB\-m\fP\fI/path/.../to/macros.txt\fP \fB\-f\fP\fI/path/.../to/inputFile.txt\fP \fB\-o\fP\fI/path/.../to/outputFile.html\fP
+.PP
+.B Note:
+.RS
+.IP \(em 3
+macros.txt : file containing macros
+.IP \(em 3
+inputFile.txt : input text file to process (following the macro call syntax specified in macros.txt)
+.IP \(em 3
+outputFile.html : generated HTML output file (resulting from conversion by bracketext)
+.RE
+.SH DESCRIPTION
+The executable file is called bracketext and must be associated with a macro command file macros.txt that contains the Lua functions corresponding to each tag definition.
+The syntax for calling bracketext from the command line is as follows:
+
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help message
+.TP
+.BR \-v ", " \-\-version
+Show version information
+.SH AUTHOR
+Preferencesoft <john@preferencesoft.com>

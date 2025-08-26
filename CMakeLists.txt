@@ -95,10 +95,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # Include GNU standard directories
 include(GNUInstallDirs)
 
-# Install man page
-install(FILES docs/program.1
-  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
-)
+# Install the man page
+install(FILES docs/man/bracketext.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+        COMPONENT runtime)
 
 # Install documentation files
 install(DIRECTORY docs/
@@ -115,22 +115,25 @@ install(FILES LICENSE DESTINATION ${CMAKE_INSTALL_DOCDIR}
 
 # ===== PACKAGING CONFIGURATION =====
 include(GNUInstallDirs)
-include(CPack)
 
 # Package metadata
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION "Bracket a tex macro language")
+set(CPACK_PACKAGE_DESCRIPTION "Converter of text tagged with macro commands to HTML")
 set(CPACK_PACKAGE_VENDOR "Preferencesoft")
 set(CPACK_PACKAGE_CONTACT "john@preferencesoft.com")
 
 # Set package generators (choose one or more)
-set(CPACK_GENERATOR "TGZ")  # Start with just TGZ for testing
-# set(CPACK_GENERATOR "DEB;TGZ;ZIP")  # Multiple formats
+# set(CPACK_GENERATOR "TGZ")  # Start with just TGZ for testing
+set(CPACK_GENERATOR "DEB;TGZ;ZIP")  # Multiple formats
 
-# For DEB packages (if using)
+# Debian-specific settings
+set(CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}-1")
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jean-Claude COLETTE <john@preferencesoft.com>")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.3-dev")
+set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 
 # Set the package file name
@@ -143,9 +146,17 @@ install(TARGETS bracketext
     ARCHIVE DESTINATION lib
 )
 
+# Install the man page
+install(FILES docs/man/bracketext.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+        COMPONENT runtime)
+
 # Install documentation files
 install(FILES 
     README.md 
     LICENSE
     DESTINATION share/doc/${PROJECT_NAME}
 )
+
+# Include CPack LAST - after all installation commands
+include(CPack)

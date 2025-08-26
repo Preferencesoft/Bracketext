@@ -460,13 +460,13 @@ for (std::vector<std::string>::size_type n = 0; n < sepListCount; n++) {
     
     tagAssociationList.push_back(std::vector<int>(len - 1));
     
-    for (int i = 1; i < len; i++) {
+    for (std::vector<int>::size_type i = 1; i < len; i++) {
         std::vector<std::string>::const_iterator lower =
         std::lower_bound(tagList.begin(), tagList.end(), separ[i], utf8_less);
         int index = 0;
         for (std::vector<std::string>::const_iterator it = tagList.begin(); it != lower; ++it) {
-        index++;
-}
+          index++;
+        }
         tagAssociationList[n][i - 1] = index;
     }
     
@@ -619,7 +619,7 @@ void Tags::check_utf8(const std::string &s) {
 std::vector<Tags::Entity> extract(const Tags::EntityVector tokens, std::string::size_type i,
                                   std::string::size_type j) {
   Tags::EntityVector sublist;
-  if (i >= 0 && j < tokens.size() && i <= j) {
+  if (/* i >= 0 && */ j < tokens.size() && i <= j) {
     sublist.reserve(j - i + 1);
     std::copy(tokens.begin() + i, tokens.begin() + j + 1,
               std::back_inserter(sublist));
@@ -1159,6 +1159,7 @@ std::string Tags::DocumentToFile(const std::string& fileName) {
         return "Error: File verification failed for " + fileName;
     }
     test.close();
+    return "Success: File verification succeed for " + fileName;
 }
 
 

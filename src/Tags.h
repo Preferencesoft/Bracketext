@@ -3,16 +3,7 @@
 
 #pragma once
 
-#include "stdint_portable.h"
-#include "lua_types.h"
-
-#include "lua.hpp"
-extern "C" {
-//#include <lua50/lua.h>
-//#include <lua50/lualib.h>
-//#include <lua50/lua.h>
-}
-
+#include "lua_cpp98_compat.hpp"
 #include <utf8.h>
 
 #include <locale>

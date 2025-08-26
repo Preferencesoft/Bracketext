@@ -35,10 +35,10 @@ endif()
 # find_package(Lua 5.1 EXACT REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 # Verify the manual library exists
-# find_library(LUA51_LIB lua5.1 REQUIRED)
-# set(LUA_LIBRARIES ${LUA51_LIB})
+find_library(LUA51_LIB lua5.1 EXACT REQUIRED)
+set(LUA_LIBRARIES ${LUA51_LIB})
 # Or use the simpler approach you already have:
-set(LUA_LIBRARIES lua5.1)
+# set(LUA_LIBRARIES lua5.1)
 
 # Collect all .cpp files from src/
 file(GLOB SOURCES "src/*.cpp")

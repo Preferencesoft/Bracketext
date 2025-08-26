@@ -129,7 +129,7 @@ set(CPACK_GENERATOR "TGZ")  # Start with just TGZ for testing
 # set(CPACK_GENERATOR "DEB;TGZ;ZIP")  # Multiple formats
 
 # For DEB packages (if using)
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your-email@example.com>")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jean-Claude COLETTE <john@preferencesoft.com>")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.3-dev")
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 

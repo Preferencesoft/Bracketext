@@ -83,7 +83,7 @@ jobs:
     - name: Install Lua and utf8-cpp dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y liblua5.1-0-dev lua5.1
+        sudo apt-get install -y liblua5.3-dev lua5.3
         sudo apt-get install -y libutfcpp-dev
 
     - name: Clang-Tidy
@@ -95,7 +95,7 @@ jobs:
     - name: Cppcheck
       run: |
         sudo apt-get install -y cppcheck
-        cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem src/ include/
+        cppcheck --enable=all --std=c++98 --suppress=missingIncludeSystem src/ include/
 
   package:
     runs-on: ubuntu-latest

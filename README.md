@@ -4,7 +4,21 @@
 
 The Bracketext software has been rewritten in C++ and no longer uses JavaScript but Lua for macros. However, I still need to complete the macros. For now, Bracketext only generates HTML, but it will be able to generate Latex, for example, without any problems. The disadvantage of Bracketext is that a text must be accompanied by the macro file in order to be converted, and it is not a standardized language like SGML, HTML, etc.
 
-The choice of C++ version, C++98, guarantees compilation on a maximum number of platforms. But the trade-off is that I had to compile with Lua5.1 (instead of versions 5.2 or 5.3).
+The choice of C++ version, C++98, guarantees compilation on a maximum number of platforms. 
+In order to use the Lua 5.2 and 5.3 libraries, I allowed the compiler to handle long long integers. 
+However, the project can be compiled without modification using a C++11 standard compiler.
+
+TODO:
+
+- The `macros.txt` macro command file still needs to be completely adapted.
+It was previously written in `JavaScript`, but I found that the Lua language is really easy to call from C or C++.
+Only a few macros written in `Lua` have been verified.
+
+- I also plan to add the ability for macros to use multiple intermediate tags, as in the following example:
+[command] text1 [line] tex2 [col] text3 [col] text4 [col] [line]  [/command]
+The tags [line] and [col] must not, of course, be used as command tags or as intermediate tags for other commands. 
+But the difficulty that arises is being able to find the type of intermediate tag (in the example [col] or [line]) in the parameters,
+ which I didn't need until now.
 
 Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
 efl

@@ -21,8 +21,8 @@ void Bracketext::Test() {
 }
 
 int Bracketext::Main(int argc, char *argv[]) {
-  // Test();
-  // return;
+
+   // Test();
 
     std::string macroFile;
     std::string inputFile;
@@ -57,6 +57,7 @@ int Bracketext::Main(int argc, char *argv[]) {
     }
 
   Tags::LoadMacros(macroFile);
+  cout << "macros loaded" << endl;
   Tags::Init();
   std::string str = inputFile;
   Tags::scan_utf8_file(Tags::readFile(str));

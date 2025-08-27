@@ -16,8 +16,8 @@ using namespace std;
 */
 
 const int nString = -1; // string in parameters
-const int nResult = -2; // during a conversion, certain character strings should
-                        // only be converted once
+// const int nResult = -2; // during a conversion, certain character strings
+// should only be converted once
 const int nOpenBracket = -3;
 const int nOpenedBracket = -3;
 const int nClosedBracket = -4;
@@ -27,8 +27,8 @@ const int nParameterBlocks = -7; // contains a complete tag
 const int nArguments = -8;       // contains a complete tag
 const int nGroup =
     -9; // groups together successions of tags and strings (without [ | ])
-const int nTag = -6;    // tag
-const int nMATag = -11; // tag argument to complete
+const int nTag = -6; // tag
+// const int nMATag = -11; // tag argument to complete
 const int nNone = -12;
 // we do not define a tag when the parameters are not complete
 
@@ -42,6 +42,7 @@ std::vector<int> Tags::tagEntryList;
 std::vector<int> Tags::tagTypeList;
 std::vector<int> Tags::tagPositionList;
 std::vector<Tags::Entity> Tags::document;
+std::vector<std::vector<Tags::Position> > Tags::tagListList;
 
 // Tag association table
 // 0 undefined
@@ -118,10 +119,10 @@ void remove_carriage_return(std::string &str) {
 }
 
 std::string Tags::readFile(std::string &file_name) {
-  std::ifstream file(file_name.c_str(), std::ios::binary);  // Use .c_str()
-    if (!file) {
-        throw std::runtime_error("Failed to open file: " + file_name);
-    }
+  std::ifstream file(file_name.c_str(), std::ios::binary); // Use .c_str()
+  if (!file) {
+    throw std::runtime_error("Failed to open file: " + file_name);
+  }
 
   // Read file content
   std::string content((std::istreambuf_iterator<char>(file)),
@@ -178,27 +179,28 @@ std::vector<std::string> Tags::split(const std::string &s, char delimiter) {
 
 // Alternative using pointers instead of iterators
 std::string Tags::Trim(std::string &str) {
-    if (str.empty())
-        return "";
+  if (str.empty())
+    return "";
 
-    // Find first non-whitespace
-    const char* start_ptr = str.c_str();
-    while (*start_ptr && std::isspace(*start_ptr)) {
-        start_ptr++;
-    }
+  // Find first non-whitespace
+  const char *start_ptr = str.c_str();
+  while (*start_ptr && std::isspace(*start_ptr)) {
+    start_ptr++;
+  }
 
-    // If we reached the end
-    if (*start_ptr == '\0') {
-        return "";
-    }
+  // If we reached the end
+  if (*start_ptr == '\0') {
+    return "";
+  }
 
-    // Find last non-whitespace
-    const char* end_ptr = str.c_str() + str.size() - 1;
-    while (end_ptr > start_ptr && std::isspace(*end_ptr)) {
-        end_ptr--;
-    }
+  // Find last non-whitespace
+  const char *end_ptr = str.c_str() + str.size() - 1;
+  while (end_ptr > start_ptr && std::isspace(*end_ptr)) {
+    end_ptr--;
+  }
 
-    return std::string(start_ptr, end_ptr + 1); // end_ptr + 1 to include the last character
+  return std::string(start_ptr,
+                     end_ptr + 1); // end_ptr + 1 to include the last character
 }
 
 // Function to extract UTF-8 strings between delimiters
@@ -336,7 +338,7 @@ void Tags::LoadMacros(std::string psFileName) {
       }
     }
   }
-  /*
+/*
   for (auto s : scriptList) {
      cout << s << endl;
   }
@@ -353,53 +355,59 @@ void Tags::LoadMacros(std::string psFileName) {
 }
 
 // Simple UTF-8 decoder for C++98
-uint32_t utf8_next(const char*& ptr, const char* end) {
-    if (ptr >= end) return 0;
-    
-    unsigned char first_byte = static_cast<unsigned char>(*ptr++);
-    uint32_t code_point = 0;
-    
-    if (first_byte < 0x80) {
-        // 1-byte sequence
-        code_point = first_byte;
-    } else if ((first_byte & 0xE0) == 0xC0) {
-        // 2-byte sequence
-        if (ptr >= end) return 0;
-        code_point = ((first_byte & 0x1F) << 6) | (*ptr++ & 0x3F);
-    } else if ((first_byte & 0xF0) == 0xE0) {
-        // 3-byte sequence
-        if (ptr + 1 >= end) return 0;
-        code_point = ((first_byte & 0x0F) << 12) | ((ptr[0] & 0x3F) << 6) | (ptr[1] & 0x3F);
-        ptr += 2;
-    } else if ((first_byte & 0xF8) == 0xF0) {
-        // 4-byte sequence
-        if (ptr + 2 >= end) return 0;
-        code_point = ((first_byte & 0x07) << 18) | ((ptr[0] & 0x3F) << 12) | ((ptr[1] & 0x3F) << 6) | (ptr[2] & 0x3F);
-        ptr += 3;
-    } else {
-        // Invalid UTF-8, treat as replacement character
-        code_point = 0xFFFD;
-    }
-    
-    return code_point;
+uint32_t utf8_next(const char *&ptr, const char *end) {
+  if (ptr >= end)
+    return 0;
+
+  unsigned char first_byte = static_cast<unsigned char>(*ptr++);
+  uint32_t code_point = 0;
+
+  if (first_byte < 0x80) {
+    // 1-byte sequence
+    code_point = first_byte;
+  } else if ((first_byte & 0xE0) == 0xC0) {
+    // 2-byte sequence
+    if (ptr >= end)
+      return 0;
+    code_point = ((first_byte & 0x1F) << 6) | (*ptr++ & 0x3F);
+  } else if ((first_byte & 0xF0) == 0xE0) {
+    // 3-byte sequence
+    if (ptr + 1 >= end)
+      return 0;
+    code_point =
+        ((first_byte & 0x0F) << 12) | ((ptr[0] & 0x3F) << 6) | (ptr[1] & 0x3F);
+    ptr += 2;
+  } else if ((first_byte & 0xF8) == 0xF0) {
+    // 4-byte sequence
+    if (ptr + 2 >= end)
+      return 0;
+    code_point = ((first_byte & 0x07) << 18) | ((ptr[0] & 0x3F) << 12) |
+                 ((ptr[1] & 0x3F) << 6) | (ptr[2] & 0x3F);
+    ptr += 3;
+  } else {
+    // Invalid UTF-8, treat as replacement character
+    code_point = 0xFFFD;
+  }
+
+  return code_point;
 }
 
 bool utf8_compare(const std::string &str1, const std::string &str2) {
-    const char* ptr1 = str1.c_str();
-    const char* ptr2 = str2.c_str();
-    const char* end1 = str1.c_str() + str1.length();
-    const char* end2 = str2.c_str() + str2.length();
+  const char *ptr1 = str1.c_str();
+  const char *ptr2 = str2.c_str();
+  const char *end1 = str1.c_str() + str1.length();
+  const char *end2 = str2.c_str() + str2.length();
 
-    while (ptr1 < end1 && ptr2 < end2) {
-        uint32_t cp1 = utf8_next(ptr1, end1); // Pointer-based version
-        uint32_t cp2 = utf8_next(ptr2, end2);
+  while (ptr1 < end1 && ptr2 < end2) {
+    uint32_t cp1 = utf8_next(ptr1, end1); // Pointer-based version
+    uint32_t cp2 = utf8_next(ptr2, end2);
 
-        if (cp1 != cp2) {
-            return cp1 < cp2;
-        }
+    if (cp1 != cp2) {
+      return cp1 < cp2;
     }
+  }
 
-    return str1.length() < str2.length();
+  return str1.length() < str2.length();
 }
 
 bool CompareString(Tags::info i1, Tags::info i2) {
@@ -421,10 +429,9 @@ void Tags::Init() {
 
   // *** Test ***
   /*
-  for (vector<Tags::info>::iterator it=infoList.begin(); it != infoList.end(); it++) {
-    Tags::info& info=*it;       
-    cout << " { " << info.sep << " - " << info.entry << " - " <<
-     info.pos << " } ";
+  for (vector<Tags::info>::iterator it=infoList.begin(); it != infoList.end();
+  it++) { Tags::info& info=*it; cout << " { " << info.sep << " - " << info.entry
+  << " - " << info.pos << " } ";
   }
   */
 
@@ -439,9 +446,8 @@ void Tags::Init() {
   }
   // *** Test ***
   /*
-  for (vector<std::string>::iterator it=tagList.begin(); it != tagList.end(); it++) {
-    std::string& tag=*it;       
-    cout << " { " << tag << " } ";
+  for (vector<std::string>::iterator it=tagList.begin(); it != tagList.end();
+  it++) { std::string& tag=*it; cout << " { " << tag << " } ";
     // cout << tag << " , ";
   }
   */
@@ -452,36 +458,38 @@ void Tags::Init() {
   cout << tNumber << " + " << tagList[tNumber] << endl;
   */
 
-for (std::vector<std::string>::size_type n = 0; n < sepListCount; n++) {
-    const std::vector<std::string>& separ = Tags::tagInfoList[n];  // Use reference
+  for (std::vector<std::string>::size_type n = 0; n < sepListCount; n++) {
+    const std::vector<std::string> &separ =
+        Tags::tagInfoList[n]; // Use reference
     std::vector<std::string>::size_type len = separ.size();
-    
-    if (len < 1) continue;  // Safety check
-    
+
+    if (len < 1)
+      continue; // Safety check
+
     tagAssociationList.push_back(std::vector<int>(len - 1));
-    
+
     for (std::vector<int>::size_type i = 1; i < len; i++) {
-        std::vector<std::string>::const_iterator lower =
-        std::lower_bound(tagList.begin(), tagList.end(), separ[i], utf8_less);
-        int index = 0;
-        for (std::vector<std::string>::const_iterator it = tagList.begin(); it != lower; ++it) {
-          index++;
-        }
-        tagAssociationList[n][i - 1] = index;
+      std::vector<std::string>::const_iterator lower =
+          std::lower_bound(tagList.begin(), tagList.end(), separ[i], utf8_less);
+      int index = 0;
+      for (std::vector<std::string>::const_iterator it = tagList.begin();
+           it != lower; ++it) {
+        index++;
+      }
+      tagAssociationList[n][i - 1] = index;
     }
-    
+
     // Convert string to int using stringstream (recommended)
     int e = 0;
     std::istringstream iss(separ[0]);
     iss >> e;
     tagTypeList.push_back(e);
-}
+  }
   // *** Test ***
   // display tagList
   /*
-  for (std::vector<std::string>::iterator it=tagList.begin(); it!=tagList.end();it++) {
-    std::string& s = *it;
-    cout << s << " , " << endl;
+  for (std::vector<std::string>::iterator it=tagList.begin();
+  it!=tagList.end();it++) { std::string& s = *it; cout << s << " , " << endl;
   }
   */
 }
@@ -563,7 +571,8 @@ bool Tags::utf8_less(const std::string &a, const std::string &b) {
 
 int Tags::binary_search_utf8(const std::vector<std::string> &list,
                              const std::string &key) {
-  const std::vector<std::string>::const_iterator it = std::lower_bound(list.begin(), list.end(), key, utf8_less);
+  const std::vector<std::string>::const_iterator it =
+      std::lower_bound(list.begin(), list.end(), key, utf8_less);
 
   if (it != list.end() && !utf8_less(key, *it) && !utf8_less(*it, key)) {
     return std::distance(list.begin(), it); // Return index if found
@@ -608,15 +617,16 @@ std::string Tags::utf8_rtrim(const std::string &utf8_str) {
 void Tags::check_utf8(const std::string &s) {
   std::cout << "String: '" << s << "'\nHex: ";
   // for (char c : s) {
-    for (std::string::const_iterator it = s.begin(); it != s.end(); it++) {
-    const char& c = *it; 
+  for (std::string::const_iterator it = s.begin(); it != s.end(); it++) {
+    const char &c = *it;
     std::cout << std::hex << std::setw(2) << std::setfill('0')
               << (int)(unsigned char)c << " ";
   }
   std::cout << "\n---\n";
 }
 
-std::vector<Tags::Entity> extract(const Tags::EntityVector tokens, std::string::size_type i,
+std::vector<Tags::Entity> extract(const Tags::EntityVector tokens,
+                                  std::string::size_type i,
                                   std::string::size_type j) {
   Tags::EntityVector sublist;
   if (/* i >= 0 && */ j < tokens.size() && i <= j) {
@@ -642,49 +652,48 @@ bool Tags::is_associated_last(int index, int next_index) {
 }
 
 void Tags::create_tag(std::vector<Tags::Entity>::size_type i, int index,
-                      std::vector<Tags::Entity>& tokens,
-                      std::vector<EntityIndexPair >& parameter_list) {
+                      std::vector<Tags::Entity> &tokens,
+                      std::vector<EntityIndexPair> &parameter_list) {
   if (parameter_list.size() > 0) {
     vector<Tags::Entity> parameter_block;
-    parameter_block.push_back(Tags::Entity(nParameterBlocks, "", vector<Tags::Entity>()));
+    parameter_block.push_back(
+        Tags::Entity(nParameterBlocks, "", vector<Tags::Entity>()));
     vector<Tags::Entity> group;
     // for (auto pl : parameter_list) {
-      for (std::vector<std::vector<EntityIndexPair > >::size_type it = 0; it < parameter_list.size(); it++)
-      {
+    for (std::vector<std::vector<EntityIndexPair> >::size_type it = 0;
+         it < parameter_list.size(); it++) {
       group.clear();
-      for (std::vector<Tags::Entity>::size_type k = parameter_list[it].first + 1; k < parameter_list[it].second; k++)
+      for (std::vector<Tags::Entity>::size_type k =
+               parameter_list[it].first + 1;
+           k < parameter_list[it].second; k++)
         group.push_back(tokens[k]);
       parameter_block[0].entityList.push_back(Tags::Entity(nGroup, "", group));
     }
     vector<Tags::Entity> vec_temp;
     vec_temp.push_back(Tags::Entity(index, "", parameter_block));
-    tokens[i] = Tags::Entity(
-        nTag, "",
-        vec_temp);
+    tokens[i] = Tags::Entity(nTag, "", vec_temp);
   } else {
     vector<Tags::Entity> vec_temp1;
-    vec_temp1.push_back(Tags::Entity(
-                             nParameterBlocks, "", vector<Tags::Entity>()));
+    vec_temp1.push_back(
+        Tags::Entity(nParameterBlocks, "", vector<Tags::Entity>()));
     vector<Tags::Entity> vec_temp2;
-    vec_temp2.push_back(Tags::Entity(
-                         index, "",
-                         vec_temp1));
-    tokens[i] = Tags::Entity(nTag, "",
-                     vec_temp2);
+    vec_temp2.push_back(Tags::Entity(index, "", vec_temp1));
+    tokens[i] = Tags::Entity(nTag, "", vec_temp2);
   }
 }
 
-void Tags::add_parameter_block(
-    std::vector<Tags::Entity>::size_type i, std::vector<Tags::Entity> &tokens,
-    std::vector<EntityIndexPair >&parameter_list) {
+void Tags::add_parameter_block(std::vector<Tags::Entity>::size_type i,
+                               std::vector<Tags::Entity> &tokens,
+                               std::vector<EntityIndexPair> &parameter_list) {
   Tags::Entity parameter_block =
       Tags::Entity(nParameterBlocks, "", vector<Tags::Entity>());
 
   vector<Tags::Entity> group;
-      for (std::vector<EntityIndexPair >::size_type it = 0; it < parameter_list.size(); it++)
-      {
+  for (std::vector<EntityIndexPair>::size_type it = 0;
+       it < parameter_list.size(); it++) {
     group.clear();
-    for (std::vector<Tags::Entity>::size_type k = parameter_list[it].first + 1; k < parameter_list[it].second; k++)
+    for (std::vector<Tags::Entity>::size_type k = parameter_list[it].first + 1;
+         k < parameter_list[it].second; k++)
       group.push_back(tokens[k]);
     parameter_block.entityList.push_back(Tags::Entity(nGroup, "", group));
   }
@@ -692,18 +701,22 @@ void Tags::add_parameter_block(
   tokens[i].entityList[0].entityList.push_back(parameter_block);
 }
 
-void Tags::add_argument(std::vector<Tags::Entity>::size_type i, std::vector<Tags::Entity> &tokens,
+void Tags::add_argument(std::vector<Tags::Entity>::size_type i,
+                        std::vector<Tags::Entity> &tokens,
                         const EntityIndexPair argument) {
   Tags::Entity arguments = Tags::Entity(nArguments, "", vector<Tags::Entity>());
 
-  for (std::vector<Tags::Entity>::size_type k = argument.first + 1; k < argument.second; k++)
+  for (std::vector<Tags::Entity>::size_type k = argument.first + 1;
+       k < argument.second; k++)
     arguments.entityList.push_back(tokens[k]);
   tokens[i].entityList[0].entityList.push_back(arguments);
   // tokens[i].entityList.push_back(arguments);
 }
 
-bool Tags::check_tag(std::vector<Tags::Entity>::size_type i, const std::vector<Tags::Entity> &tokens, int &index,
-                      std::vector<EntityIndexPair >&parameter_list, std::vector<Tags::Entity>::size_type &j) {
+bool Tags::check_tag(std::vector<Tags::Entity>::size_type i,
+                     const std::vector<Tags::Entity> &tokens, int &index,
+                     std::vector<EntityIndexPair> &parameter_list,
+                     std::vector<Tags::Entity>::size_type &j) {
   parameter_list.clear();
   // Minimum pattern: [nString]
   if (i + 2 >= tokens.size()) {
@@ -715,7 +728,7 @@ bool Tags::check_tag(std::vector<Tags::Entity>::size_type i, const std::vector<T
     return false;
   }
 
-   EntityIndexPair parameter;
+  EntityIndexPair parameter;
 
   // Is next token a nClosedBracket ?
   if (tokens[i + 2].tagNumber == nClosedBracket) {
@@ -734,7 +747,8 @@ bool Tags::check_tag(std::vector<Tags::Entity>::size_type i, const std::vector<T
     return false;
   }
 
-  std::vector<Tags::Entity>::size_type current_pos = i + 3; // Start after "nString |"
+  std::vector<Tags::Entity>::size_type current_pos =
+      i + 3; // Start after "nString |"
 
   // Now parse zero or more nLists separated by nVerticalLine
   while (current_pos < tokens.size()) {
@@ -781,8 +795,10 @@ bool Tags::check_tag(std::vector<Tags::Entity>::size_type i, const std::vector<T
   return false;
 }
 
-bool Tags::check_arg(std::vector<Tags::Entity>::size_type i, const std::vector<Tags::Entity> &tokens,
-                     EntityIndexPair& argument, std::vector<Tags::Entity>::size_type &j) {
+bool Tags::check_arg(std::vector<Tags::Entity>::size_type i,
+                     const std::vector<Tags::Entity> &tokens,
+                     EntityIndexPair &argument,
+                     std::vector<Tags::Entity>::size_type &j) {
   // Check if we're within bounds
   if (i + 1 >= tokens.size()) {
     return false;
@@ -809,17 +825,26 @@ bool Tags::check_arg(std::vector<Tags::Entity>::size_type i, const std::vector<T
   return false;
 }
 
+void Tags::DisplayEntityTag(Tags::Entity& e) {
+  std::vector<Tags::Entity> elist;
+  elist.push_back(e);
+  cout << "begin" << endl;
+  cout << "tag number: " << e.tagNumber << endl;
+  Tags::DisplayEntity(elist);
+  cout << "end" << endl;
+}
+
 void Tags::BBCodeToTree() {
   bool modified = true;
   int index;
-  std::vector<Tags::Entity>::size_type i = 0;
   std::vector<Tags::Entity>::size_type j;
-  std::vector<EntityIndexPair > parameter_list;
-  std::vector<std::vector<EntityIndexPair > > parameter_block_list;
+  std::vector<EntityIndexPair> parameter_list;
+  std::vector<std::vector<EntityIndexPair> > parameter_block_list;
   std::vector<EntityIndexPair> argument_list;
   EntityIndexPair argument;
   while (modified) {
     modified = false;
+    std::vector<Tags::Entity>::size_type i = 0;
     while (i < document.size()) {
       if (document[i].tagNumber == nOpenedBracket) {
         parameter_block_list.clear();
@@ -863,8 +888,7 @@ void Tags::BBCodeToTree() {
 
                   parameter_block_list.push_back(parameter_list);
 
-                  Tags::create_tag(i, index, document,
-                                   parameter_block_list[0]);
+                  Tags::create_tag(i, index, document, parameter_block_list[0]);
                   add_parameter_block(i, document, parameter_block_list[1]);
                   add_argument(i, document, argument);
                   document.erase(document.begin() + i + 1,
@@ -917,12 +941,14 @@ void Tags::BBCodeToTree() {
                                      parameter_block_list[0]);
                     parameter_block_list.erase(parameter_block_list.begin());
 
-                    for (std::vector<std::vector<EntityIndexPair > >::size_type ind=0; ind < parameter_block_list.size(); ind++)
-                    {
-                      add_parameter_block(i, document, parameter_block_list[ind]);
+                    for (std::vector<std::vector<EntityIndexPair> >::size_type
+                             ind = 0;
+                         ind < parameter_block_list.size(); ind++) {
+                      add_parameter_block(i, document,
+                                          parameter_block_list[ind]);
                     }
-                    for (std::vector<EntityIndexPair>::size_type ind=0; ind < argument_list.size(); ind++)
-                    {
+                    for (std::vector<EntityIndexPair>::size_type ind = 0;
+                         ind < argument_list.size(); ind++) {
                       add_argument(i, document, argument_list[ind]);
                     }
                     document.erase(document.begin() + i + 1,
@@ -942,16 +968,18 @@ void Tags::BBCodeToTree() {
   }   // end while modified
 
   // *** Test ***
+  // cout << "Document " << endl;
   // DisplayEntity(document);
+  // cout << "Fin du document " << endl;
 }
 
 std::string int_to_string(int i) {
-    std::ostringstream oss;
-    oss << i;
-    return oss.str();
+  std::ostringstream oss;
+  oss << i;
+  return oss.str();
 }
 
-std::string Tags::TagToString(Tags::Entity e) {
+std::string Tags::TagToString(Tags::Entity &e) {
   switch (e.tagNumber) {
   case nStraightLine:
     return "|";
@@ -961,137 +989,137 @@ std::string Tags::TagToString(Tags::Entity e) {
     return "]";
   case nString:
     return e.str;
-  case nMATag:
-    return "[not recognized tag]";
   }
   return "[error] tagNumber:" + int_to_string(e.tagNumber);
 }
-
-
 
 vector<std::string> Tags::ToStringArrayList(vector<Tags::Entity> le,
                                             vector<int> index) {
   vector<std::string> res;
   int i = -1;
   std::string str = "";
-  if (index.size() > 0) str = int_to_string(index[0]);
-    for (std::vector<int>::iterator j = index.begin() + 1; j != index.end(); j++)
+  if (index.size() > 0)
+    str = int_to_string(index[0]);
+  for (std::vector<int>::iterator j = index.begin() + 1; j != index.end(); j++)
     str += "," + int_to_string(*j);
   // for (Tags::Entity e : le) {
-    for (vector<Tags::Entity>::iterator it=le.begin(); it!=le.end(); it++) {
-      Tags::Entity& e= *it; 
-    if (e.tagNumber == nResult) {
+  for (vector<Tags::Entity>::iterator it = le.begin(); it != le.end(); it++) {
+    Tags::Entity &e = *it;
+    /* if (e.tagNumber == nResult) {
       i++;
       res.push_back(str + "," + int_to_string(i));
       res.push_back(int_to_string(nResult));
       i++;
       res.push_back(str + "," + int_to_string(i));
       res.push_back(e.str);
-    } else {
+    } else {*/
       i++;
       res.push_back(str + "," + int_to_string(i));
       res.push_back(int_to_string(nString));
       i++;
       res.push_back(str + "," + int_to_string(i));
       res.push_back(TagToString(e));
-    }
+    //}
   }
   return res;
 }
 
+std::vector<std::vector<std::vector<std::string> > >
+Tags::GetParameters(const Tags::Entity &tag) {
+  std::vector<std::vector<std::vector<std::string> > > parameter_block;
 
-std::vector<std::vector<std::vector<std::string> > > Tags::GetParameters(const Tags::Entity& tag) {
-    std::vector<std::vector<std::vector<std::string> > > parameter_block;
-    
-    if (tag.tagNumber == nTag && !tag.entityList.empty()) {
-        const std::vector<Tags::Entity>& pList = tag.entityList[0].entityList;
-        
-        for (std::vector<Tags::Entity>::size_type i = 0; i < pList.size(); i++) {
-            const Tags::Entity& pa = pList[i];
-            
-            if (pa.tagNumber == nParameterBlocks) {
-                std::vector<std::vector<std::string> > parameters;
-                
-                if (!pa.entityList.empty()) {
-                    for (std::vector<Tags::Entity>::size_type j = 0; j < pa.entityList.size(); j++) {
-                        const Tags::Entity& grp = pa.entityList[j];
-                        std::vector<std::string> group;
-                        
-                        if (!grp.entityList.empty()) {
-                            for (std::vector<Tags::Entity>::size_type k = 0; k < grp.entityList.size(); k++) {
-                                const Tags::Entity& e = grp.entityList[k];
-                                
-                                if (e.tagNumber == nResult) {
-                                    group.push_back(e.str);
-                                } else {
-                                    group.push_back(TagToString(e));
-                                }
-                            }
-                        }
-                        parameters.push_back(group);
-                    }
-                }
-                parameter_block.push_back(parameters);
+  if (tag.tagNumber == nTag && !tag.entityList.empty()) {
+    const std::vector<Tags::Entity> &pList = tag.entityList[0].entityList;
+
+    for (std::vector<Tags::Entity>::size_type i = 0; i < pList.size(); i++) {
+      const Tags::Entity &pa = pList[i];
+
+      if (pa.tagNumber == nParameterBlocks) {
+        std::vector<std::vector<std::string> > parameters;
+
+        if (!pa.entityList.empty()) {
+          for (std::vector<Tags::Entity>::size_type j = 0;
+               j < pa.entityList.size(); j++) {
+            const Tags::Entity &grp = pa.entityList[j];
+            std::vector<std::string> group;
+
+            if (!grp.entityList.empty()) {
+              for (std::vector<Tags::Entity>::size_type k = 0;
+                   k < grp.entityList.size(); k++) {
+                Tags::Entity e = grp.entityList[k];
+
+                // if (e.tagNumber == nResult) {
+                //  group.push_back(e.str);
+                // } else {
+                  group.push_back(TagToString(e));
+                // }
+              }
             }
+            parameters.push_back(group);
+          }
         }
+        parameter_block.push_back(parameters);
+      }
     }
-    return parameter_block;
+  }
+  return parameter_block;
 }
 
- std::vector<std::vector<std::string> > Tags::GetArguments(const Tags::Entity& tag)
-{
-    std::vector<std::vector<std::string> > arguments;
-    
-    if (tag.tagNumber == nTag && !tag.entityList.empty())
-    {
-        const std::vector<Tags::Entity>& pList = tag.entityList[0].entityList;
-        
-        for (std::vector<Tags::Entity>::size_type i = 0; i < pList.size(); i++)
-        {
-            const Tags::Entity& pa = pList[i];
-            
-            if (pa.tagNumber == nArguments)
-            {
-                std::vector<std::string> arg;
-                
-                if (!pa.entityList.empty())
-                {
-                    for (std::vector<Tags::Entity>::size_type j = 0; j < pa.entityList.size(); j++)
-                    {
-                        const Tags::Entity& e = pa.entityList[j];
-                        
-                        if (e.tagNumber == nResult)
-                        {
-                            arg.push_back(e.str);
-                        }
-                        else
-                        {
-                            arg.push_back(TagToString(e));
-                        }
-                    }
-                }
-                arguments.push_back(arg);
-            }
+std::vector<std::vector<std::string> >
+Tags::GetArguments(const Tags::Entity &tag) {
+  std::vector<std::vector<std::string> > arguments;
+
+  if (tag.tagNumber == nTag && !tag.entityList.empty()) {
+    const std::vector<Tags::Entity> &pList = tag.entityList[0].entityList;
+
+    for (std::vector<Tags::Entity>::size_type i = 0; i < pList.size(); i++) {
+      const Tags::Entity &pa = pList[i];
+
+      if (pa.tagNumber == nArguments) {
+        std::vector<std::string> arg;
+
+        if (!pa.entityList.empty()) {
+          for (std::vector<Tags::Entity>::size_type j = 0;
+               j < pa.entityList.size(); j++) {
+            Tags::Entity e = pa.entityList[j];
+
+            // if (e.tagNumber == nResult) {
+            //  arg.push_back(e.str);
+            // } else {
+              arg.push_back(TagToString(e));
+            // }
+          }
         }
+        arguments.push_back(arg);
+      }
     }
-    return arguments;
+  }
+  return arguments;
 }
 
-void Tags::display_parameters(std::vector<std::vector<std::vector<std::string> > > p) {
-  for (std::vector<std::vector<std::vector<std::string> > >::iterator it_b = p.begin(); it_b != p.end(); ++it_b) {
+void Tags::display_parameters(
+    std::vector<std::vector<std::vector<std::string> > > p) {
+  for (std::vector<std::vector<std::vector<std::string> > >::iterator it_b =
+           p.begin();
+       it_b != p.end(); ++it_b) {
     std::cout << "block" << std::endl;
-    
-    // Correct: *it_b is a vector<vector<string>>, so b should be a reference to that
-    std::vector<std::vector<std::string> >& b = *it_b;
-    
-    for (std::vector<std::vector<std::string> >::iterator it_parameters = b.begin(); it_parameters != b.end(); ++it_parameters) {
+
+    // Correct: *it_b is a vector<vector<string> >, so b should be a reference to
+    // that
+    std::vector<std::vector<std::string> > &b = *it_b;
+
+    for (std::vector<std::vector<std::string> >::iterator it_parameters =
+             b.begin();
+         it_parameters != b.end(); ++it_parameters) {
       std::cout << "   parameter" << std::endl;
       std::cout << "   ";
-      
-      // Correct: *it_parameters is a vector<string>, so parameters should be a reference to that
-      std::vector<std::string>& parameters = *it_parameters;
-      
-      for (std::vector<std::string>::iterator it_s = parameters.begin(); it_s != parameters.end(); ++it_s) {
+
+      // Correct: *it_parameters is a vector<string>, so parameters should be a
+      // reference to that
+      std::vector<std::string> &parameters = *it_parameters;
+
+      for (std::vector<std::string>::iterator it_s = parameters.begin();
+           it_s != parameters.end(); ++it_s) {
         std::string s = *it_s;
         std::cout << " - " << s;
       }
@@ -1101,12 +1129,14 @@ void Tags::display_parameters(std::vector<std::vector<std::vector<std::string> >
 }
 
 void Tags::display_arguments(vector<vector<std::string> > arguments) {
-  for (vector<vector<std::string> >::iterator it_argument = arguments.begin(); it_argument != arguments.end(); ++it_argument) {
-    std::vector<std::string>& argument =*it_argument;
+  for (vector<vector<std::string> >::iterator it_argument = arguments.begin();
+       it_argument != arguments.end(); ++it_argument) {
+    std::vector<std::string> &argument = *it_argument;
     cout << "argument" << endl;
     cout << "   ";
-    for (vector<std::string>::iterator it_s = argument.begin(); it_s != argument.end(); ++it_s) {
-    std::string s =*it_s;
+    for (vector<std::string>::iterator it_s = argument.begin();
+         it_s != argument.end(); ++it_s) {
+      std::string s = *it_s;
       cout << " - " << s;
     }
     cout << endl;
@@ -1115,53 +1145,53 @@ void Tags::display_arguments(vector<vector<std::string> > arguments) {
 
 std::string Tags::DocumentToHTML() {
   std::string sb = "";
-    for (std::vector<Tags::Entity>::iterator it_entity=document.begin(); it_entity != document.end(); ++it_entity) {
-    Tags::Entity e =*it_entity;
+  for (std::vector<Tags::Entity>::iterator it_entity = document.begin();
+       it_entity != document.end(); ++it_entity) {
+    Tags::Entity e = *it_entity;
     sb += e.str;
   }
   HTMLEntityTransformer transformer;
   return transformer.transform(sb);
 }
 
-
-std::string Tags::DocumentToFile(const std::string& fileName) {
+std::string Tags::DocumentToFile(const std::string &fileName) {
   std::string content = "";
-    for (std::vector<Tags::Entity>::iterator it_entity=document.begin(); it_entity != document.end(); ++it_entity) {
-    Tags::Entity e =*it_entity;
+  for (std::vector<Tags::Entity>::iterator it_entity = document.begin();
+       it_entity != document.end(); ++it_entity) {
+    Tags::Entity e = *it_entity;
     content += e.str;
-    }
+  }
   HTMLEntityTransformer transformer;
   content = transformer.transform(content);
-    // Check if the string is empty (optional)
-    if (content.empty()) {
-        return "Warning: Content is empty, creating empty file";
-    }
-    // Open file in binary mode to preserve UTF-8 encoding
-    std::ofstream file(fileName.c_str(), std::ios::binary);
-    
-    if (!file) {
-        return "Error: Failed to open file " + fileName + " for writing";
-    }
-    // Write content    
-    file.write(content.c_str(), content.size());
+  // Check if the string is empty (optional)
+  if (content.empty()) {
+    return "Warning: Content is empty, creating empty file";
+  }
+  // Open file in binary mode to preserve UTF-8 encoding
+  std::ofstream file(fileName.c_str(), std::ios::binary);
 
-    // Check if write was successful    
-    if (!file) {
-        return "Error: Failed to write to file " + fileName;
-    }
-    
-    file.close();
-    return "Success: File " + fileName + " saved successfully";
+  if (!file) {
+    return "Error: Failed to open file " + fileName + " for writing";
+  }
+  // Write content
+  file.write(content.c_str(), content.size());
 
-    // Verify file was written (optional)
-    std::ifstream test(fileName.c_str(), std::ios::binary);
-    if (!test) {
-        return "Error: File verification failed for " + fileName;
-    }
-    test.close();
-    return "Success: File verification succeed for " + fileName;
+  // Check if write was successful
+  if (!file) {
+    return "Error: Failed to write to file " + fileName;
+  }
+
+  file.close();
+  return "Success: File " + fileName + " saved successfully";
+
+  // Verify file was written (optional)
+  std::ifstream test(fileName.c_str(), std::ios::binary);
+  if (!test) {
+    return "Error: File verification failed for " + fileName;
+  }
+  test.close();
+  return "Success: File verification succeed for " + fileName;
 }
-
 
 std::string Tags::HTMLEntities(std::string s) {
   int n = s.length();
@@ -1212,16 +1242,13 @@ std::string Tags::HTMLEntities(std::string s) {
 }
 
 // Replace symbol tag ([, |, ]) by a <string>
-void Tags::SymbolTagToString(vector<Tags::Entity> eList, int pos) {
+void Tags::SymbolTagToString(vector<Tags::Entity> &eList, int pos) {
   switch (eList[pos].tagNumber) {
   case nStraightLine:
   case nOpenBracket:
   case nClosedBracket:
-    eList[pos] = Tags::Entity(
-      nString, 
-      TagNumberToString(eList[pos].tagNumber), 
-      std::vector<Tags::Entity>()
-    );
+    eList[pos] = Tags::Entity(nString, TagNumberToString(eList[pos].tagNumber),
+                              std::vector<Tags::Entity>());
     break;
   }
 }
@@ -1231,61 +1258,49 @@ void Tags::SymbolTagToHTML(vector<Tags::Entity> eList, int pos) {
   case nStraightLine:
   case nOpenBracket:
   case nClosedBracket:
-    eList[pos] = Tags::Entity(
-      nString, 
-      TagNumberToString(eList[pos].tagNumber), 
-      std::vector<Tags::Entity>()
-    );
+    eList[pos] = Tags::Entity(nString, TagNumberToString(eList[pos].tagNumber),
+                              std::vector<Tags::Entity>());
     break;
   case nString:
-  case nResult:
-   eList[pos] = Tags::Entity(
-      nString, 
-      HTMLEntities(eList[pos].str), 
-      std::vector<Tags::Entity>()
-    );
+  // case nResult:
+    eList[pos] = Tags::Entity(nString, HTMLEntities(eList[pos].str),
+                              std::vector<Tags::Entity>());
     break;
   }
 }
 
-std::string Tags::StringifyMATag(const Tags::Entity& e) {
-    std::string sb = "[";
-    if (e.tagNumber <= 0 && !e.entityList.empty()) {
-        sb += tagList[e.entityList[0].tagNumber];
-        const std::vector<Tags::Entity>& pList = e.entityList[0].entityList;
-        
-        for (std::vector<Tags::Entity>::size_type j = 0; j < pList.size(); j++) {
-            const Tags::Entity& pa = pList[j];
-            if (pa.tagNumber == nParameterBlocks && !pa.entityList.empty()) {
-                for (std::vector<Tags::Entity>::size_type k = 0; k < pa.entityList.size(); k++) {
-                    const Tags::Entity& pb = pa.entityList[k];
-                    if (!pb.entityList.empty()) {
-                        for (std::vector<Tags::Entity>::size_type m = 0; m < pb.entityList.size(); m++) {
-                            const Tags::Entity& grp = pb.entityList[m];
-                            if (!grp.entityList.empty()) {
-                                for (std::vector<Tags::Entity>::size_type l = 0; l < grp.entityList.size(); l++) {
-                                    sb += "|";
-                                    sb += grp.entityList[l].str;
-                                }
-                            }
-                        }
-                    }
+std::string Tags::StringifyMATag(const Tags::Entity &e) {
+  std::string sb = "[";
+  if (e.tagNumber <= 0 && !e.entityList.empty()) {
+    sb += tagList[e.entityList[0].tagNumber];
+    const std::vector<Tags::Entity> &pList = e.entityList[0].entityList;
+
+    for (std::vector<Tags::Entity>::size_type j = 0; j < pList.size(); j++) {
+      const Tags::Entity &pa = pList[j];
+      if (pa.tagNumber == nParameterBlocks && !pa.entityList.empty()) {
+        for (std::vector<Tags::Entity>::size_type k = 0;
+             k < pa.entityList.size(); k++) {
+          const Tags::Entity &pb = pa.entityList[k];
+          if (!pb.entityList.empty()) {
+            for (std::vector<Tags::Entity>::size_type m = 0;
+                 m < pb.entityList.size(); m++) {
+              const Tags::Entity &grp = pb.entityList[m];
+              if (!grp.entityList.empty()) {
+                for (std::vector<Tags::Entity>::size_type l = 0;
+                     l < grp.entityList.size(); l++) {
+                  sb += "|";
+                  sb += grp.entityList[l].str;
                 }
+              }
             }
+          }
         }
-        sb += "]";
+      }
     }
-    return sb;
+    sb += "]";
+  }
+  return sb;
 }
-
-struct Position {
-public:
-  std::vector<Tags::Entity>& list;
-  vector<Tags::Entity>::size_type index;
-
-// Constructor that takes a reference
-  Position(std::vector<Tags::Entity>& vec, int idx) : list(vec), index(idx) {}
-};
 
 // Helper to push a C++ vector<string> as a Lua table
 void push_string_vector(lua_State *L, const std::vector<std::string> &vec) {
@@ -1297,7 +1312,7 @@ void push_string_vector(lua_State *L, const std::vector<std::string> &vec) {
   }
 }
 
-// Helper to push a C++ vector<vector<string>> as a nested Lua table
+// Helper to push a C++ vector<vector<string> > as a nested Lua table
 void push_nested_string_vector(
     lua_State *L, const std::vector<std::vector<std::string> > &nested_vec) {
   lua_newtable(L); // Create the outer table
@@ -1334,127 +1349,116 @@ std::vector<std::string> lua_table_to_vector(lua_State *L, int index) {
   return result;
 }
 
-
-
-
 // Function to call the Lua function named lua_function
 std::vector<std::vector<std::string> > call_lua_function(
-    lua_State* L, 
-    const std::string& lua_function,
-    const std::vector<std::vector<std::vector<std::string> > >& params,
-    const std::vector<std::vector<std::string> >& args)
-{
+    lua_State *L, const std::string &lua_function,
+    const std::vector<std::vector<std::vector<std::string> > > &params,
+    const std::vector<std::vector<std::string> > &args) {
 
-    int initial_stack = lua_gettop(L);
-    
-    // Push the function onto the stack
-    lua_getglobal(L, lua_function.c_str());
-    
-    if (!lua_isfunction(L, -1)) {
-        std::cerr << "Error: " << lua_function << " is not a function" << std::endl;
-        lua_settop(L, initial_stack);
-        return std::vector<std::vector<std::string> >();
-    }
-    
-    // First argument: params (3D vector) - handle empty case
-    lua_newtable(L);
-    if (!params.empty()) {
-        for (size_t i = 0; i < params.size(); i++) {
-            lua_newtable(L);
-            if (!params[i].empty()) {
-                for (size_t j = 0; j < params[i].size(); j++) {
-                    lua_newtable(L);
-                    if (!params[i][j].empty()) {
-                        for (size_t k = 0; k < params[i][j].size(); k++) {
-                            lua_pushstring(L, params[i][j][k].c_str());
-                            lua_rawseti(L, -2, k + 1);
-                        }
-                    }
-                    lua_rawseti(L, -2, j + 1);
-                }
-            }
-            lua_rawseti(L, -2, i + 1);
-        }
-    }
-    
-    // Second argument: args (2D vector) - handle empty case
-    lua_newtable(L);
-    if (!args.empty()) {
-        for (size_t i = 0; i < args.size(); i++) {
-            lua_newtable(L);
-            if (!args[i].empty()) {
-                for (size_t j = 0; j < args[i].size(); j++) {
-                    lua_pushstring(L, args[i][j].c_str());
-                    lua_rawseti(L, -2, j + 1);
-                }
-            }
-            lua_rawseti(L, -2, i + 1);
-        }
-    }
-    
-    
-    // Call the function
-    if (lua_pcall(L, 2, 1, 0) != 0) {
-        std::cerr << "Error calling " << lua_function << ": " << lua_tostring(L, -1) << std::endl;
-        lua_pop(L, 1);
-        lua_settop(L, initial_stack);
-        return std::vector<std::vector<std::string> >();
-    }
-    
-    // Process the return value - LUA 5.1 COMPATIBLE VERSION
-    std::vector<std::vector<std::string> > result;
-    
-// Alternative approach using manual iteration (more flexible)
-if (lua_istable(L, -1)) {
-    // Iterate through outer table
-    lua_pushnil(L);  // First key
-    while (lua_next(L, -2) != 0) {
-        // Key at index -2, value at index -1
-        
-        if (lua_istable(L, -1)) {
-            std::vector<std::string> innerVec;
-            
-            // Iterate through inner table
-            lua_pushnil(L);  // First key for inner table
-            while (lua_next(L, -2) != 0) {
-                if (lua_isstring(L, -1)) {
-                    innerVec.push_back(lua_tostring(L, -1));
-                }
-                lua_pop(L, 1);  // pop value, keep key
-            }
-            result.push_back(innerVec);
-        } else if (lua_isstring(L, -1)) {
-            std::vector<std::string> singleElement;
-            singleElement.push_back(lua_tostring(L, -1));
-            result.push_back(singleElement);
-        }
-        
-        lua_pop(L, 1);  // pop value, keep key for next outer iteration
-    }
-}
-    
-    lua_pop(L, 1);  // pop the return value
+  int initial_stack = lua_gettop(L);
+
+  // Push the function onto the stack
+  lua_getglobal(L, lua_function.c_str());
+
+  if (!lua_isfunction(L, -1)) {
+    std::cerr << "Error: " << lua_function << " is not a function" << std::endl;
     lua_settop(L, initial_stack);
-    
-    return result;
+    return std::vector<std::vector<std::string> >();
+  }
+
+  // First argument: params (3D vector) - handle empty case
+  lua_newtable(L);
+  if (!params.empty()) {
+    for (size_t i = 0; i < params.size(); i++) {
+      lua_newtable(L);
+      if (!params[i].empty()) {
+        for (size_t j = 0; j < params[i].size(); j++) {
+          lua_newtable(L);
+          if (!params[i][j].empty()) {
+            for (size_t k = 0; k < params[i][j].size(); k++) {
+              lua_pushstring(L, params[i][j][k].c_str());
+              lua_rawseti(L, -2, k + 1);
+            }
+          }
+          lua_rawseti(L, -2, j + 1);
+        }
+      }
+      lua_rawseti(L, -2, i + 1);
+    }
+  }
+
+  // Second argument: args (2D vector) - handle empty case
+  lua_newtable(L);
+  if (!args.empty()) {
+    for (size_t i = 0; i < args.size(); i++) {
+      lua_newtable(L);
+      if (!args[i].empty()) {
+        for (size_t j = 0; j < args[i].size(); j++) {
+          lua_pushstring(L, args[i][j].c_str());
+          lua_rawseti(L, -2, j + 1);
+        }
+      }
+      lua_rawseti(L, -2, i + 1);
+    }
+  }
+
+  // Call the function
+  if (lua_pcall(L, 2, 1, 0) != 0) {
+    std::cerr << "Error calling " << lua_function << ": " << lua_tostring(L, -1)
+              << std::endl;
+    lua_pop(L, 1);
+    lua_settop(L, initial_stack);
+    return std::vector<std::vector<std::string> >();
+  }
+
+  // Process the return value - LUA 5.1 COMPATIBLE VERSION
+  std::vector<std::vector<std::string> > result;
+
+  // Alternative approach using manual iteration (more flexible)
+  if (lua_istable(L, -1)) {
+    // Iterate through outer table
+    lua_pushnil(L); // First key
+    while (lua_next(L, -2) != 0) {
+      // Key at index -2, value at index -1
+
+      if (lua_istable(L, -1)) {
+        std::vector<std::string> innerVec;
+
+        // Iterate through inner table
+        lua_pushnil(L); // First key for inner table
+        while (lua_next(L, -2) != 0) {
+          if (lua_isstring(L, -1)) {
+            innerVec.push_back(lua_tostring(L, -1));
+          }
+          lua_pop(L, 1); // pop value, keep key
+        }
+        result.push_back(innerVec);
+      } else if (lua_isstring(L, -1)) {
+        std::vector<std::string> singleElement;
+        singleElement.push_back(lua_tostring(L, -1));
+        result.push_back(singleElement);
+      }
+
+      lua_pop(L, 1); // pop value, keep key for next outer iteration
+    }
+  }
+
+  lua_pop(L, 1); // pop the return value
+  lua_settop(L, initial_stack);
+
+  return result;
 }
 
 void Tags::EvalTree() {
+  std::vector<std::vector<Tags::Position> >::size_type level = 0;
 
-  // initialization
-  // create new Lua state
-  lua_State *L = luaL_newstate();
-  luaL_openlibs(L);
-
-  vector<vector<Position> > tagListList;
-  int level = 0;
-  tagListList.push_back(vector<Position>());
+  Tags::tagListList.push_back(vector<Position>());
   for (vector<Tags::Entity>::size_type i = 0; i < document.size(); i++) {
-     if (document[i].tagNumber == nTag || document[i].tagNumber == nMATag)
-      tagListList[level].push_back(Position(document, i));
-    else
-      SymbolTagToString(document, i);
+    if (document[i].tagNumber == nTag) {
+      tagListList[level].push_back(Tags::Position(&document, i));
+    }
   }
+
   // descent to the innermost tags
 
   while (true) {
@@ -1462,74 +1466,82 @@ void Tags::EvalTree() {
       break;
     level++;
     tagListList.push_back(vector<Position>());
-    for (std::vector<Position>::const_iterator ita = tagListList[level - 1].begin(); ita != tagListList[level - 1].end(); ++ita) {
-    const Position& pos = *ita;
 
-      Entity e = pos.list[pos.index];
-      if (e.tagNumber <= 0) {
-        vector<Tags::Entity> pList = e.entityList[0].entityList;
-        for (std::vector<Tags::Entity>::size_type j = 0; j < pList.size(); j++) {
-          Entity pa = pList[j];
-          if (pa.tagNumber == nParameterBlocks) {
-            if (!pa.entityList.empty()) {
-              for (std::vector<Tags::Entity>::iterator it = pList[j].entityList.begin(); it != pList[j].entityList.end(); ++it) {
-              Tags::Entity& pb = *it;
-
-                if (!pb.entityList.empty()) {
-                  for (std::vector<Tags::Entity>::iterator itp = pb.entityList.begin(); itp != pb.entityList.end(); ++itp) {
-                  Tags::Entity& grp = *itp;
-                    if (!grp.entityList.empty()) {
-                      for (std::vector<Tags::Entity>::size_type l = 0; l < grp.entityList.size(); l++) {
-                        if (grp.entityList[l].tagNumber == nTag ||
-                            grp.entityList[l].tagNumber == nMATag)
-                          tagListList[level].push_back(
-                              Position(grp.entityList, l));
-                        else
-                          SymbolTagToString(grp.entityList, l);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          if (pa.tagNumber == nArguments) {
-            if (!pa.entityList.empty()) {
-              for (std::vector<Tags::Entity>::iterator it = pa.entityList.begin(); it != pa.entityList.end(); ++it) {
-              Tags::Entity& gra = *it;
-
-                if (gra.entityList.empty()) {
-                  for (std::vector<Tags::Entity>::size_type l = 0; l < gra.entityList.size(); l++) {
-                    if (gra.entityList[l].tagNumber == nTag ||
-                        gra.entityList[l].tagNumber == nMATag)
-                      tagListList[level].push_back(Position(gra.entityList, l));
-                    else
-                      SymbolTagToString(gra.entityList, l);
+    size_t size = tagListList[level - 1].size();
+    for (size_t i_pos = 0; i_pos < size; ++i_pos) {
+      Tags::Position &pos = tagListList[level - 1][i_pos];
+      // push_back operations are safe now
+      // cout << pos.list << endl;;
+      Tags::Entity &e = (*(pos.list))[pos.index];
+      // DisplayEntityTag(e);
+      // cout << "e.tagNumber" << e.tagNumber << endl;
+      // if (e.tagNumber <= 0) {
+      vector<Tags::Entity> &pList = e.entityList[0].entityList;
+      for (std::vector<Tags::Entity>::size_type j = 0; j < pList.size(); j++) {
+        Entity &pa = pList[j];
+        if (pa.tagNumber == nParameterBlocks) {
+           // DisplayEntityTag(pa);
+          if (!pa.entityList.empty()) {
+            for (std::vector<Tags::Entity>::size_type ind_pa = 0;
+                 ind_pa < pa.entityList.size(); ind_pa++) {
+              Tags::Entity &group = pa.entityList[ind_pa];
+              // cout << "parameter? (ngroup)" << group.tagNumber << endl;
+              if (!group.entityList.empty()) {
+                for (std::vector<Tags::Entity>::size_type l = 0;
+                     l < group.entityList.size(); l++) {
+                  if (group.entityList[l].tagNumber == nTag) {
+                    std::vector<Tags::Entity> &elem = group.entityList;
+                    tagListList[level].push_back(
+                        Position(&(group.entityList), l));
                   }
                 }
               }
             }
           }
         }
+        if (pa.tagNumber == nArguments) {
+         // std::vector<Tags::Entity> elist;
+         // elist.push_back(pa);
+         // DisplayEntity(elist);
+          if (!pa.entityList.empty()) {
+            for (std::vector<Tags::Entity>::size_type m = 0;
+                 m < pa.entityList.size(); m++) {
+              Tags::Entity &gra = pa.entityList[m];
+              if (gra.tagNumber == nTag) {
+                tagListList[level].push_back(Position(&(pa.entityList), m));
+                // std::vector<Tags::Entity> elist;
+                // elist.push_back(gra);
+                // DisplayEntity(elist);
+              }
+              // else
+              //  SymbolTagToString(gra.entityList, l);
+            }
+          }
+        }
       }
     }
   }
- 
-  reverse(tagListList.begin(), tagListList.end());
+  // initialization
+  // create new Lua state
+  lua_State *L = luaL_newstate();
+  luaL_openlibs(L);
+  ///////////////////////reverse(tagListList.begin(), tagListList.end());
   vector<std::string> results;
   std::string bigScript = "";
-  for (vector<std::string>::const_iterator it = scriptList.begin(); it != scriptList.end(); ++it) {
-    const std::string& script = *it;
+  for (vector<std::string>::const_iterator it = scriptList.begin();
+       it != scriptList.end(); ++it) {
+    const std::string &script = *it;
     bigScript += script + "\n";
   }
-  for (vector<std::string>::const_iterator it = commandList.begin(); it != commandList.end(); ++it) {
-    const std::string& script = *it;
+  for (vector<std::string>::const_iterator it = commandList.begin();
+       it != commandList.end(); ++it) {
+    const std::string &script = *it;
     bigScript += script + "\n";
   }
- // cout << bigScript << endl;
+  // cout << bigScript << endl;
 
- // Load and execute the Lua code
- // First, just try to load the script to check for syntax errors
+  // Load and execute the Lua code
+  // First, just try to load the script to check for syntax errors
   if (luaL_loadstring(L, bigScript.c_str()) != 0) {
     std::cerr << "Lua syntax error: " << lua_tostring(L, -1) << std::endl;
     lua_pop(L, 1);
@@ -1544,63 +1556,60 @@ void Tags::EvalTree() {
     lua_close(L);
     return;
   }
-
-    for (std::vector<std::vector<Position> >::const_iterator it = tagListList.begin(); it != tagListList.end(); ++it) {
-    const vector<Position>& pList = *it;
+  cout << "level: " << level << endl;
+  for (std::vector<std::vector<Tags::Position> >::size_type v = 0; v <=level;
+       v++) {
+    std::vector<Tags::Position> &pList = Tags::tagListList[level-v];
     /////////////////////////reverse(pList.begin(), pList.end());
-    for (std::vector<Position>::const_iterator itp = pList.begin(); itp != pList.end(); ++itp) {
-    const Position& p = *itp;
-
-      Tags::Entity tagNum = p.list[p.index].entityList[0];
+    for (std::vector<Position>::size_type ip = 0; ip < pList.size(); ip++) {
+      Position &p = pList[ip];
+      cout << "tagnumber = " << (*(p.list))[p.index].tagNumber << endl;
+      Tags::Entity tagNum = (*(p.list))[p.index].entityList[0];
       int entry = tagEntryList[tagNum.tagNumber];
       // cout << "tag name: " << tagList[tagNum.tagNumber] << endl;
       std::string command_name = functionNameList[entry];
       // cout << command_name << endl;
-      Tags::Entity tag = p.list[p.index];
-      // Tags::DisplayEntity(std::vector<Tags::Entity>{tag});
-      // Tags::DisplayEntity(document);
-      if (tag.tagNumber == nTag) {
-         std::vector<std::vector<std::vector<std::string> > > params =
-         GetParameters(tag);
-         // display_parameters(params);
-         std::vector<std::vector<std::string> > args = GetArguments(tag);
-         // display_arguments(args);
+      Tags::Entity &tag = (*(p.list))[p.index];
+          // Tags::DisplayEntity(std::vector<Tags::Entity>{tag});
+          // Tags::DisplayEntity(document);
+          if (tag.tagNumber == nTag) {
+        std::vector<std::vector<std::vector<std::string> > > params =
+            GetParameters(tag);
+        display_parameters(params);
+        std::vector<std::vector<std::string> > args = GetArguments(tag);
+        display_arguments(args);
 
-    // Call the function
-    // cout << "command name" << command_name << endl;
-    std::vector<std::vector<std::string> > result = call_lua_function(L, command_name, params, args);
+        // Call the function
+        // cout << "command name" << command_name << endl;
+        std::vector<std::vector<std::string> > result =
+            call_lua_function(L, command_name, params, args);
 
-// Print the result
-/*
-    std::cout << "Result:" << std::endl;
-    for (std::vector<std::vector<std::string> >::size_type i = 0; i < result.size(); ++i) {
-      for (std::vector<std::string>::size_type j = 0; j < result[i].size(); ++j) {
-        std::cout << result[i][j] << " ";
+        // Print the result
+        /*
+            std::cout << "Result:" << std::endl;
+            for (std::vector<std::vector<std::string> >::size_type i = 0; i <
+           result.size(); ++i) { for (std::vector<std::string>::size_type j = 0;
+           j < result[i].size(); ++j) { std::cout << result[i][j] << " ";
+              }
+              std::cout << std::endl;
+            }
+        */
+        std::string res = "";
+        for (std::vector<std::vector<std::string> >::size_type i = 0;
+             i < result.size(); ++i) {
+          for (std::vector<std::string>::size_type j = 0; j < result[i].size();
+               ++j) {
+            res += result[i][j];
+          }
+        }
+
+        (*p.list)[p.index] =
+            Tags::Entity(nString, res, std::vector<Tags::Entity>());
       }
-      std::cout << std::endl;
-    }
-*/
-std::string res = "";
-    for (std::vector<std::vector<std::string> >::size_type i = 0; i < result.size(); ++i) {
-      for (std::vector<std::string>::size_type j = 0; j < result[i].size(); ++j) {
-        res += result[i][j];
-      }
-    }
-    
-    p.list[p.index] = Tags::Entity(
-      nString, 
-      res, 
-      std::vector<Tags::Entity>()
-    );
-
-      } else {
+      else {
         // other entities are converted to strings
-        p.list[p.index] = Tags::Entity(
-          nString, 
-          StringifyMATag(tag), 
-          std::vector<Tags::Entity>()
-        );
-
+        (*p.list)[p.index] = Tags::Entity(nString, StringifyMATag(tag),
+                                          std::vector<Tags::Entity>());
       }
       // DisplayEntity(p.list);
     }
@@ -1640,11 +1649,6 @@ void Tags::DisplayEntity(vector<Tags::Entity> document) {
           DisplayEntity(e.entityList);
           cout << ">>>>>END TAG" << endl;
           break;
-        case nMATag:
-          cout << ">>>>>BEGIN MATAG" << endl;
-          DisplayEntity(e.entityList);
-          cout << ">>>>>END MATAG" << endl;
-          break;
         case nParameterBlocks:
           cout << ">>>>>BEGIN PARAMETER BLOCK" << endl;
           DisplayEntity(e.entityList);
@@ -1675,117 +1679,115 @@ void Tags::DisplayEntity(vector<Tags::Entity> document) {
 }
 
 void Tags::scan_utf8_file(const std::string &text) {
-    if (text.empty()) return;
+  if (text.empty())
+    return;
 
-    std::string::const_iterator it = text.begin();
-    std::string current_token;
+  std::string::const_iterator it = text.begin();
+  std::string current_token;
 
-    while (it != text.end()) {
-        // Get current character (UTF-8 aware)
-        unsigned char first_byte = static_cast<unsigned char>(*it);
-        uint32_t code_point;
-        size_t byte_length = 1;
+  while (it != text.end()) {
+    // Get current character (UTF-8 aware)
+    unsigned char first_byte = static_cast<unsigned char>(*it);
+    uint32_t code_point;
+    size_t byte_length = 1;
 
-        try {
-            // Decode UTF-8 character manually for C++98 compatibility
-            if (first_byte < 0x80) {
-                // 1-byte sequence (ASCII)
-                code_point = first_byte;
-                byte_length = 1;
-            } else if ((first_byte & 0xE0) == 0xC0) {
-                // 2-byte sequence
-                if (it + 1 >= text.end()) throw utf8::exception();
-                code_point = ((first_byte & 0x1F) << 6) | (it[1] & 0x3F);
-                byte_length = 2;
-            } else if ((first_byte & 0xF0) == 0xE0) {
-                // 3-byte sequence
-                if (it + 2 >= text.end()) throw utf8::exception();
-                code_point = ((first_byte & 0x0F) << 12) | ((it[1] & 0x3F) << 6) | (it[2] & 0x3F);
-                byte_length = 3;
-            } else if ((first_byte & 0xF8) == 0xF0) {
-                // 4-byte sequence
-                if (it + 3 >= text.end()) throw utf8::exception();
-                code_point = ((first_byte & 0x07) << 18) | ((it[1] & 0x3F) << 12) | ((it[2] & 0x3F) << 6) | (it[3] & 0x3F);
-                byte_length = 4;
-            } else {
-                // Invalid UTF-8
-                throw utf8::exception();
-            }
-        } catch (const utf8::exception &) {
-            // Skip invalid UTF-8 sequences
-            ++it;
-            continue;
-        }
-
-        // Check for backslash (escape character)
-        if (code_point == '\\') {
-            // Check if next character is a delimiter
-            std::string::const_iterator next_it = it + byte_length;
-            if (next_it != text.end()) {
-                unsigned char next_byte = static_cast<unsigned char>(*next_it);
-                uint32_t next_cp = next_byte; // Simple ASCII check
-                
-                if (next_cp == '[' || next_cp == ']' || next_cp == '|') {
-                    // Found escaped delimiter - add the delimiter itself (without backslash)
-                    current_token += static_cast<char>(next_cp);
-                    it = next_it + 1; // Skip both backslash and escaped character
-                    continue;
-                }
-            }
-            // Not an escaped delimiter - keep backslash as-is
-            current_token += '\\';
-            it += byte_length;
-        }
-        // Check for delimiters
-        else if (code_point == '[' || code_point == ']' || code_point == '|') {
-            // Add current token if not empty
-            if (!current_token.empty()) {
-                Tags::document.push_back(Tags::Entity(
-                    nString, 
-                    current_token, 
-                    std::vector<Tags::Entity>()
-                ));
-                current_token.clear();
-            }
-            // Add the delimiter as a separate token
-            std::string delimiter(1, static_cast<char>(code_point));
-            Tags::document.push_back(Tags::Entity(
-                CharToTagNumber(code_point), 
-                delimiter, 
-                std::vector<Tags::Entity>()
-            ));
-            it += byte_length;
-        } else {
-            // Regular character - add to current token
-            // For simplicity, handle ASCII characters directly
-            if (code_point < 128) {
-                current_token += static_cast<char>(code_point);
-            } else {
-                // For non-ASCII, use UTF-8 encoding
-                for (size_t i = 0; i < byte_length; ++i) {
-                    current_token += *(it + i);
-                }
-            }
-            it += byte_length;
-        }
+    try {
+      // Decode UTF-8 character manually for C++98 compatibility
+      if (first_byte < 0x80) {
+        // 1-byte sequence (ASCII)
+        code_point = first_byte;
+        byte_length = 1;
+      } else if ((first_byte & 0xE0) == 0xC0) {
+        // 2-byte sequence
+        if (it + 1 >= text.end())
+          throw utf8::exception();
+        code_point = ((first_byte & 0x1F) << 6) | (it[1] & 0x3F);
+        byte_length = 2;
+      } else if ((first_byte & 0xF0) == 0xE0) {
+        // 3-byte sequence
+        if (it + 2 >= text.end())
+          throw utf8::exception();
+        code_point = ((first_byte & 0x0F) << 12) | ((it[1] & 0x3F) << 6) |
+                     (it[2] & 0x3F);
+        byte_length = 3;
+      } else if ((first_byte & 0xF8) == 0xF0) {
+        // 4-byte sequence
+        if (it + 3 >= text.end())
+          throw utf8::exception();
+        code_point = ((first_byte & 0x07) << 18) | ((it[1] & 0x3F) << 12) |
+                     ((it[2] & 0x3F) << 6) | (it[3] & 0x3F);
+        byte_length = 4;
+      } else {
+        // Invalid UTF-8
+        throw utf8::exception();
+      }
+    } catch (const utf8::exception &) {
+      // Skip invalid UTF-8 sequences
+      ++it;
+      continue;
     }
 
-    // Add any remaining characters
-    if (!current_token.empty()) {
-        Tags::document.push_back(Tags::Entity(
-            nString, 
-            current_token, 
-            std::vector<Tags::Entity>()
-        ));
+    // Check for backslash (escape character)
+    if (code_point == '\\') {
+      // Check if next character is a delimiter
+      std::string::const_iterator next_it = it + byte_length;
+      if (next_it != text.end()) {
+        unsigned char next_byte = static_cast<unsigned char>(*next_it);
+        uint32_t next_cp = next_byte; // Simple ASCII check
+
+        if (next_cp == '[' || next_cp == ']' || next_cp == '|') {
+          // Found escaped delimiter - add the delimiter itself (without
+          // backslash)
+          current_token += static_cast<char>(next_cp);
+          it = next_it + 1; // Skip both backslash and escaped character
+          continue;
+        }
+      }
+      // Not an escaped delimiter - keep backslash as-is
+      current_token += '\\';
+      it += byte_length;
     }
-    // *** Test ***
-    /*
-    for (Tags::EntityIterator it=document.begin(); it != document.end(); it++) {
-      Tags::Entity& e = *it; 
-      cout << e.tagNumber << " >>>>> " << e.str << endl;
+    // Check for delimiters
+    else if (code_point == '[' || code_point == ']' || code_point == '|') {
+      // Add current token if not empty
+      if (!current_token.empty()) {
+        Tags::document.push_back(
+            Tags::Entity(nString, current_token, std::vector<Tags::Entity>()));
+        current_token.clear();
+      }
+      // Add the delimiter as a separate token
+      std::string delimiter(1, static_cast<char>(code_point));
+      Tags::document.push_back(Tags::Entity(
+          CharToTagNumber(code_point), delimiter, std::vector<Tags::Entity>()));
+      it += byte_length;
+    } else {
+      // Regular character - add to current token
+      // For simplicity, handle ASCII characters directly
+      if (code_point < 128) {
+        current_token += static_cast<char>(code_point);
+      } else {
+        // For non-ASCII, use UTF-8 encoding
+        for (size_t i = 0; i < byte_length; ++i) {
+          current_token += *(it + i);
+        }
+      }
+      it += byte_length;
     }
-    Tags::DisplayEntity(Tags::document);
-    */
+  }
+
+  // Add any remaining characters
+  if (!current_token.empty()) {
+    Tags::document.push_back(
+        Tags::Entity(nString, current_token, std::vector<Tags::Entity>()));
+  }
+  // *** Test ***
+  /*
+  for (Tags::EntityIterator it=document.begin(); it != document.end(); it++) {
+    Tags::Entity& e = *it;
+    cout << e.tagNumber << " >>>>> " << e.str << endl;
+  }
+  Tags::DisplayEntity(Tags::document);
+  */
 }
 
 void Tags::ScanFile(std::string fileName) {
@@ -1824,25 +1826,19 @@ void Tags::ScanFile(std::string fileName) {
         ++i;
       }
       std::string s = sb;
-      document.push_back(Tags::Entity(
-        nString, 
-        s, 
-        std::vector<Tags::Entity>()
-      ));
+      document.push_back(Tags::Entity(nString, s, std::vector<Tags::Entity>()));
       --i;
-      // Console.WriteLine(">> {0}", sb.ToString());
+      // Console.WriteLine("> > {0}", sb.ToString());
     } else {
       // [ or ] or | is a delim
-      document.push_back(Tags::Entity(
-        CharToTagNumber(c), 
-        (std::string)(&c), 
-        std::vector<Tags::Entity>()
-      ));
+      document.push_back(Tags::Entity(CharToTagNumber(c), (std::string)(&c),
+                                      std::vector<Tags::Entity>()));
       // Console.WriteLine("[ or ] or |");
     }
     ++i;
   }
   // *** Test ***
+/*
   for (std::vector<Tags::Entity>::size_type i = 0; i < document.size(); i++) {
     if (document[i].tagNumber) {
       cout << "type:" << CharToTagNumber(document[i].tagNumber) << endl;
@@ -1850,4 +1846,5 @@ void Tags::ScanFile(std::string fileName) {
       cout << "type:" << tagList[document[i].tagNumber] << endl;
     cout << ">>>>>>>>>>" << document[i].str;
   }
+*/
 }

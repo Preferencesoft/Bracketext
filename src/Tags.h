@@ -31,7 +31,7 @@ class Tags
 
     */
 public:
-    static const int nResult = -2; // during a conversion, certain character strings should only be converted once
+    // static const int nResult = -2; // during a conversion, certain character strings should only be converted once
     static const int nOpenBracket = -3;
     static const int nOpenedBracket = -3;
     static const int nClosedBracket = -4;
@@ -41,8 +41,8 @@ public:
     static const int nArguments = -8; // contains a complete tag
     static const int nGroup = -9; // groups together successions of tags and strings (without [ | ])
     static const int nTag = -6; // tag
-    static const int nMATag = -11; // tag argument to complete
-    static const int nNone = -12;
+    // static const int nMATag = -11; // tag argument to complete
+ static const int nNone = -12;
     // we do not define a tag when the parameters are not complete
     static const int nString = -1; // string in parameters
 
@@ -79,6 +79,29 @@ public:
        info(const std::string& s, int ent, int p)
             : sep(s), entry(ent), pos(p) {}
     };
+
+struct Position {
+public:
+  std::vector<Tags::Entity>* list;
+  std::vector<Tags::Entity>::size_type index;
+
+// Constructor that takes a reference
+  Position(std::vector<Tags::Entity>* vec, size_t idx) : list(vec), index(idx) {
+if (list == 0) {
+            std::cerr << "ERROR: Null pointer in Position constructor!" << std::endl;
+        }
+}
+    // Custom copy constructor
+    Position(const Position& other) : list(other.list), index(other.index) {}
+    
+    // Custom assignment operator
+    Position& operator=(const Position& other) {
+        list = other.list;
+        index = other.index;
+        return *this;
+    }
+};
+
 
     // Tag association table
     // 0 undefined
@@ -163,6 +186,7 @@ public:
     static std::vector<int> tagPositionList;
     static std::vector<Entity> document;
 
+    static std::vector<std::vector<Position> > tagListList;
 
     public:
         static std::string SubStr(std::string& s, std::string::size_type n);
@@ -212,13 +236,14 @@ public:
 
         private:
             static bool utf8_compare(const std::string& str1, const std::string& str2);
-            static std::string TagToString(Entity e);
+            static std::string TagToString(Tags::Entity& e);
             static std::vector<std::string> ToStringArrayList(std::vector<Tags::Entity> le, std::vector<int> index);
 
             static std::string HTMLEntities(std::string s);
-            static void SymbolTagToString(std::vector<Tags::Entity> eList, int pos);
+            static void SymbolTagToString(std::vector<Tags::Entity>& eList, int pos);
             static void SymbolTagToHTML(std::vector<Tags::Entity> eList, int pos);
             static std::string StringifyMATag(const Tags::Entity& e);
 
             static void DisplayEntity(std::vector<Tags::Entity> document);
+            static void DisplayEntityTag(Tags::Entity& e);
 };

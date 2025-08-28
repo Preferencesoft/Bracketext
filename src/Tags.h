@@ -225,10 +225,10 @@ if (list == 0) {
 
         static void BBCodeToTree();
 
-        static std::vector<std::vector<std::vector<std::string> > > GetParameters(const Tags::Entity& tag);
-        static std::vector<std::vector<std::string> > GetArguments(const Tags::Entity& tag);
-        static void display_parameters(std::vector<std::vector<std::vector<std::string> > > p);
-        static void display_arguments(std::vector<std::vector<std::string> > arguments);
+        static std::vector<std::vector<std::string> > GetParameters(const Tags::Entity& tag);
+        static std::vector<std::string> GetArguments(const Tags::Entity& tag);
+        static void display_parameters(std::vector<std::vector<std::string> > p);
+        static void display_arguments(std::vector<std::string> arguments);
         static std::string DocumentToHTML();
         static std::string DocumentToFile(const std::string& fileName);
         static void ScanFile(std::string fileName);
@@ -236,12 +236,11 @@ if (list == 0) {
 
         private:
             static bool utf8_compare(const std::string& str1, const std::string& str2);
-            static std::string TagToString(Tags::Entity& e);
+            static std::string TagToString(const Tags::Entity& e);
             static std::vector<std::string> ToStringArrayList(std::vector<Tags::Entity> le, std::vector<int> index);
 
             static std::string HTMLEntities(std::string s);
             static void SymbolTagToString(std::vector<Tags::Entity>& eList, int pos);
-            static void SymbolTagToHTML(std::vector<Tags::Entity> eList, int pos);
             static std::string StringifyMATag(const Tags::Entity& e);
 
             static void DisplayEntity(std::vector<Tags::Entity> document);

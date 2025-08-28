@@ -20,6 +20,12 @@ The tags [line] and [col] must not, of course, be used as command tags or as int
 But the difficulty that arises is being able to find the type of intermediate tag (in the example [col] or [line]) in the parameters,
  which I didn't need until now.
 
+Progress:
+
+- I simplified the calling of Lua routines. Now the pa and ar parameters are respectively tables of tables of character strings and tables of character strings.
+
+- The macros.txt file has not yet been fully updated.
+
 Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
 efl
 These symbols are used to form tags. These are always in the form:
@@ -36,7 +42,7 @@ or more generally:
 
 The ti tags can be repeated; the parts of text placed between each tag are considered the arguments of the macro. If the macro consists of only one tag, it will have no arguments.
 
-These macros must be written in scripting languages like **JavaScript**. To write macros, you need to use *JavaScript* programming language. The project uses **JavaScriptEngineSwitcher**.
+These macros must be written in scripting languages like **Lua**. To write macros, you need to use *Lua* programming language. 
 
 We use a scripting language to create macros that when inserted into any text will transform it into HTML for example.
 

@@ -486,27 +486,6 @@ void Tags::Init() {
     */
 }
 
-bool Tags::IsNotDelim(char c) {
-    switch (c) {
-        case '[':
-        case ']':
-        case '|':
-            return false;
-    }
-    return true;
-}
-
-bool Tags::IsNotSymbol(char c) {
-    switch (c) {
-        case '[':
-        case ']':
-        case '|':
-        case '\\':
-            return false;
-    }
-    return true;
-}
-
 int Tags::CharToTagNumber(char c) {
     switch (c) {
         case '[':
@@ -1022,36 +1001,6 @@ std::string Tags::TagToString(const Tags::Entity &e) {
     return "[error] tagNumber:" + int_to_string(e.tagNumber);
 }
 
-vector<std::string> Tags::ToStringArrayList(vector<Tags::Entity> le,
-                                            vector<int> index) {
-    vector<std::string> res;
-    int i = -1;
-    std::string str = "";
-    if (index.size() > 0) str = int_to_string(index[0]);
-    for (std::vector<int>::iterator j = index.begin() + 1; j != index.end();
-         ++j)
-        str += "," + int_to_string(*j);
-    for (vector<Tags::Entity>::iterator it = le.begin(); it != le.end(); ++it) {
-        const Tags::Entity &e = *it;
-        /* if (e.tagNumber == nResult) {
-          i++;
-          res.push_back(str + "," + int_to_string(i));
-          res.push_back(int_to_string(nResult));
-          i++;
-          res.push_back(str + "," + int_to_string(i));
-          res.push_back(e.str);
-        } else {*/
-        i++;
-        res.push_back(str + "," + int_to_string(i));
-        res.push_back(int_to_string(nString));
-        i++;
-        res.push_back(str + "," + int_to_string(i));
-        res.push_back(TagToString(e));
-        //}
-    }
-    return res;
-}
-
 std::vector<std::vector<std::string> > Tags::GetParameters(
     const Tags::Entity &tag) {
     std::vector<std::vector<std::string> > parameter_block;
@@ -1321,15 +1270,6 @@ void push_nested_string_vector(
         lua_pushinteger(L, i + 1);             // Outer table key (1-based)
         push_string_vector(L, nested_vec[i]);  // Push subtable (vector<string>)
         lua_settable(L, -3);                   // outer_table[i+1] = subtable
-    }
-}
-
-// Helper to check Lua errors
-void check_lua(lua_State *L, int status) {
-    if (status != 0) {
-        std::cerr << "Lua Error: " << lua_tostring(L, -1) << std::endl;
-        lua_pop(L, 1);  // Remove error message
-        exit(1);
     }
 }
 

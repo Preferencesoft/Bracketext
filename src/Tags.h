@@ -197,8 +197,6 @@ if (list == 0) {
         static void LoadMacros(std::string psFileName);
         static void Init();
 
-        static bool IsNotDelim(char c);
-        static bool IsNotSymbol(char c);
         static int CharToTagNumber(char c);
 
         static std::string TagNumberToString(int t);
@@ -231,13 +229,11 @@ if (list == 0) {
         static void display_arguments(std::vector<std::string> arguments);
         static std::string DocumentToHTML();
         static std::string DocumentToFile(const std::string& fileName);
-        static void ScanFile(std::string fileName);
-		static void EvalTree();
+        static void EvalTree();
 
         private:
             static bool utf8_compare(const std::string& str1, const std::string& str2);
             static std::string TagToString(const Tags::Entity& e);
-            static std::vector<std::string> ToStringArrayList(std::vector<Tags::Entity> le, std::vector<int> index);
 
             static std::string HTMLEntities(std::string s);
             static void SymbolTagToString(std::vector<Tags::Entity>& eList, int pos);

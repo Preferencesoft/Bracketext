@@ -496,20 +496,12 @@ end
 -- <<<<<<
 -- ||||||2|table|/table
 function outTable(pa, ar)
-
-    local a = pa[1][1]
     local oList = {}
-    table.insert(oList, '<table>')
-    local len = #a
-    for i = 1, len, 2 do
-        local str = a[i + 1]
-        if a[i] == '-1' then
-            str = toHTML(str)
-        end
-        table.insert(oList, '-2')
-        table.insert(oList, str)
-    end
-    table.insert(oList, '</table>')
+    table.insert(oList, '\1<table>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</table>\4')
     return oList
 end
 -- >>>>>>
@@ -1044,7 +1036,6 @@ function outBurl(pa, ar)
     end
     
     if e then
-        table.insert(oList, '-2')
         table.insert(oList, '<a class="lead text-purple" href="')
         
         -- Build URL from p
@@ -1067,17 +1058,13 @@ function outBurl(pa, ar)
                 if a[i] == '-1' then
                     str = toHTML(str)  -- Assuming toHTML function exists
                 end
-                table.insert(oList, '-2')
                 table.insert(oList, str)
             end
         end
         
-        table.insert(oList, '-2')
         table.insert(oList, '</a>')
     else
-        table.insert(oList, '-2')
         table.insert(oList, '<a class="lead text-purple" href="">')
-        table.insert(oList, '-2')
         table.insert(oList, '</a>')
     end
     

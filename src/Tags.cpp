@@ -1119,22 +1119,21 @@ std::vector<std::string> Tags::GetArguments(
 
 void Tags::display_parameters(
     std::vector<std::vector<std::string> > p) {
-    for (std::vector<std::vector<std::string> >::iterator it_b =
+    for (std::vector<std::vector<std::string> >::iterator it_parameters =
              p.begin();
-         it_b != p.end(); ++it_b) {
+         it_parameters != p.end(); ++it_parameters) {
         std::cout << "block" << std::endl;
 
-        std::vector<std::string> &b = *it_b;
+        std::vector<std::string> &parameters = *it_parameters;
 
-        for (std::vector<std::string>::iterator it_parameters =
-                 b.begin();
-             it_parameters != b.end(); ++it_parameters) {
+        for (std::vector<std::string>::iterator it_parameter =
+                 parameters.begin();
+             it_parameter != parameters.end(); ++it_parameter) {
             std::cout << "   parameter" << std::endl;
             std::cout << "   ";
 
-            std::string &parameters = *it_parameters;
-                std::string s = *it_parameters;
-                std::cout << " - " << s;
+            const std::string &parameter = *it_parameter;
+            std::cout << " - " << parameter;
             std::cout << std::endl;
         }
     }
@@ -1146,8 +1145,7 @@ void Tags::display_arguments(vector<std::string> arguments) {
         std::string &argument = *it_argument;
         cout << "argument" << endl;
         cout << "   ";
-        std::string s = *it_argument;
-        cout << " - " << s;
+        cout << " - " << argument;
         cout << endl;
     }
 }

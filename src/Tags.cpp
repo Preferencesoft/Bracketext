@@ -402,7 +402,7 @@ bool utf8_compare(const std::string &str1, const std::string &str2) {
     return str1.length() < str2.length();
 }
 
-bool CompareString(Tags::info i1, Tags::info i2) {
+bool CompareString(const Tags::info& i1, const Tags::info& i2) {
     return utf8_compare(i1.sep, i2.sep);
 }
 
@@ -1333,23 +1333,6 @@ void check_lua(lua_State *L, int status) {
     }
 }
 
-// Convert a Lua table (on stack) to a C++ vector<string>
-std::vector<std::string> lua_table_to_vector(lua_State *L, int index) {
-    std::vector<std::string> result;
-    if (!lua_istable(L, index)) {
-        return result;  // Not a table → return empty vector
-    }
-
-    lua_pushnil(L);                        // Start table iteration
-    while (lua_next(L, index - 1) != 0) {  // Pops key, pushes value
-        if (lua_isstring(L, -1)) {
-            result.push_back(lua_tostring(L, -1));
-        }
-        lua_pop(L, 1);  // Remove value, keep key for next iteration
-    }
-    return result;
-}
-
 // Function to call the Lua function named lua_function
 std::vector<std::vector<std::string> > call_lua_function(
     lua_State *L, const std::string &lua_function,
@@ -1889,57 +1872,3 @@ void Tags::scan_utf8_file(const std::string &text) {
     */
 }
 
-void Tags::ScanFile(std::string fileName) {
-    std::string text = readFile(fileName);
-    std::string::size_type textLength = text.length();
-    std::string sb = "";
-    std::string::size_type i = 0;
-    while (i < textLength) {
-        char c = text[i];
-        if (IsNotDelim(c)) {
-            // retrieve the string
-            sb = "";
-            while (i < textLength) {
-                c = text[i];
-                if (IsNotSymbol(c))
-                    sb += c;
-                else {
-                    if (c == '\\') {
-                        if (++i < textLength) {
-                            c = text[i];
-                            if (IsNotSymbol(c)) {
-                                sb += "\\";
-                                sb += c;
-                            } else {
-                                /* no \ before [ ] | \ */
-                                sb += c;
-                            }
-                        } else {
-                            sb += "\\";
-                        }
-                    } else
-                        break;
-                }
-                ++i;
-            }
-            document.push_back(
-                Tags::Entity(nString, sb, std::vector<Tags::Entity>()));
-            --i;
-        } else {
-            // [ or ] or | is a delim
-            document.push_back(Tags::Entity(CharToTagNumber(c),
-                                            (std::string)(&c),
-                                            std::vector<Tags::Entity>()));
-        }
-        ++i;
-    }
-    // *** Test ***
-    /*
-      for (std::vector<Tags::Entity>::size_type i = 0; i < document.size(); i++)
-      { if (document[i].tagNumber) { cout << "type:" <<
-      CharToTagNumber(document[i].tagNumber) << endl; } else cout << "type:" <<
-      tagList[document[i].tagNumber] << endl; cout << ">>>>>>>>>>" <<
-      document[i].str;
-      }
-    */
-}

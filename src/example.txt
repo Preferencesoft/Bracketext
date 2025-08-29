@@ -1,4 +1,5 @@
 [command]
+[command|gggggggggggg]
 [p]
 [b][/b]
 [/p]
@@ -23,7 +24,13 @@ lfllfflf
 [ul]gggggggggggggg[/ul]
 [li]gggggggggggggg[/li]
 [code]ccccccccccccc[/code]
-
+[email|11111111111]22222222222222[/email]
+[email]22222222222222[/email]
+[email|22222222222222][/email]
+[email][/email]
+[btable] col1 [C] col2 [/btable]
+[language|hhhhhhhhhhhhh]
+[sp|7]
 [doc]
             dgljkfgjdlgjdlkgjdlkgdjkl
 [/doc]

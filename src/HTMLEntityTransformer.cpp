@@ -4,7 +4,8 @@
 
 HTMLEntityTransformer::HTMLEntityTransformer() {
     // Initialize HTML entity mapping using insert()
-    entity_map.insert(std::make_pair(0x0020, "&nbsp;"));    // space
+    // entity_map.insert(std::make_pair(0x0020, "&nbsp;"));    
+    // space
     entity_map.insert(std::make_pair(0x003C, "&lt;"));      // <
     entity_map.insert(std::make_pair(0x003E, "&gt;"));      // >
     entity_map.insert(std::make_pair(0x0026, "&amp;"));     // &

@@ -486,20 +486,10 @@ end
 -- <<<<<<
 -- ||||||2|htm|/htm
 function outHtm(pa, ar)
---todo
-    local a = pa[1]
     local oList = {}
-    if #a > 0 then 
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
     return oList
 end
 -- >>>>>>
@@ -526,85 +516,39 @@ end
 -- <<<<<<
 -- ||||||2|tr|/tr
 function outTr(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<tr>')
+    table.insert(oList, '\1<tr>\4')
     
-    if #a > 0 then 
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</tr>')
+    table.insert(oList, '\1</tr>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|th|/th
 function outTh(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<th>')
+    table.insert(oList, '\1<th>\4')
     
-    if #a > 0 then 
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</th>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end        
+    table.insert(oList, '\1</th>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|td|/td
 function outTd(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<td>')
-    if #a > 0 then 
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
-    table.insert(oList, '-2')
-    table.insert(oList, '</td>')
+    table.insert(oList, '\1<td>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</td>\4')
     return oList
 end
 -- >>>>>>
@@ -612,20 +556,14 @@ end
 -- ||||||3|list|*|/list
 function outList(pa, ar)
         local oList = {}
-    if type(ar) == "table" and #ar > 0 then
-   if type(pa) == "table" and #pa > 0 then
-   if type(pa[1]) == "table" and #pa[1] > 0 then
-      local innerTable = pa[1]
-      if type(innerTable[1]) == "table" then
-         p = innerTable[1]
-         local a = ar
         local b = '\1<ul>\4'
         local e = '\1</ul>\4'
-        local x = ''
-                local len = #p
-                for i = 1, len do
-                    x = x .. p[i]
-                end
+   if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+      local p = pa[1]
+      if type(p) == "string" then
+        local x = p[1]
+      end
+   end
     if x == '1' then
         b = '\1<ol style="list-style-type: decimal">\4'
         e = '\1</ol>\4'
@@ -636,49 +574,38 @@ function outList(pa, ar)
         b = '\1<ul>\4'
         e = '\1</ul>\4'
     end
-
     table.insert(oList, b)
-    local lena = #a
-    
-    for i = 1, lena do
+    if type(ar) == "table" and #ar > 0 then
+    local lenar=#ar
+    for i=1,lenar do
+      if type(ar[i]) == "string" then
         table.insert(oList, '\1<li>\4')
-        local lenaa = #a[i]
-        local str=''
-        for j = 1, lenaa do
-            str = str .. a[i][j]
-        end
-        table.insert(oList, str)
+        table.insert(oList, ar[i])
         table.insert(oList, '\1</li>\4')
+      end
     end 
-
+    end
     table.insert(oList, e)
-    end
-    end
-    end
-    end    
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|email|/email
 function outEmail(pa, ar)
-
-    local a = pa[1]
-    local p = pa[0]
     local oList = {}
     local ae = false
     local pe = false
-
-    if #p > 0 then
-        if #p[1] > 0 then
-            pe = true
-            p = p[1][1]
-        end
-    end
-
-    if #a > 0 then
+    local p
+    local a
+ if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+      if type(pa[1][1]) == "string" then
+        pe=true
+        p = pa[1][1]
+      end
+   end
+   if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
         ae = true
-        a = a[1]
+        a = ar[1]
     end
 
     local e = ae or pe
@@ -691,32 +618,15 @@ function outEmail(pa, ar)
         a = p
     end
 
-    if e then
-        table.insert(oList, '-2')
-        table.insert(oList, '<a href="mailto:')
-        local lenp = #p
-        for i = 1, lenp, 2 do
-            table.insert(oList, '-2')
-            table.insert(oList, p[i + 1])
-        end
-        table.insert(oList, '-2')
-        table.insert(oList, '">')
-        local lena = #a
-        for i = 1, lena, 2 do
-            local str = a[i + 1]
-            if a[i] == '-1' then
-                str = toHTML(str)
-            end
-            table.insert(oList, '-2')
-            table.insert(oList, str)
-        end
-        table.insert(oList, '-2')
-        table.insert(oList, '</a>')
+    if e ~="" then
+        table.insert(oList, '\1<a href="mailto:\4')
+        table.insert(oList, p)
+        table.insert(oList, '\1">\4')
+        table.insert(oList, a)
+        table.insert(oList, '\1</a>\4')
     else
-        table.insert(oList, '-2')
-        table.insert(oList, '<a href="mailto:">')
-        table.insert(oList, '-2')
-        table.insert(oList, '</a>')
+        table.insert(oList, '\1<a href="mailto:">\4')
+        table.insert(oList, '\1</a>\4')
     end
 
     return oList
@@ -725,86 +635,53 @@ end
 -- <<<<<<
 -- ||||||3|btable|C|/btable
 function outBtable(pa, ar)
-
-    local a = pa[1]
-    local p = pa[0]
     local oList = {}
-    local n = #a
     local nrow = 1
-    local ncol = n
+    local ncol = 1
+ if type(ar) == "table" and #ar > 0 then
+    ncol = #ar
+ end
+ if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 1 then
+      local p = pa[1]
+      if type(p[1]) == "string" and type(p[2]) == "string" then
+            nrow = tonumber(p[1])
+            ncol = tonumber(p[2])
+      end
+   end
 
-    if #p > 0 then
-        if #p[1] > 1 then
-            p = p[1]
-            nrow = tonumber(tostring(p[1]))
-            ncol = tonumber(tostring(p[2]))
-        end
-    end
-
-    local lena = #a
+    local lena = #ar
     local k = 0
-    table.insert(oList, '-2')
-    table.insert(oList, '<table class="table table-striped table-bordered">')
-    table.insert(oList, '-2')
-    table.insert(oList, '<thead>')
-    table.insert(oList, '-2')
-    table.insert(oList, '<tr>')
+    table.insert(oList, '\1<table class="table table-striped table-bordered">\4')
+    table.insert(oList, '\1<thead>\4')
+    table.insert(oList, '\1<tr>\4')
 
     for j = 0, ncol - 1 do
-        table.insert(oList, '-2')
-        table.insert(oList, '<th>')
+        table.insert(oList, '\1<th>\4')
         if k < lena then
-            local len = #a[k + 1]
-            for l = 0, len - 1, 2 do
-                local str = a[k + 1][l + 2]
-                if a[k + 1][l + 1] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-            table.insert(oList, '-2')
-            table.insert(oList, '</th>')
+            table.insert(oList, ar[k+1])
+            table.insert(oList, '\1</th>\4')
         end
         k = k + 1
     end
 
-    table.insert(oList, '-2')
-    table.insert(oList, '</tr>')
-    table.insert(oList, '-2')
-    table.insert(oList, '</thead>')
-    table.insert(oList, '-2')
-    table.insert(oList, '<tbody>')
+    table.insert(oList, '\1</tr>\4')
+    table.insert(oList, '\1</thead>\4')
+    table.insert(oList, '\1<tbody>\4')
 
     for i = 2, nrow do
-        table.insert(oList, '-2')
-        table.insert(oList, '<tr>')
+        table.insert(oList, '\1<tr>\4')
         for j = 0, ncol - 1 do
-            table.insert(oList, '-2')
-            table.insert(oList, '<td>')
+            table.insert(oList, '\1<td>\4')
             if k < lena then
-                local len = #a[k + 1]
-                for l = 0, len - 1, 2 do
-                    local str = a[k + 1][l + 2]
-                    if a[k + 1][l + 1] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
-                end
+                    table.insert(oList, ar[k+1])
                 k = k + 1
             end
-            table.insert(oList, '-2')
-            table.insert(oList, '</td>')
+            table.insert(oList, '\1</td>\4')
         end
-        table.insert(oList, '-2')
-        table.insert(oList, '</tr>')
+        table.insert(oList, '\1</tr>\4')
     end
-
-    table.insert(oList, '-2')
-    table.insert(oList, '</tbody>')
-    table.insert(oList, '-2')
-    table.insert(oList, '</table>')
+    table.insert(oList, '\1</tbody>\4')
+    table.insert(oList, '\1</table>\4')
 
     return oList
 end
@@ -814,25 +691,12 @@ end
 function outCommand(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="command">\4')
-    -- Add comprehensive nil and bounds checking
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
-        if type(p[1]) == "table" and #p[1] > 0 then
-            local innerTable = p[1]
-            if type(innerTable[1]) == "table" then
-                p = innerTable[1]
-                local lenp = #p
-                for i = 1, lenp do
-                        local str = p[i]
-                            -- Make sure toHTML function exists
-                            if type(toHTML) == "function" then
-                                str = toHTML(str)
-                        end
-                        table.insert(oList, str)
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -840,596 +704,309 @@ end
 -- <<<<<<
 -- ||||||1|language
 function outLanguage(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="language">')
-    
-    if #p > 0 then
-        if #p[1] > 0 then
-            p = p[1][1]
-            local lenp = #p
-            for i = 1, lenp, 2 do
-                local str = p[i + 1]
-                if p[i] == '-1' then
-                    str = toHTML(str)
+    table.insert(oList, '\1<span class="language">\4')
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|file
 function outFile(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="file">')
-    
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    table.insert(oList, '\1<span class="file">\4')
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|extension
 function outExtension(pa, ar)
-
-    p = p[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="file">')
-    
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    table.insert(oList, '\1<span class="file">\4')
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|directory
 function outDirectory(pa, ar)
-
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="directory">')
-    
-    if #p > 0 then
-        if #p[1] > 0 then
-            p = p[1][1]
-            local lenp = #p
-            for i = 1, lenp, 2 do
-                local str = p[i + 1]
-                if p[i] == '-1' then
-                    str = toHTML(str)
+    table.insert(oList, '\1<span class="directory">\4')
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|path
 function outPath(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="path">')
-    
-    if #p > 0 then
-        if #p[1] > 0 then
-            p = p[1][1]
-            local lenp = #p
-            for i = 1, lenp, 2 do
-                local str = p[i + 1]
-                if p[i] == '-1' then
-                    str = toHTML(str)
+    table.insert(oList, '\1<span class="path">\4')
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|trademark
 function outTrademark(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="trademark">')
+    table.insert(oList, '\1<span class="trademark">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
-            end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+            end    
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|item
 function outItem(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="item">')
+    table.insert(oList, '\1<span class="item">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|iurl
 function outIurl(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="url">')
+    table.insert(oList, '\1<span class="url">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|example
 function outExample(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="definition">')
+    table.insert(oList, '\1<span class="definition">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|definition
 function outDefinition(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="definition">')
+    table.insert(oList, '\1<span class="definition">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|output
 function outOutput(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="output">')
+
+    table.insert(oList, '\1<span class="output">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            if #p[1][1] > 0 then
-                p = p[1][1]
-                local lenp = #p
-                for i = 1, lenp, 2 do
-                    local str = p[i + 1]
-                    if p[i] == '-1' then
-                        str = toHTML(str)
-                    end
-                    table.insert(oList, '-2')
-                    table.insert(oList, str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
             end
-        end
-    end
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|output-box|/output-box
 function outOutputBox(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<div class="output-box">')
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local lena = #a
-            for i = 1, lena, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
+    table.insert(oList, '\1<div class="output-box">\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
     end
-    table.insert(oList, '-2')
-    table.insert(oList, '</div>')
+    table.insert(oList, '\1</div>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|input
 function outInput(pa, ar)
-
-    local p = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<span class="input">')
+    table.insert(oList, '\1<span class="input">\4')
     
-    if #p > 0 then
-        if #p[1] > 0 then
-            p = p[1][1]
-            local lenp = #p
-            for i = 1, lenp, 2 do
-                local str = p[i + 1]
-                if p[i] == '-1' then
-                    str = toHTML(str)
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+                        table.insert(oList, p[1])
                 end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
             end
-        end
-    end
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</span>')
+    table.insert(oList, '\1</span>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|input-box|/input-box
 function outInputBox(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<div class="input-box">')
+    table.insert(oList, '\1<div class="input-box">\4')
     
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local lena = #a
-            for i = 1, lena, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
     end
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</div>')
+    table.insert(oList, '\1</div>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
--- ||||||2|ocode|/ocode
+-- ||||||2|icode|/icode
 function outOcode(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<code>')
+    table.insert(oList, '\1<code>\4')
     
-    if #a > 0 then
-        a = a[1]
-        local len = #a
-        for i = 1, len, 2 do
-            local str = a[i + 1]
-            if a[i] == '-1' then
-                str = toHTML(str)
-            end
-            table.insert(oList, '-2')
-            table.insert(oList, str)
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</code>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end        
+    table.insert(oList, '\1</code>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|definition-box|/definition-box
 function outDefinitionBox(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<div class="definition">')
+    table.insert(oList, '\1<div class="definition">\4')
     
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</div>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+
+    table.insert(oList, '\1</div>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|sup|/sup
 function outSup(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<sup>')
+    table.insert(oList, '\1<sup>\4')
     
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</sup>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+
+    table.insert(oList, '\1</sup>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|sub|/sub
 function outSub(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<sub>')
+    table.insert(oList, '\1<sub>\4')
     
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
     
-    table.insert(oList, '-2')
-    table.insert(oList, '</sub>')
+    table.insert(oList, '\1</sub>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||1|hr
 function outHr(pa, ar)
-return stringListToXML({'-2', '<hr />'})
+return ({'\1<hr />\4'})
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|em|/em
 function outEm(pa, ar)
-
-    local a = pa[1]
     local oList = {}
-    table.insert(oList, '-2')
-    table.insert(oList, '<em>')
+    table.insert(oList, '\1<em>\4')
     
-    if #a > 0 then
-        if #a[1] > 0 then
-            a = a[1]
-            local len = #a
-            for i = 1, len, 2 do
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)
-                end
-                table.insert(oList, '-2')
-                table.insert(oList, str)
-            end
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</em>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</em>\4')
     return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|strong|/strong
 function outStrong(pa, ar)
-
-    local a = pa[1]
     local oList = {}
     
-    table.insert(oList, '-2')
-    table.insert(oList, '<strong>')
+    table.insert(oList, '\1<strong>\4')
     
-    if a and #a > 0 and a[1] and #a[1] > 0 then
-        a = a[1]
-        local len = #a
-        for i = 1, len, 2 do  -- Lua arrays start at 1, not 0
-            local str = a[i + 1]  -- Equivalent to a[i+1] in JS
-            if a[i] == '-1' then
-                str = toHTML(str)  -- Assuming toHTML function exists
-            end
-            table.insert(oList, '-2')
-            table.insert(oList, str)
-        end
-    end
-    
-    table.insert(oList, '-2')
-    table.insert(oList, '</strong>')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+
+    table.insert(oList, '\1</strong>\4')
     
     return oList  -- Assuming stringListToXML function exists
 end
@@ -1510,21 +1087,23 @@ end
 -- <<<<<<
 -- ||||||1|sp
 function outSp(pa, ar)
-
-    local p = pa[1]  -- Changed from pa[0] to pa[1] (Lua is 1-indexed)
     local oList = {}
     local x = 1
     
     -- Check if p has content (Lua is 1-indexed)
-    if p and #p > 0 and p[1] and #p[1] > 0 and p[1][1] and #p[1][1] > 0 then
-        p = p[1][1]
-        x = tonumber(p) or 1  -- Use tonumber() instead of toString()
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+          x = tonumber(p[1])
+          if not x then
+            x=1
+          end
+        end
     end
     
     -- Add non-breaking spaces
     for i = 1, x do  -- Start at 1, go up to x
-        table.insert(oList, '-2')
-        table.insert(oList, '&nbsp;')
+        table.insert(oList, '\1&nbsp;\4')
     end
     
     return oList  -- Assuming stringListToXML function exists

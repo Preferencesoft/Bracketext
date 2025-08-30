@@ -15,7 +15,7 @@ void Bracketext::Test() {
       "/home/<user>/Documents/programming/projects-cpp/bracketext/src/example.txt";
   Tags::scan_utf8_file(Tags::readFile(str));
 
-  Tags::BBCodeToTree();
+  Tags::TagsToTree();
   Tags::EvalTree();
   cout << Tags::DocumentToHTML();
 }
@@ -61,7 +61,7 @@ int Bracketext::Main(int argc, char *argv[]) {
   Tags::Init();
   std::string str = inputFile;
   Tags::scan_utf8_file(Tags::readFile(str));
-  Tags::BBCodeToTree();
+  Tags::TagsToTree();
   Tags::EvalTree();
   cout << Tags::DocumentToFile(outputFile);
   // cout << Tags::DocumentToHTML();

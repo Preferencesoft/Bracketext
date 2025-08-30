@@ -2,6 +2,7 @@
 //
 
 #include "Bracketext.h"
+#include "version.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ int Bracketext::Main(int argc, char *argv[]) {
     std::string outputFile;
     
     int opt;
-    while ((opt = getopt(argc, argv, "m:f:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:f:o:v")) != -1) {
         switch (opt) {
             case 'm':
                 macroFile = optarg;
@@ -40,21 +41,33 @@ int Bracketext::Main(int argc, char *argv[]) {
             case 'o':
                 outputFile = optarg;
                 break;
+           case 'v':
+                std::cout << "Application Version: " << PROJECT_VERSION << std::endl;
+                std::cout << "Build: " << __DATE__ << " " << __TIME__ << std::endl;
+                return 0;
             case '?':
                 std::cerr << "Unknown option: " << char(optopt) << "\n";
                 return 1;
             default:
-                std::cerr << "Usage: " << argv[0] << " -m <mode> -f <input_file> -o <output_file>\n";
+                std::cerr << "Usage: " << argv[0] << " -m <macro_file> -f <input_file> -o <output_file> [-v]\n";
                 return 1;
         }
     }
     // *** Test ***
     // cout << ">>" << inputFile << endl << ">>" << outputFile << endl << ">>" << macroFile << endl;
     
-    if (inputFile.empty()) {
-        std::cerr << "Error: Input file (-f) is required\n";
+       // Validate mandatory options
+    if (macroFile.empty() || inputFile.empty() || outputFile.empty()) {
+        std::cerr << "Error: Missing required options\n";
+        std::cerr << "Usage: " << argv[0] << " -m <macro> -f <input_file> -o <output_file> [-v]\n";
+        
+        if (macroFile.empty()) std::cerr << "  -m option is required\n";
+        if (inputFile.empty()) std::cerr << "  -f option is required\n";
+        if (outputFile.empty()) std::cerr << "  -o option is required\n";
+        
         return 1;
     }
+
 
   Tags::LoadMacros(macroFile);
   cout << "macros loaded" << endl;

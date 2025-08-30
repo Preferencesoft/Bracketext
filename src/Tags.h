@@ -221,12 +221,12 @@ if (list == 0) {
                std::vector<EntityIndexPair >& parameter_list, std::vector<Tags::Entity>::size_type& j);
         static bool check_arg(std::vector<Tags::Entity>::size_type i, const std::vector<Tags::Entity>& tokens, EntityIndexPair& argument, std::vector<Tags::Entity>::size_type& j);
 
-        static void BBCodeToTree();
+        static void TagsToTree();
 
         static std::vector<std::vector<std::string> > GetParameters(const Tags::Entity& tag);
         static std::vector<std::string> GetArguments(const Tags::Entity& tag);
-        static void display_parameters(std::vector<std::vector<std::string> > p);
-        static void display_arguments(std::vector<std::string> arguments);
+        static void display_parameters(const std::vector<std::vector<std::string> >& p);
+        static void display_arguments(const std::vector<std::string>& arguments);
         static std::string DocumentToHTML();
         static std::string DocumentToFile(const std::string& fileName);
         static void EvalTree();

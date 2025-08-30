@@ -268,7 +268,6 @@ local x = ""
  end
 oList = {}
 table.insert(oList, '\1<span style="font-size:\4' .. y .. '\1;">\4' .. x .. '\1</span>\4')
-    
     return oList
 end
 -- >>>>>>
@@ -287,76 +286,60 @@ end
 -- <<<<<<
 -- ||||||2|url|/url
 function outURL(pa, ar)
-    local oList = {} -- todo
+    local oList = {}
     local ae = false
     local pe = false
-    -- Check if p has content
-    if p and #p > 0 then
-        if p[1] and #p[1] > 0 then
-            pe = true
-            p = p[1]
-        end
+    local p
+    local a
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+      local p1 = pa[1]
+      if type(p1[1]) == "string" then
+          pe = true
+          p = p1[1]
+      end
     end
-    -- Check if a has content
-    if a and #a > 0 then
-        ae = true
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+      ae = true
+      a=ar[1]
     end
     local e = ae or pe
     if e then
-        table.insert(oList, '<a href="')
-        
-        -- Build URL from p
-        if p and #p > 0 then
-            local len = #p
-            for i = 1, len do
-                table.insert(oList, p[i])
-            end
-        end
-        table.insert(oList, '">')
-        -- Build link text from a
-        if a and #a > 0 then
-            local len = #a
-            for i = 1, len do
-                local str = a[i]
-                table.insert(oList, str)
-            end
+        table.insert(oList, '\1<a href="\4')
+        if pe then
+          table.insert(oList, p)
+          table.insert(oList, '\1">\4')
+          table.insert(oList, a)
         else
-            -- Use p as link text if a is empty
-            if p and #p > 0 then
-                local len = #p
-                for i = 1, len do
-                    table.insert(oList, p[i])
-                end
-            end
-        end 
-        table.insert(oList, '</a>')
-    else
-        -- Empty link if neither has content
-        table.insert(oList, '<a href=""></a>')
-    end
-    return oList
+          table.insert(oList, a)
+          table.insert(oList, '\1">\4')
+          table.insert(oList, p)
+        end
+        table.insert(oList, '\1</a>\4')
+   else
+     table.insert(oList, '\1<a href=""></a>\4')
+  end
+  return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|nofollow|/nofollow
 function outNofollow(pa, ar)
-    local a = pa[1][1] -- todo
-    local p = pa[1][1]
     local oList = {}
     local ae = false
     local pe = false
-
-    if #p > 0 then
-        if #p[1] > 0 then
+    local a
+    local p
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+      local p1 = pa[1]
+      if type(p1[1]) == "string" then
             pe = true
-            p = p[1]
-        end
+            p = p1[1]
+      end
     end
-
-    if #a > 0 then
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
         ae = true
+        a=ar[1]
     end
-
     local e = ae or pe
     if ae and not pe then
         p = a
@@ -364,28 +347,16 @@ function outNofollow(pa, ar)
     if not ae and pe then
         a = p
     end
-
     if e then
-        table.insert(oList, '<a href="')
-        local len = #p
-        for i = 1, len, 2 do
-            table.insert(oList, p[i + 1])
-        end
-        table.insert(oList, '" rel="nofollow">')
-        len = #a
-        for i = 1, len, 2 do
-            local str = a[i + 1]
-            if a[i] == '-1' then
-                str = toHTML(str)
-            end
-            table.insert(oList, str)
-        end
-        table.insert(oList, '</a>')
+        table.insert(oList, '\1<a href="\4')
+        table.insert(oList, p)
+        table.insert(oList, '\1" rel="nofollow">\4')
+        table.insert(oList, a)
+        table.insert(oList, '\1</a>\4')
     else
-        table.insert(oList, '<a href="" rel="nofollow">')
-        table.insert(oList, '</a>')
+        table.insert(oList, '\1<a href="" rel="nofollow">\4')
+        table.insert(oList, '\1</a>\4')
     end
-
     return oList
 end
 -- >>>>>>
@@ -396,7 +367,7 @@ function outImg(pa, ar)
     table.insert(oList, '\1<img src="\4')
    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0  then
     local p=pa[1]
-    if #p > 1 and type(p) == "table" then
+    if type(p[1]) == "string" then
         local src = p[1]
         local alt = p[2]
         table.insert(oList, src)
@@ -510,11 +481,9 @@ end
 function outTr(pa, ar)
     local oList = {}
     table.insert(oList, '\1<tr>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
-    end    
-    
+    end
     table.insert(oList, '\1</tr>\4')
     return oList
 end
@@ -523,8 +492,7 @@ end
 -- ||||||2|th|/th
 function outTh(pa, ar)
     local oList = {}
-    table.insert(oList, '\1<th>\4')
-    
+    table.insert(oList, '\1<th>\4') 
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end        
@@ -599,17 +567,13 @@ function outEmail(pa, ar)
         ae = true
         a = ar[1]
     end
-
     local e = ae or pe
-
     if ae and not pe then
         p = a
     end
-
     if not ae and pe then
         a = p
     end
-
     if e ~="" then
         table.insert(oList, '\1<a href="mailto:\4')
         table.insert(oList, p)
@@ -620,7 +584,6 @@ function outEmail(pa, ar)
         table.insert(oList, '\1<a href="mailto:">\4')
         table.insert(oList, '\1</a>\4')
     end
-
     return oList
 end
 -- >>>>>>
@@ -640,7 +603,6 @@ function outBtable(pa, ar)
             ncol = tonumber(p[2])
       end
    end
-
     local lena = #ar
     local k = 0
     table.insert(oList, '\1<table class="table table-striped table-bordered">\4')
@@ -655,11 +617,9 @@ function outBtable(pa, ar)
         end
         k = k + 1
     end
-
     table.insert(oList, '\1</tr>\4')
     table.insert(oList, '\1</thead>\4')
     table.insert(oList, '\1<tbody>\4')
-
     for i = 2, nrow do
         table.insert(oList, '\1<tr>\4')
         for j = 0, ncol - 1 do
@@ -674,7 +634,6 @@ function outBtable(pa, ar)
     end
     table.insert(oList, '\1</tbody>\4')
     table.insert(oList, '\1</table>\4')
-
     return oList
 end
 -- >>>>>>
@@ -773,7 +732,6 @@ end
 function outTrademark(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="trademark">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
@@ -789,14 +747,12 @@ end
 function outItem(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="item">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-    
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -806,14 +762,12 @@ end
 function outIurl(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="url">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -823,14 +777,12 @@ end
 function outExample(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="definition">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-    
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -840,14 +792,12 @@ end
 function outDefinition(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="definition">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -856,16 +806,13 @@ end
 -- ||||||1|output
 function outOutput(pa, ar)
     local oList = {}
-
     table.insert(oList, '\1<span class="output">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-    
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -887,14 +834,12 @@ end
 function outInput(pa, ar)
     local oList = {}
     table.insert(oList, '\1<span class="input">\4')
-    
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
         if type(p[1]) == "string" then
                         table.insert(oList, p[1])
                 end
             end
-    
     table.insert(oList, '\1</span>\4')
     return oList
 end
@@ -904,11 +849,9 @@ end
 function outInputBox(pa, ar)
     local oList = {}
     table.insert(oList, '\1<div class="input-box">\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end
-    
     table.insert(oList, '\1</div>\4')
     return oList
 end
@@ -918,7 +861,6 @@ end
 function outOcode(pa, ar)
     local oList = {}
     table.insert(oList, '\1<code>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end        
@@ -931,11 +873,9 @@ end
 function outDefinitionBox(pa, ar)
     local oList = {}
     table.insert(oList, '\1<div class="definition">\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
-    end    
-
+    end
     table.insert(oList, '\1</div>\4')
     return oList
 end
@@ -945,11 +885,9 @@ end
 function outSup(pa, ar)
     local oList = {}
     table.insert(oList, '\1<sup>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
-    end    
-
+    end
     table.insert(oList, '\1</sup>\4')
     return oList
 end
@@ -959,11 +897,9 @@ end
 function outSub(pa, ar)
     local oList = {}
     table.insert(oList, '\1<sub>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end    
-    
     table.insert(oList, '\1</sub>\4')
     return oList
 end
@@ -979,7 +915,6 @@ end
 function outEm(pa, ar)
     local oList = {}
     table.insert(oList, '\1<em>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end    
@@ -990,85 +925,60 @@ end
 -- <<<<<<
 -- ||||||2|strong|/strong
 function outStrong(pa, ar)
-    local oList = {}
-    
+    local oList = {} 
     table.insert(oList, '\1<strong>\4')
-    
     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList,ar[1])
     end    
-
     table.insert(oList, '\1</strong>\4')
-    
-    return oList  -- Assuming stringListToXML function exists
+    return oList
 end
 -- >>>>>>
 -- <<<<<<
 -- ||||||2|burl|/burl
 function outBurl(pa, ar)
-
-    local a = pa[1]
-    local p = pa[1]  -- Changed from pa[0] to pa[1] (Lua is 1-indexed)
     local oList = {}
     local ae = false
     local pe = false
-    
+    local a
+    local p
     -- Check if p has content (Lua is 1-indexed)
-    if p and #p > 0 and p[1] and #p[1] > 0 then
-        pe = true
-        p = p[1][1]
-    end
-    
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p1 = pa[1]
+        if type(p1[1]) == "string" then
+             pe = true
+             p=p1[1]
+                end
+            end
     -- Check if a has content
-    if a and #a > 0 then
+   if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
         ae = true
-        a = a[1]
+        a = ar[1]
     end
-    
     local e = ae or pe
-    
     if ae and not pe then
         p = a
     end
-    
     if not ae and pe then
         a = p
     end
-    
-    if e then
-        table.insert(oList, '<a class="lead text-purple" href="')
-        
-        -- Build URL from p
-        if p and #p > 0 then
-            local lenp = #p
-            for k = 1, lenp, 2 do  -- Start at 1, increment by 2
-                table.insert(oList, '-2')
-                table.insert(oList, p[k + 1])  -- p[k+1] equivalent to p[k+1] in JS
-            end
-        end
-        
-        table.insert(oList, '-2')
-        table.insert(oList, '">')
-        
+    if pe then
+        table.insert(oList, '\1<a class="lead text-purple" href="\4')
+       table.insert(oList, p)
+       table.insert(oList, '\1">\4')
         -- Build link text from a
-        if a and #a > 0 then
-            local len = #a
-            for i = 1, len, 2 do  -- Start at 1, increment by 2
-                local str = a[i + 1]
-                if a[i] == '-1' then
-                    str = toHTML(str)  -- Assuming toHTML function exists
-                end
-                table.insert(oList, str)
-            end
+        if ae then
+                table.insert(oList, a)
         end
-        
-        table.insert(oList, '</a>')
+        table.insert(oList, '\1</a>\4')
     else
-        table.insert(oList, '<a class="lead text-purple" href="">')
-        table.insert(oList, '</a>')
+        table.insert(oList, '\1<a class="lead text-purple" href="">\4')
+        if ae then
+            table.insert(oList, a)
+        end
+        table.insert(oList, '\1</a>\4')
     end
-    
-    return oList  -- Assuming stringListToXML function exists
+    return oList
 end
 -- >>>>>>
 -- <<<<<<
@@ -1076,7 +986,6 @@ end
 function outSp(pa, ar)
     local oList = {}
     local x = 1
-    
     -- Check if p has content (Lua is 1-indexed)
     if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
         local p = pa[1]
@@ -1087,12 +996,10 @@ function outSp(pa, ar)
           end
         end
     end
-    
     -- Add non-breaking spaces
     for i = 1, x do  -- Start at 1, go up to x
         table.insert(oList, '\1&nbsp;\4')
     end
-    
-    return oList  -- Assuming stringListToXML function exists
+    return oList
 end
 -- >>>>>>

@@ -10,9 +10,13 @@ However, the project can be compiled without modification using a C++11 standard
 
 TODO:
 
-- The `macros.txt` macro command file still needs to be completely adapted.
-It was previously written in `JavaScript`, but I found that the Lua language is really easy to call from C or C++.
-Only a few macros written in `Lua` have been verified.
+- The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
+
+- Create a generic “official” macro file that can be used to convert to different formats.
+Create a macro file more specialized in HTML production (and Bootstrap, for example).
+Create a macro file that closely follows the BBcode markup language, for those who use it or have used it before.
+
+- Add new features to the application, such as counters, in order to automatically number certain items.
 
 - I also plan to add the ability for macros to use multiple intermediate tags, as in the following example:
 [command] text1 [line] tex2 [col] text3 [col] text4 [col] [line]  [/command]

@@ -591,17 +591,19 @@ void Tags::check_utf8(const std::string &s) {
     std::cout << "\n---\n";
 }
 
+/*
 std::vector<Tags::Entity> extract(const Tags::EntityVector &tokens,
                                   std::string::size_type i,
                                   std::string::size_type j) {
     Tags::EntityVector sublist;
-    if (/* i >= 0 && */ j < tokens.size() && i <= j) {
+    if (j < tokens.size() && i <= j) {
         sublist.reserve(j - i + 1);
         std::copy(tokens.begin() + i, tokens.begin() + j + 1,
                   std::back_inserter(sublist));
     }
     return sublist;
 }
+*/
 
 bool Tags::is_associated_intermediate(int index, int next_index) {
     int entry = tagEntryList[index];
@@ -804,7 +806,7 @@ void Tags::DisplayEntityTag(Tags::Entity &e) {
     cout << "end" << endl;
 }
 
-void Tags::BBCodeToTree() {
+void Tags::TagsToTree() {
     bool modified = true;
     int index;
     std::vector<Tags::Entity>::size_type j;
@@ -1067,15 +1069,15 @@ std::vector<std::string> Tags::GetArguments(
 }
 
 void Tags::display_parameters(
-    std::vector<std::vector<std::string> > p) {
-    for (std::vector<std::vector<std::string> >::iterator it_parameters =
+    const std::vector<std::vector<std::string> >& p) {
+    for (std::vector<std::vector<std::string> >::const_iterator it_parameters =
              p.begin();
          it_parameters != p.end(); ++it_parameters) {
         std::cout << "block" << std::endl;
 
-        std::vector<std::string> &parameters = *it_parameters;
+        const std::vector<std::string> &parameters = *it_parameters;
 
-        for (std::vector<std::string>::iterator it_parameter =
+        for (std::vector<std::string>::const_iterator it_parameter =
                  parameters.begin();
              it_parameter != parameters.end(); ++it_parameter) {
             std::cout << "   parameter" << std::endl;
@@ -1088,10 +1090,10 @@ void Tags::display_parameters(
     }
 }
 
-void Tags::display_arguments(vector<std::string> arguments) {
-    for (vector<std::string>::iterator it_argument = arguments.begin();
+void Tags::display_arguments(const vector<std::string>& arguments) {
+    for (vector<std::string>::const_iterator it_argument = arguments.begin();
          it_argument != arguments.end(); ++it_argument) {
-        std::string &argument = *it_argument;
+        const std::string &argument = *it_argument;
         cout << "argument" << endl;
         cout << "   ";
         cout << " - " << argument;

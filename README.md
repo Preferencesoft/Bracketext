@@ -10,13 +10,13 @@ However, the project can be compiled without modification using a C++11 standard
 
 TODO:
 
-- The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
+- declare macros that allow you to manage counters for automatic numbering.
 
 - Create a generic “official” macro file that can be used to convert to different formats.
 Create a macro file more specialized in HTML production (and Bootstrap, for example).
 Create a macro file that closely follows the BBcode markup language, for those who use it or have used it before.
 
-- Add new features to the application, such as counters, in order to automatically number certain items.
+- Update the explanations in this README and create detailed documentation.
 
 - I also plan to add the ability for macros to use multiple intermediate tags, as in the following example:
 [command] text1 [line] tex2 [col] text3 [col] text4 [col] [line]  [/command]
@@ -28,7 +28,14 @@ Progress:
 
 - I simplified the calling of Lua routines. Now the pa and ar parameters are respectively tables of tables of character strings and tables of character strings.
 
-- The macros.txt file has not yet been fully updated.
+- The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
+
+- You can now declare global variables in the macros.txt file by placing them in a field of the form: 
+-- <<<<<< 
+-- ||||||v| 
+local counter=1 
+local n=12334 
+-- >>>>>> 
 
 Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
 efl
@@ -54,30 +61,22 @@ We use a scripting language to create macros that when inserted into any text wi
 
 Let's give an example. If we declare in the file ``macros.txt``:
 
-    // <<<<<<
-    // ||||||2|h1|/h1
-    function outH1(...params) {
-       var pa = getParameters(params);
-       var a=pa[1];
-       var t=pa[2];
-       var oList = [];
-       oList.push('-2');
-       oList.push('<h1>');
-       if (a.length>0) {if (a[0].length>0){
-          a=a[0];
-          var len=a.length;
-          for (var i=0; i<len; i+=2) {
-             var str=a[i+1];
-             var tagNumber=a[i];
-             if (tagNumber === '-1'){str=toHTML(str);}
-                oList.push('-2');
-             oList.push(str);
-       }}}
-       oList.push('-2');
-       oList.push('</h1>');
-       return stringListToXML(oList);
-    }
-    // >>>>>>
+    -- <<<<<<
+    -- ||||||2|h1|/h1
+    function outU(pa, ar) 
+    local oList = {}
+    table.insert(oList,'\1')
+    table.insert(oList,'<h1>')
+    table.insert(oList,'\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+      table.insert(oList,ar[1])
+    end
+    table.insert(oList,'\1')
+    table.insert(oList,'</h1>')
+    table.insert(oList,'\4')
+    return oList
+end
+-- >>>>>>
 
 In the text, we can write:
 
@@ -140,28 +139,25 @@ Let's give a simple example:
 
 in the file macro.txt:
 
-    // <<<<<<
-    // ||||||2|color|/color
-    function outColor(...params) {
-    var p = getParameters(params);
-    var a=p[1][0];
-    var oList = [];
-    var col="verdana";
-    if (p[0][0].length > 0){if (p[0][0][0].length > 0){col=toString(p[0][0][0]);}}
-    oList.push('-2');
-    oList.push('<span style="color: '+col+';">');
-    var len=a.length;
-    for (var i=0; i<len; i+=2) {
-    var str=a[i+1];
-    if (a[i] === '-1'){str=toHTML(str);}
-    oList.push('-2');
-    oList.push(str);
-    }
-    oList.push('-2');
-    oList.push('</span>');
-    return stringListToXML(oList);
-    }
-    // >>>>>>
+    -- <<<<<<
+    -- ||||||2|color|/color
+    function outColor(pa, ar)
+    local oList = {}
+    local col="verdana"
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+      local p = pa[1]
+      if type(p[1]) == "string" then
+        col=p[1]
+      end
+    end
+    table.insert(oList, '\1<span style="color: ' .. col .. ';">\4')
+     if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList, ar[1])
+     end
+    table.insert(oList, '\1</span>\4')
+    return oList
+    end
+    -- >>>>>>
 
 The result:
 

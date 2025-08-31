@@ -1,4 +1,9 @@
 -- <<<<<<
+-- ||||||v|
+local counter=1
+local n=12334
+-- >>>>>>
+-- <<<<<<
 -- ||||||g|
 function HTMLEntities(s)
     if not s then return "" end

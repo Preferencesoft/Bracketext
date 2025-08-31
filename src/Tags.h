@@ -192,7 +192,7 @@ if (list == 0) {
         static std::string SubStr(std::string& s, std::string::size_type n);
         static void scan_utf8_file(const std::string& text);
         static std::string readFile(std::string& file_name);
-        static std::string Trim(std::string& str);
+        static const std::string Trim(const std::string& str);
         static std::vector<std::string> split(const std::string& s, const char delimiter);
         static void LoadMacros(std::string psFileName);
         static void Init();

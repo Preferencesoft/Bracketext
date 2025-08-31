@@ -177,7 +177,7 @@ std::vector<std::string> Tags::split(const std::string &s, char delimiter) {
 }
 
 // Alternative using pointers instead of iterators
-std::string Tags::Trim(std::string &str) {
+const std::string Tags::Trim(const std::string &str) {
     if (str.empty()) return "";
 
     // Find first non-whitespace
@@ -269,85 +269,89 @@ std::string getFunctionName(const std::string &line) {
 void Tags::LoadMacros(std::string psFileName) {
     // provisionally, we load the entire text.
     vector<std::string> text = Tags::split(readFile(psFileName), '\n');
+/*
+    cout << "______________________"  << endl;
+    for (vector<std::string>::iterator it=text.begin();it!=text.end();it++) {
+       std::string& str = *it; 
+       cout << str << endl;
+    }
+    cout << "______________________"  << endl;
+*/
 
-    int state = 0;
-    std::stringstream sb;
-    // 0 no function
-    // 1 header
-    // 2 inside the function
-    for (vector<std::string>::size_type i = 0; i < text.size(); i++) {
-        if (state == 0) {
-            if (Trim(text[i]) != "-- <<<<<<") continue;
-            state++;
-        } else {
-            if (state == 1) {
-                // beginning of a function
-                std::string header = Trim(text[i]);
-                // cout << header;
-                std::vector<string> entry = extractStrings(header);
-                bool isGlobal = false;
-                if (entry.size() > 0) {
-                    if (entry[0] == "g") isGlobal = true;
-                }
-                if (isGlobal) {
-                    sb.clear();
-                    state = 4;
-                    // pass 2 and 3
-                } else {
-                    tagInfoList.push_back(entry);
-                    state++;
-                    // goto 2
-                }
-            } else {
-                if (state == 2) {
-                    std::string fun = Trim(text[i]);
-                    if (SubStr(fun, 9) != "function ") continue;
-                    fun = fun.substr(9);
-                    int ind = fun.find_first_of('(');
-                    fun = fun.erase(ind);
+    enum BlockType { NONE, SCRIPT, COMMAND, SKIP };
+    BlockType current_block = NONE;
 
-                    functionNameList.push_back(fun);
-                    sb.clear();
-                    sb << Trim(text[i]) << endl;
-                    state++;
-                } else {
-                    if (state == 3) {
-                        if (Trim(text[i]) != "-- >>>>>>") {
-                            sb << Trim(text[i]) << endl;
-                            continue;
+    for (std::vector<std::string>::const_iterator it = text.begin(); it != text.end(); ++it) {
+        const std::string& line = *it;
+        
+        if (current_block == NONE) {
+            if (line == "-- <<<<<<") {
+                ++it;
+                if (it == text.end()) break;
+                
+                const std::string& type_line = *it;
+                
+                if (type_line == "-- ||||||g|" || type_line == "-- ||||||v|") {
+                    current_block = SCRIPT;
+                } 
+                else {
+                    // Handle function definition case
+                    const std::string header = Tags::Trim(type_line);
+                    std::vector<string> entry = extractStrings(header);
+                    
+                    if (!entry.empty()) {
+                        ++it;
+                        if (it == text.end()) break;
+                        
+                        const std::string& info_line = *it;
+                        --it; // Go back to maintain iterator position
+                        
+                        std::string fun = getFunctionName(Trim(info_line));
+                        if (fun != "") {
+                                functionNameList.push_back(fun);
+                                tagInfoList.push_back(entry);
+                                current_block = COMMAND;
                         } else {
-                            Tags::commandList.push_back(sb.str());
-                            state = 0;
+                            current_block = SKIP;
                         }
                     } else {
-                        if (state == 4) {
-                            if (Trim(text[i]) != "-- >>>>>>") {
-                                sb << Trim(text[i]) << endl;
-                                continue;
-                            } else {
-                                Tags::scriptList.push_back(sb.str());
-                                state = 0;
-                            }
-                        }
+                        current_block = SKIP;
                     }
+                }
+            }
+        } else {
+            if (line == "-- >>>>>>") {
+                current_block = NONE;
+            } else {
+                if (current_block == SCRIPT) {
+                    Tags::scriptList.push_back(line);
+                } else if (current_block == COMMAND) {
+                    Tags::commandList.push_back(line);
                 }
             }
         }
     }
-    /*
-      for (auto s : scriptList) {
-         cout << s << endl;
-      }
-      for (auto f : functionNameList) {
-         cout << f << endl;
-      }
-      for (auto tagInfo : tagInfoList) {
-      for (auto t : tagInfo) {
-        cout << t << " + ";
-      }
-      cout << endl;
-      }
-    */
+
+/*
+    cout << "script list " << endl;
+    for (vector<std::string>::iterator it=scriptList.begin();it!=scriptList.end();it++) {
+       cout << *it << endl;
+    }
+
+    cout << "script list " << endl;
+    for (vector<std::string>::iterator it=commandList.begin();it!=commandList.end();it++) {
+       cout << *it << endl;
+    }
+
+    cout << "tag info list " << endl;
+    for (std::vector<vector<std::string> >::iterator it=tagInfoList.begin();it!=tagInfoList.end();it++) {
+           vector<std::string>& tagInfo = *it;
+           for (vector<std::string>::iterator itt=tagInfo.begin();itt!=tagInfo.end();itt++) {
+       cout << *itt << endl;
+    }
+    cout << endl;
+    }
+*/
 }
 
 // Simple UTF-8 decoder for C++98
@@ -1556,12 +1560,14 @@ void Tags::EvalTree() {
     for (vector<std::string>::const_iterator it = scriptList.begin();
          it != scriptList.end(); ++it) {
         const std::string &script = *it;
+        // cout << script << endl;
         bigScript += script + "\n";
     }
     for (vector<std::string>::const_iterator it = commandList.begin();
          it != commandList.end(); ++it) {
         const std::string &script = *it;
         bigScript += script + "\n";
+        // cout << script << endl;
     }
     // cout << bigScript << endl;
 
@@ -1598,7 +1604,7 @@ void Tags::EvalTree() {
             // Tags::DisplayEntity(document);
             if (tag.tagNumber == nTag) {
                 std::vector<std::vector<std::string> > params =
-                    GetParameters(tag);
+                GetParameters(tag);
                 display_parameters(params);
                 std::vector<std::string> args = GetArguments(tag);
                 display_arguments(args);

@@ -525,6 +525,13 @@ std::string Tags::TagNumberToString(int t) {
     return " ";
 }
 
+std::string int_to_string(int i) {
+    std::ostringstream oss;
+    oss << i;
+    return oss.str();
+}
+
+
 bool Tags::utf8_less(const std::string &a, const std::string &b) {
     std::string::const_iterator it_a = a.begin();
     std::string::const_iterator it_b = b.begin();
@@ -716,7 +723,7 @@ void Tags::add_info(std::vector<Tags::Entity>::size_type i,
     for (std::vector<int>::size_type k = 0;
          k < info.size(); k++) {
         Tags::Entity tag_info =
-        Tags::Entity(nString, std::to_string(info[k]), vector<Tags::Entity>());
+        Tags::Entity(nString, int_to_string(info[k]), vector<Tags::Entity>());
         tag_informations.entityList.push_back(tag_info);
     }
     tokens[i].entityList[0].entityList.push_back(tag_informations);
@@ -1072,12 +1079,6 @@ void Tags::TagsToTree() {
     // cout << "Document " << endl;
     // DisplayEntity(document);
     // cout << "Fin du document " << endl;
-}
-
-std::string int_to_string(int i) {
-    std::ostringstream oss;
-    oss << i;
-    return oss.str();
 }
 
 std::string Tags::TagToString(const Tags::Entity &e) {

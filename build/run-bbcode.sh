@@ -1,0 +1,2 @@
+#../bin/bracketext -m/home/jcc/Documents/programming/projects-cpp/bracketext/src/macros.txt -f/home/jcc/Documents/programming/projects-cpp/bracketext/src/example.txt -o/home/jcc/Documents/programming/projects-cpp/bracketext/src/out.txt
+../bin/bracketext -m/home/jcc/Documents/programming/projects-cpp/bracketext/src/macros-bbcode-to-html.txt -f/home/jcc/Documents/programming/projects-cpp/bracketext/src/example.txt -o/home/jcc/Documents/programming/projects-cpp/bracketext/src/out.html

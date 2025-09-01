@@ -855,12 +855,6 @@ void Tags::TagsToTree() {
                                     int index_end;
                                     parameter_block_list.push_back(
                                         parameter_list);
-                                    /*
-                                    for (auto p: parameter_block_list[0]) {
-                                         Tags::DisplayEntity(extract(document,
-                                    p[0]+1, p[1]-1));
-                                       }
-                                    */
                                     parameter_list.clear();
                                     bool b =
                                         Tags::check_tag(j2, document, index_end,
@@ -895,45 +889,32 @@ void Tags::TagsToTree() {
                                 parameter_list.clear();
                                 argument_list.clear();
                                 int k = 0;
-                                b = Tags::check_arg(jn[k], document, argument,
-                                                    j);
-                                if (b) {
+                                b = true;
+                                int index_end;
+                                bool is_final = true;
+                                bool is_intermediate = true;
+                                while (b && (is_final || is_intermediate)) {
+                                  b = Tags::check_arg(jn[k], document, argument, j);
+                                  if (b) {
                                     jn.push_back(j);
                                     k++;
                                     argument_list.push_back(argument);
-                                    b = true;
-                                    int index_end;
-                                    while (b) {
-                                        b = Tags::check_tag(jn[k], document,
+                                    b = Tags::check_tag(jn[k], document,
                                                             index_end,
                                                             parameter_list, j);
-                                        if (b &
-                                            Tags::is_associated_intermediate(
-                                                index, index_end)) {
-                                            jn.push_back(j);
-                                            k++;
-                                            parameter_block_list.push_back(
-                                                parameter_list);
-                                            b = Tags::check_arg(jn[k], document,
-                                                                argument, j);
-                                            if (b) {
-                                                jn.push_back(j);
-                                                k++;
-                                                argument_list.push_back(
-                                                    argument);
-                                            } 
-                                        } else b = false;
-                                        if (b) {
-                                            b = Tags::check_tag(
-                                                jn[k], document, index_end,
-                                                parameter_list, j);
-                                            if (b & Tags::is_associated_last(
-                                                        index, index_end)) {
-                                                jn.push_back(j);
-                                                k++;
-                                                parameter_block_list.push_back(
-                                                    parameter_list);
-
+                                    if (b) {
+                                       is_intermediate = Tags::is_associated_intermediate(index, index_end);
+                                       is_final = Tags::is_associated_last(index, index_end);
+                                       if (is_final || is_intermediate) {
+                                         jn.push_back(j);
+                                         k++;
+                                         parameter_block_list.push_back(parameter_list);
+                                         if (is_final) b=false;
+                                       }
+                                    }
+                                  }
+                                }
+                                if (is_final) {
                                                 Tags::create_tag(
                                                     i, index, document,
                                                     parameter_block_list[0]);
@@ -966,13 +947,10 @@ void Tags::TagsToTree() {
                                                     document.begin() + jn[k] +
                                                         1);
                                                 modified = true;
-                                            } else
-                                                b = false;
-                                        }  // end if b
-                                    } // end while b
-                                } 
+
+                                } //end if b && is_final
                                 break;
-                            }
+                            } // end case
                         }  // end switch
                     }      // end position
                 }          // end first checktag

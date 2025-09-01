@@ -30,12 +30,15 @@ Progress:
 
 - The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
 
-- You can now declare global variables in the macros.txt file by placing them in a field of the form: 
--- <<<<<< 
--- ||||||v| 
-local counter=1 
-local n=12334 
--- >>>>>> 
+- You can now declare global variables in the macros.txt file by placing them in a field of the form below.
+ 
+    -- <<<<<< 
+    -- ||||||v| 
+    local counter=1 
+    local n=12334 
+    -- >>>>>> 
+
+## Software overview
 
 Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
 efl
@@ -75,8 +78,8 @@ Let's give an example. If we declare in the file ``macros.txt``:
     table.insert(oList,'</h1>')
     table.insert(oList,'\4')
     return oList
-end
--- >>>>>>
+    end
+    -- >>>>>>
 
 In the text, we can write:
 
@@ -88,7 +91,7 @@ This text will be transformed into ``HTML`` as
 
 Inverse quote inhibits the effect of other symbols [ | ] in the text when it precedes them.
 
-For example \`[Example\`] will produce the text [example]
+For example \[Example\] will produce the text [example]
 
 The general syntax of a macro is as follows... 
 
@@ -135,22 +138,28 @@ All is said for the representation of the parameters.
 
 Let's give a simple example:
 
-   bla1 [color|blue] the world is blue [color-|X] bla2
+   bla1 [color+|blue] the world is blue [color-|X] bla2
 
 in the file macro.txt:
 
     -- <<<<<<
-    -- ||||||2|color|/color
+    -- ||||||2|color+|color-
     function outColor(pa, ar)
     local oList = {}
-    local col="verdana"
-    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
-      local p = pa[1]
-      if type(p[1]) == "string" then
-        col=p[1]
+    local col="green"
+    local text=''
+    if type(pa) == "table" and #pa > 1 and type(pa[1]) == "table" and #pa[1]>0  and type(pa[2]) == "table" and #pa[2]>0 then
+      local p1 = pa[1]
+      local p2 = pa[2]
+      if type(p1[1]) == "string" then
+        col=p1[1]
+      end
+      if type(p2[1]) == "string" then
+        text=p2[1]
       end
     end
     table.insert(oList, '\1<span style="color: ' .. col .. ';">\4')
+    table.insert(oList, text)
      if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
        table.insert(oList, ar[1])
      end

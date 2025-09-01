@@ -1,6 +1,6 @@
 # Create first commit
 git add .
-git commit -m "Lua global variables"
+git commit -m "Patch"
 
 # Then push
 git push -u origin master

@@ -1,0 +1,6 @@
+#pragma once
+
+#define PROJECT_VERSION_MAJOR @bracketext_VERSION_MAJOR@
+#define PROJECT_VERSION_MINOR @bracketext_VERSION_MINOR@
+#define PROJECT_VERSION_PATCH @bracketext_VERSION_PATCH@
+#define PROJECT_VERSION "@bracketext_VERSION@"

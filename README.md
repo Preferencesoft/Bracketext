@@ -14,29 +14,32 @@ TODO:
 
 - Create a generic “official” macro file that can be used to convert to different formats.
 Create a macro file more specialized in HTML production (and Bootstrap, for example).
-Create a macro file that closely follows the BBcode markup language, for those who use it or have used it before.
 
 - Update the explanations in this README and create detailed documentation.
-
-- I also plan to add the ability for macros to use multiple intermediate tags, as in the following example:
-[command] text1 [line] tex2 [col] text3 [col] text4 [col] [line]  [/command]
-The tags [line] and [col] must not, of course, be used as command tags or as intermediate tags for other commands. 
-But the difficulty that arises is being able to find the type of intermediate tag (in the example [col] or [line]) in the parameters,
- which I didn't need until now.
 
 Progress:
 
 - I simplified the calling of Lua routines. Now the pa and ar parameters are respectively tables of tables of character strings and tables of character strings.
 
+- All macro and example files have been moved to the macros directory.
+
+- The `bbcode` macro file named `macros-bbcode-to-html.txt is located in the macros directory.
+
 - The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
 
 - You can now declare global variables in the macros.txt file by placing them in a field of the form below.
+
+- Macros can now use multiple intermediate tags, as in the following example:
+[command] text1 [line] tex2 [col] text3 [col] text4 [col] [line]  [/command]
+The tags [line] and [col] must not, of course, be used as command tags or as intermediate tags for other commands. 
+But the difficulty that arises is being able to find the type of intermediate tag (in the example [col] or [line]) in the parameters and
+ I will explain how to program using the index information in the association table.
  
-    -- <<<<<< 
-    -- ||||||v| 
-    local counter=1 
-    local n=12334 
-    -- >>>>>> 
+    -- <<<<<<
+    -- ||||||v|
+    local counter=1
+    local n=12334
+    -- >>>>>>
 
 ## Software overview
 
@@ -66,7 +69,7 @@ Let's give an example. If we declare in the file ``macros.txt``:
 
     -- <<<<<<
     -- ||||||2|h1|/h1
-    function outU(pa, ar) 
+    function outU(pa, ar)
     local oList = {}
     table.insert(oList,'\1')
     table.insert(oList,'<h1>')

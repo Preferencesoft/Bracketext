@@ -27,6 +27,7 @@ const int nParameterBlocks = -7;  // contains a complete tag
 const int nArguments = -8;        // contains a complete tag
 const int nGroup =
     -9;  // groups together successions of tags and strings (without [ | ])
+const int nInformations = -10; // informations about tag number when a tag has multiple intermediaries
 const int nTag = -6;  // tag
 // const int nMATag = -11; // tag argument to complete
 const int nNone = -12;
@@ -609,16 +610,35 @@ std::vector<Tags::Entity> extract(const Tags::EntityVector &tokens,
 }
 */
 
+int Tags::association_index(int index, int next_index) {
+    int entry = tagEntryList[index];
+    vector<int>& asso = tagAssociationList[entry];
+    // Find the iterator
+    vector<int>::iterator it = std::find(asso.begin(), asso.end(), next_index);
+    // If found, return the position/index
+    if (it != asso.end()) {
+        return it - asso.begin();  // Returns the actual index position
+    }
+    return -1;  // Return -1 if not found
+}
+
+bool Tags::is_associated(int index, int next_index) {
+    int entry = tagEntryList[index];
+    vector<int>& asso = tagAssociationList[entry];
+    return (std::find(asso.begin() + 1, asso.end(), next_index) != asso.end());
+}
+
 bool Tags::is_associated_intermediate(int index, int next_index) {
     int entry = tagEntryList[index];
-    vector<int> asso = tagAssociationList[entry];
-    int last = asso.size() - 1;
-    return asso[last - 1] == next_index;
+    vector<int>& asso = tagAssociationList[entry];
+    std::vector<int>::iterator it = std::find(asso.begin() + 1, asso.end() - 1, next_index);
+    bool found = (it != asso.end() - 1);
+    return found;
 }
 
 bool Tags::is_associated_last(int index, int next_index) {
     int entry = tagEntryList[index];
-    vector<int> asso = tagAssociationList[entry];
+    vector<int>& asso = tagAssociationList[entry];
     int last = asso.size() - 1;
     return asso[last] == next_index;
 }
@@ -685,7 +705,21 @@ void Tags::add_argument(std::vector<Tags::Entity>::size_type i,
          k < argument.second; k++)
         arguments.entityList.push_back(tokens[k]);
     tokens[i].entityList[0].entityList.push_back(arguments);
-    // tokens[i].entityList.push_back(arguments);
+}
+
+void Tags::add_info(std::vector<Tags::Entity>::size_type i,
+                        std::vector<Tags::Entity> &tokens,
+                        const std::vector<int>& info) {
+    Tags::Entity tag_informations =
+        Tags::Entity(nInformations, "", vector<Tags::Entity>());
+
+    for (std::vector<int>::size_type k = 0;
+         k < info.size(); k++) {
+        Tags::Entity tag_info =
+        Tags::Entity(nString, std::to_string(info[k]), vector<Tags::Entity>());
+        tag_informations.entityList.push_back(tag_info);
+    }
+    tokens[i].entityList[0].entityList.push_back(tag_informations);
 }
 
 bool Tags::check_tag(std::vector<Tags::Entity>::size_type i,
@@ -892,8 +926,8 @@ void Tags::TagsToTree() {
                                 b = true;
                                 int index_end;
                                 bool is_final = true;
-                                bool is_intermediate = true;
-                                while (b && (is_final || is_intermediate)) {
+                                bool is_associated = true;
+                                while (b && (is_associated)) {
                                   b = Tags::check_arg(jn[k], document, argument, j);
                                   if (b) {
                                     jn.push_back(j);
@@ -903,12 +937,12 @@ void Tags::TagsToTree() {
                                                             index_end,
                                                             parameter_list, j);
                                     if (b) {
-                                       is_intermediate = Tags::is_associated_intermediate(index, index_end);
-                                       is_final = Tags::is_associated_last(index, index_end);
-                                       if (is_final || is_intermediate) {
+                                       is_associated = Tags::is_associated(index, index_end);
+                                       if (is_associated) {
                                          jn.push_back(j);
                                          k++;
                                          parameter_block_list.push_back(parameter_list);
+                                         is_final = Tags::is_associated_last(index, index_end);
                                          if (is_final) b=false;
                                        }
                                     }
@@ -942,6 +976,81 @@ void Tags::TagsToTree() {
                                                         i, document,
                                                         argument_list[ind]);
                                                 }
+                                                document.erase(
+                                                    document.begin() + i + 1,
+                                                    document.begin() + jn[k] +
+                                                        1);
+                                                modified = true;
+
+                                } //end if b && is_final
+                                break;
+                            } // end case
+                            case TMultipleRepeatedMiddleBlocks: {
+                                vector<std::vector<Tags::Entity>::size_type> jn;
+                                std::vector<int> tag_type_list; // tag type
+                                jn.push_back(j);
+                                tag_type_list.push_back(1); // we begin from index 1 for Lua
+                                parameter_block_list.push_back(parameter_list);
+                                parameter_list.clear();
+                                argument_list.clear();
+                                int k = 0;
+                                b = true;
+                                int index_end;
+                                bool is_final = true;
+                                bool is_associated = true;
+                                while (b && (is_associated)) {
+                                  b = Tags::check_arg(jn[k], document, argument, j);
+                                  if (b) {
+                                    jn.push_back(j);
+                                    k++;
+                                    argument_list.push_back(argument);
+                                    b = Tags::check_tag(jn[k], document,
+                                                            index_end,
+                                                            parameter_list, j);
+                                    if (b) {
+                                       is_associated = Tags::is_associated(index, index_end);
+                                       if (is_associated) {
+                                         jn.push_back(j);
+                                         k++;
+                                         parameter_block_list.push_back(parameter_list);
+                                         tag_type_list.push_back(Tags::association_index(index, index_end)+1);
+                                         is_final = Tags::is_associated_last(index, index_end);
+                                         if (is_final) b=false;
+                                       }
+                                    }
+                                  }
+                                }
+                                if (is_final) {
+                                                Tags::create_tag(
+                                                    i, index, document,
+                                                    parameter_block_list[0]);
+                                                parameter_block_list.erase(
+                                                    parameter_block_list
+                                                        .begin());
+
+                                                for (std::vector<std::vector<
+                                                         EntityIndexPair> >::
+                                                         size_type ind = 0;
+                                                     ind < parameter_block_list
+                                                               .size();
+                                                     ind++) {
+                                                    add_parameter_block(
+                                                        i, document,
+                                                        parameter_block_list
+                                                            [ind]);
+                                                }
+                                                for (std::vector<
+                                                         EntityIndexPair>::
+                                                         size_type ind = 0;
+                                                     ind < argument_list.size();
+                                                     ind++) {
+                                                    add_argument(
+                                                        i, document,
+                                                        argument_list[ind]);
+                                                }
+                                                add_info(
+                                                        i, document,
+                                                        tag_type_list);
                                                 document.erase(
                                                     document.begin() + i + 1,
                                                     document.begin() + jn[k] +
@@ -1050,6 +1159,34 @@ std::vector<std::string> Tags::GetArguments(
     return arguments;
 }
 
+std::vector<std::string> Tags::GetInformations(
+    const Tags::Entity &tag) {
+    std::vector<std::string> informations;
+
+    if (tag.tagNumber == nTag && !tag.entityList.empty()) {
+        const std::vector<Tags::Entity> &pList = tag.entityList[0].entityList;
+
+        for (std::vector<Tags::Entity>::size_type i = 0; i < pList.size();
+             i++) {
+            const Tags::Entity &pa = pList[i];
+
+            if (pa.tagNumber == nInformations) {
+                std::string arg;
+
+                if (!pa.entityList.empty()) {
+                    for (std::vector<Tags::Entity>::size_type j = 0;
+                         j < pa.entityList.size(); j++) {
+                        Tags::Entity e = pa.entityList[j];
+                        informations.push_back(e.str);
+                    }
+                }
+            }
+        }
+    }
+    return informations;
+}
+
+
 void Tags::display_parameters(
     const std::vector<std::vector<std::string> >& p) {
     for (std::vector<std::vector<std::string> >::const_iterator it_parameters =
@@ -1079,6 +1216,17 @@ void Tags::display_arguments(const vector<std::string>& arguments) {
         cout << "argument" << endl;
         cout << "   ";
         cout << " - " << argument;
+        cout << endl;
+    }
+}
+
+void Tags::display_informations(const std::vector<std::string>& informations) {
+    for (vector<std::string>::const_iterator it_information = informations.begin();
+         it_information != informations.end(); ++it_information) {
+        const std::string &information = *it_information;
+        cout << "information" << endl;
+        cout << "   ";
+        cout << " - " << information;
         cout << endl;
     }
 }
@@ -1202,6 +1350,7 @@ void Tags::SymbolTagToString(vector<Tags::Entity> &eList, int pos) {
     }
 }
 
+/*
 std::string Tags::StringifyMATag(const Tags::Entity &e) {
     std::string sb = "[";
     if (e.tagNumber <= 0 && !e.entityList.empty()) {
@@ -1235,6 +1384,7 @@ std::string Tags::StringifyMATag(const Tags::Entity &e) {
     }
     return sb;
 }
+*/
 
 // Helper to push a C++ vector<string> as a Lua table
 void push_string_vector(lua_State *L, const std::vector<std::string> &vec) {
@@ -1261,7 +1411,7 @@ void push_nested_string_vector(
 std::vector<std::vector<std::string> > call_lua_function(
     lua_State *L, const std::string &lua_function,
     const std::vector<std::vector<std::string> > &params,
-    const std::vector<std::string> &args) {
+    const std::vector<std::string> &args, const std::vector<std::string> &infos) {
     int initial_stack = lua_gettop(L);
 
     // Push the function onto the stack
@@ -1297,9 +1447,19 @@ std::vector<std::vector<std::string> > call_lua_function(
             lua_rawseti(L, -2, i + 1);
         }
     }
+    int nparam = 2;
+    // Third argument (optional): info (1D vector) - handle empty case
+    if (!infos.empty()) {
+        ++nparam;
+        lua_newtable(L);
+        for (size_t i = 0; i < infos.size(); i++) {
+            lua_pushstring(L, infos[i].c_str());
+            lua_rawseti(L, -2, i + 1);
+        }
+    }
 
     // Call the function
-    if (lua_pcall(L, 2, 1, 0) != 0) {
+    if (lua_pcall(L, nparam, 1, 0) != 0) {
         std::cerr << "Error calling " << lua_function << ": "
                   << lua_tostring(L, -1) << std::endl;
         lua_pop(L, 1);
@@ -1586,11 +1746,13 @@ void Tags::EvalTree() {
                 display_parameters(params);
                 std::vector<std::string> args = GetArguments(tag);
                 display_arguments(args);
+                std::vector<std::string> infos = GetInformations(tag);
+                display_informations(infos);
 
                 // Call the function
                 // cout << "command name" << command_name << endl;
                 std::vector<std::vector<std::string> > result =
-                    call_lua_function(L, command_name, params, args);
+                    call_lua_function(L, command_name, params, args, infos);
 
                 // Print the result
                 /*
@@ -1616,8 +1778,8 @@ void Tags::EvalTree() {
                     Tags::Entity(nString, res, std::vector<Tags::Entity>());
             } else {
                 // other entities are converted to strings
-                (*p.list)[p.index] = Tags::Entity(nString, StringifyMATag(tag),
-                                                  std::vector<Tags::Entity>());
+                // (*p.list)[p.index] = Tags::Entity(nString, StringifyMATag(tag), std::vector<Tags::Entity>());
+                (*p.list)[p.index] = Tags::Entity(nString, Tags::TagToString(tag), std::vector<Tags::Entity>());
             }
             // DisplayEntity(p.list);
         }

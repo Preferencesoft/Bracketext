@@ -41,6 +41,7 @@ public:
     static const int nArguments = -8; // contains a complete tag
     static const int nGroup = -9; // groups together successions of tags and strings (without [ | ])
     static const int nTag = -6; // tag
+    static const int nInformations = -10;
     // static const int nMATag = -11; // tag argument to complete
  static const int nNone = -12;
     // we do not define a tag when the parameters are not complete
@@ -210,12 +211,17 @@ if (list == 0) {
 
         static void check_utf8(const std::string& s);
 
+        static int association_index(int index, int next_index);
+        static bool is_associated(int index, int next_index);
         static bool is_associated_intermediate(int index, int next_index);
         static bool is_associated_last(int index, int next_index);
 
         static void create_tag(std::vector<Tags::Entity>::size_type i, int index, std::vector<Tags::Entity>& tokens, std::vector<EntityIndexPair >& parameter_list);
         static void add_parameter_block(std::vector<Tags::Entity>::size_type i, std::vector<Tags::Entity>& tokens, std::vector<EntityIndexPair >& parameter_list);
         static void add_argument(std::vector<Tags::Entity>::size_type i, std::vector<Tags::Entity>& tokens, const EntityIndexPair argument);
+        static void add_info(std::vector<Tags::Entity>::size_type i,
+                        std::vector<Tags::Entity> &tokens,
+                        const std::vector<int>& info);
 
         static bool check_tag(std::vector<Tags::Entity>::size_type i, const std::vector<Tags::Entity>& tokens, int& index, 
                std::vector<EntityIndexPair >& parameter_list, std::vector<Tags::Entity>::size_type& j);
@@ -225,8 +231,10 @@ if (list == 0) {
 
         static std::vector<std::vector<std::string> > GetParameters(const Tags::Entity& tag);
         static std::vector<std::string> GetArguments(const Tags::Entity& tag);
+        static std::vector<std::string> GetInformations(const Tags::Entity &tag);
         static void display_parameters(const std::vector<std::vector<std::string> >& p);
         static void display_arguments(const std::vector<std::string>& arguments);
+        static void display_informations(const std::vector<std::string>& informations);
         static std::string DocumentToHTML();
         static std::string DocumentToFile(const std::string& fileName);
         static void EvalTree();
@@ -237,7 +245,7 @@ if (list == 0) {
 
             static std::string HTMLEntities(std::string s);
             static void SymbolTagToString(std::vector<Tags::Entity>& eList, int pos);
-            static std::string StringifyMATag(const Tags::Entity& e);
+            /* static std::string StringifyMATag(const Tags::Entity& e);*/
 
             static void DisplayEntity(std::vector<Tags::Entity> document);
             static void DisplayEntityTag(Tags::Entity& e);

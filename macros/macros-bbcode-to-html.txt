@@ -1,0 +1,617 @@
+-- <<<<<<
+-- ||||||v|
+counter=1
+n=12334
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function isHTMLColor(colorStr)
+    -- if type(colorStr) ~= "string" then return false end
+    
+    local color = colorStr:lower()
+    
+    -- Check hex format
+    if color:match("^#%x%x%x%x%x%x$") or color:match("^#%x%x%x$") then
+        return true
+    end
+    
+    -- Check predefined colors
+    return colorSet[color] or false
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function HTMLEntities(s)
+    if not s then return "" end
+    
+    local result = {}
+    local entities = {
+        [' '] = "&nbsp;",
+        ['<'] = "&lt;",
+        ['>'] = "&gt;",
+        ['&'] = "&amp;",
+        ['"'] = "&quot;",
+        ["'"] = "&apos;",
+        ['¢'] = "&cent;",
+        ['£'] = "&pound;",
+        ['¥'] = "&yen;",
+        ['€'] = "&euro;",
+        ['©'] = "&copy;",
+        ['®'] = "&reg;",
+    }
+    
+    -- Iterate through each UTF-8 character
+    for _, char in utf8.codes(s) do
+        local utf8_char = utf8.char(char)
+        local replacement = entities[utf8_char]
+        
+        if replacement then
+            table.insert(result, replacement)
+        else
+            table.insert(result, utf8_char)
+        end
+    end
+    
+    return table.concat(result)
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toXML(s)
+    local n = #s
+    local str = ""
+    for i = 1, n do
+        local r = s:sub(i,i)
+        if r == "<" then
+            r = "&lt;"
+        elseif r == ">" then
+            r = "&gt;"
+        elseif r == "&" then
+            r = "&amp;"
+        elseif r == '"' then
+            r = "&quot;"
+        elseif r == "'" then
+            r = "&apos;"
+        end
+        str = str .. r
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toHTML(s)
+    local n = #s
+    local str = ""
+    for i = 1, n do
+        local r = s:sub(i,i)
+        if r == "<" then
+            r = "&lt;"
+        elseif r == ">" then
+            r = "&gt;"
+        elseif r == "&" then
+            r = "&amp;"
+        elseif r == '"' then
+            r = "&quot;"
+        elseif r == "'" then
+            r = "&apos;"
+        elseif r == "¢" then
+            r = "&cent;"
+        elseif r == "£" then
+            r = "&pound;"
+        elseif r == "¥" then
+            r = "&yen;"
+        elseif r == "€" then
+            r = "&euro;"
+        elseif r == "©" then
+            r = "&copy;"
+        elseif r == "®" then
+            r = "&reg;"
+        end
+        str = str .. r
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function toString(strList)
+    local str = ''
+    local len = #strList
+    for i = 1, len do
+        str = str .. strList[i]
+    end
+    return str
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|b|/b
+function outB(pa, ar)
+ local oList = {}
+table.insert(oList,'\1<strong>\4')
+   if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+    local str = ar[1]
+    table.insert(oList,str)  
+  end
+table.insert(oList,'\1</strong>\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|i|/i
+function outI(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<i>')
+table.insert(oList,'\4')
+if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+  table.insert(oList,ar[1])
+end
+table.insert(oList,'\1')
+table.insert(oList,'</i>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|u|/u
+function outU(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<u>')
+table.insert(oList,'\4')
+if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+  table.insert(oList,ar[1])
+end
+table.insert(oList,'\1')
+table.insert(oList,'</u>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|s|/s
+function outS(pa, ar) 
+local oList = {}
+table.insert(oList,'\1')
+table.insert(oList,'<del>')
+table.insert(oList,'\4')
+if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+  table.insert(oList,ar[1])
+end
+table.insert(oList,'\1')
+table.insert(oList,'</del>')
+table.insert(oList,'\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||v|
+-- Predefined color set for O(1) lookup
+colorSet = {
+    aliceblue = true, antiquewhite = true, aqua = true, aquamarine = true,
+    azure = true, beige = true, bisque = true, black = true, blanchedalmond = true,
+    blue = true, blueviolet = true, brown = true, burlywood = true, cadetblue = true,
+    chartreuse = true, chocolate = true, coral = true, cornflowerblue = true,
+    cornsilk = true, crimson = true, cyan = true, darkblue = true, darkcyan = true,
+    darkgoldenrod = true, darkgray = true, darkgreen = true, darkgrey = true,
+    darkkhaki = true, darkmagenta = true, darkolivegreen = true, darkorange = true,
+    darkorchid = true, darkred = true, darksalmon = true, darkseagreen = true,
+    darkslateblue = true, darkslategray = true, darkslategrey = true,
+    darkturquoise = true, darkviolet = true, deeppink = true, deepskyblue = true,
+    dimgray = true, dimgrey = true, dodgerblue = true, firebrick = true,
+    floralwhite = true, forestgreen = true, fuchsia = true, gainsboro = true,
+    ghostwhite = true, gold = true, goldenrod = true, gray = true, green = true,
+    greenyellow = true, grey = true, honeydew = true, hotpink = true, indianred = true,
+    indigo = true, ivory = true, khaki = true, lavender = true, lavenderblush = true,
+    lawngreen = true, lemonchiffon = true, lightblue = true, lightcoral = true,
+    lightcyan = true, lightgoldenrodyellow = true, lightgray = true, lightgreen = true,
+    lightgrey = true, lightpink = true, lightsalmon = true, lightseagreen = true,
+    lightskyblue = true, lightslategray = true, lightslategrey = true,
+    lightsteelblue = true, lightyellow = true, lime = true, limegreen = true,
+    linen = true, magenta = true, maroon = true, mediumaquamarine = true,
+    mediumblue = true, mediumorchid = true, mediumpurple = true, mediumseagreen = true,
+    mediumslateblue = true, mediumspringgreen = true, mediumturquoise = true,
+    mediumvioletred = true, midnightblue = true, mintcream = true, mistyrose = true,
+    moccasin = true, navajowhite = true, navy = true, oldlace = true, olive = true,
+    olivedrab = true, orange = true, orangered = true, orchid = true, palegoldenrod = true,
+    palegreen = true, paleturquoise = true, palevioletred = true, papayawhip = true,
+    peachpuff = true, peru = true, pink = true, plum = true, powderblue = true,
+    purple = true, rebeccapurple = true, red = true, rosybrown = true, royalblue = true,
+    saddlebrown = true, salmon = true, sandybrown = true, seagreen = true, seashell = true,
+    sienna = true, silver = true, skyblue = true, slateblue = true, slategray = true,
+    slategrey = true, snow = true, springgreen = true, steelblue = true, tan = true,
+    teal = true, thistle = true, tomato = true, turquoise = true, violet = true,
+    wheat = true, white = true, whitesmoke = true, yellow = true, yellowgreen = true
+}
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|color|/color
+function outColor(pa, ar)
+local oList = {}
+local col="yellow"
+if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+  local p = pa[1]
+  if type(p[1]) == "string" then
+    if isHTMLColor(p[1]) then
+      col=p[1]
+    end
+  end
+end
+table.insert(oList, '\1<span style="color: ' .. col .. ';">\4')
+ if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+   table.insert(oList, ar[1])
+ end
+table.insert(oList, '\1</span>\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|size|/size
+function outSize(pa, ar)
+    local y = '16px'
+if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+  local p = pa[1]
+  if type(p[1]) == "string" then
+    y = p[1]
+    -- Check if y contains a digit (y is a string, not table)
+    -- local hasDigit = string.match(y, "%d") ~= nil
+    -- if hasDigit then
+    local num = tonumber(y)
+    if num and num >= 20 and num <= 200 then
+        -- y is between 20 and 200
+       y = y .. '%'  -- Fixed: use .. for concatenation, not +=
+    end
+  end
+end    
+local x = ""
+ if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+            x = ar[1]
+ end
+oList = {}
+table.insert(oList, '\1<span style="font-size:\4' .. y .. '\1;">\4' .. x .. '\1</span>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|quote|/quote
+function outQuote(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<blockquote class="bg-gray primary">\4')
+    local unquoted = ''
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+        local p = pa[1]
+        if type(p[1]) == "string" then
+           local v=p[1]
+           unquoted = v:match('^"(.*)"$') or v:match("^'(.*)'$") or v
+       end
+    end
+    if unquoted ~= '' then
+      table.insert(oList,unquoted .. ' wrote: ')
+    end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+      table.insert(oList,ar[1])
+    end
+    table.insert(oList, '\1</blockquote>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|code|/code
+function outCode(pa, ar)
+local oList = {}
+table.insert(oList, '\1<code>\4')
+if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+table.insert(oList,ar[1])
+end
+table.insert(oList, '\1</code>\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||3|list|*|/list
+function outList(pa, ar)
+        local oList = {}
+        local b = '\1<ul>\4'
+        local e = '\1</ul>\4'
+        local x=''
+   if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+      local p = pa[1]
+      if type(p[1]) == "string" then
+        x = p[1]
+      end
+   end
+    if x == '1' then
+        b = '\1<ol style="list-style-type: decimal">\4'
+        e = '\1</ol>\4'
+    elseif x == 'a' then
+        b = '\1<ol style="list-style-type: lower-alpha">\4'
+        e = '\1</ol>\4'
+    elseif x == 'A' then
+        b = '\1<ol style="list-style-type: upper-alpha">\4'
+        e = '\1</ol>\4'
+    elseif x == 'i' then
+        b = '\1<ol style="list-style-type: lower-roman">\4'
+        e = '\1</ol>\4'
+    elseif x == 'I' then
+        b = '\1<ol style="list-style-type: upper-roman">\4'
+        e = '\1</ol>\4'
+    else
+        b = '\1<ul>\4'
+        e = '\1</ul>\4'
+    end
+    table.insert(oList, b)
+    if type(ar) == "table" and #ar > 1 then
+    local lenar=#ar
+    for i=2,lenar do
+      if type(ar[i]) == "string" then
+        table.insert(oList, '\1<li>\4')
+        table.insert(oList, ar[i])
+        table.insert(oList, '\1</li>\4')
+      end
+    end 
+    end
+    table.insert(oList, e)
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|url|/url
+function outURL(pa, ar)
+    local oList = {}
+    local ae = false
+    local pe = false
+    local p
+    local a
+    if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0 then
+      local p1 = pa[1]
+      if type(p1[1]) == "string" then
+          pe = true
+          p = p1[1]
+      end
+    end
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+      ae = true
+      a=ar[1]
+    end
+    local e = ae or pe
+    if e then
+        table.insert(oList, '\1<a href="\4')
+        if pe then
+          table.insert(oList, p)
+          table.insert(oList, '\1">\4')
+          table.insert(oList, a)
+        else
+          table.insert(oList, a)
+          table.insert(oList, '\1">\4')
+          table.insert(oList, p)
+        end
+        table.insert(oList, '\1</a>\4')
+   else
+     table.insert(oList, '\1<a href=""></a>\4')
+  end
+  return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function extract_attributes(p)
+    local alt, title, width, height = "", "", "", ""
+    
+    -- First, check for the axb format (e.g., 100x50)
+    local axb_pattern = "(%d+)x(%d+)"
+    local axb_width, axb_height = p:match(axb_pattern)
+    if axb_width and axb_height then
+        width = axb_width
+        height = axb_height
+    end
+    
+    -- Extract width attribute (if not already found from axb format)
+    if width == "" then
+        local width_match = p:match('width%s*=%s*["\'](%d+)["\']')
+        if width_match then
+            width = width_match
+        end
+    end
+    
+    -- Extract height attribute (if not already found from axb format)
+    if height == "" then
+        local height_match = p:match('height%s*=%s*["\'](%d+)["\']')
+        if height_match then
+            height = height_match
+        end
+    end
+    
+    -- Extract alt attribute
+    local alt_match = p:match('alt%s*=%s*["\']([^"\']*)["\']')
+    if alt_match then
+        alt = alt_match
+    end
+    
+    -- Extract title attribute
+    local title_match = p:match('title%s*=%s*["\']([^"\']*)["\']')
+    if title_match then
+        title = title_match
+    end
+    
+    return {
+        alt = alt,
+        title = title,
+        width = width,
+        height = height
+    }
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|img|/img
+function outImg(pa, ar)
+    local oList = {}
+    local alt = ""
+    local title = ""
+    local width = ""
+    local height = ""
+    local src =""
+   if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1]>0  then
+    local p=pa[1]
+    if type(p[1]) == "string" then
+       local result = extract_attributes(p[1])
+       alt = result.alt
+       title=result.title
+       width =result.width
+       height=result.height
+    end
+   end
+   if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+     src = ar[1]
+   end
+       table.insert(oList, '\1<img src="')
+       table.insert(oList, src)
+       table.insert(oList, '"\4')
+       if width ~= '' then
+         table.insert(oList, '\1 width="')
+         table.insert(oList, width)
+         table.insert(oList, '"\4')
+       end
+       if height ~= '' then
+         table.insert(oList, '\1 height="')
+         table.insert(oList, height)
+         table.insert(oList, '"\4')
+       end
+       if alt ~= '' then
+         table.insert(oList, '\1 alt="')
+         table.insert(oList, alt)
+         table.insert(oList, '"\4')
+       end
+       if title ~= '' then
+         table.insert(oList, '\1 title="')
+         table.insert(oList, title)
+         table.insert(oList, '"\4')
+       end
+       table.insert(oList, '\1>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|tr|/tr
+function outTr(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<tr>\4') 
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end        
+    table.insert(oList, '\1</tr>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|th|/th
+function outTh(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<th>\4') 
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end        
+    table.insert(oList, '\1</th>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|td|/td
+function outTd(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<td>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</td>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|table|/table
+function outBtable(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<table>\4')
+    table.insert(oList, '\1<tbody>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</tbody>\4')
+    table.insert(oList, '\1</table>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|email|/email
+function outEmail(pa, ar)
+    local oList = {}
+    local ae = false
+    local pe = false
+    local p
+    local a
+ if type(pa) == "table" and #pa > 0 and type(pa[1]) == "table" and #pa[1] > 0 then
+      if type(pa[1][1]) == "string" then
+        pe=true
+        p = pa[1][1]
+      end
+   end
+   if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+        ae = true
+        a = ar[1]
+    end
+    local e = ae or pe
+    if ae and not pe then
+        p = a
+    end
+    if not ae and pe then
+        a = p
+    end
+    if e ~="" then
+        table.insert(oList, '\1<a href="mailto:\4')
+        table.insert(oList, p)
+        table.insert(oList, '\1">\4')
+        table.insert(oList, a)
+        table.insert(oList, '\1</a>\4')
+    else
+        table.insert(oList, '\1<a href="mailto:">\4')
+        table.insert(oList, '\1</a>\4')
+    end
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|ul|/ul
+function outUl(pa, ar)
+local oList = {}
+table.insert(oList, '\1<ul>\4')
+if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+  table.insert(oList,ar[1])
+end
+table.insert(oList, '\1</ul>\4')
+return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|ol|/ol
+function outOl(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<ol>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+      table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</ol>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||2|li|/li
+function outLi(pa, ar)
+    local oList = {}
+    table.insert(oList, '\1<li>\4')
+    if type(ar) == "table" and #ar > 0 and type(ar[1]) == "string" then
+       table.insert(oList,ar[1])
+    end    
+    table.insert(oList, '\1</li>\4')
+    return oList
+end
+-- >>>>>>

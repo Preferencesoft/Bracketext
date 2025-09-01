@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(bracketext)
+project(bracketext VERSION 2.3.0 LANGUAGES CXX)
 
 # Set C++ standard (e.g., C++11)
 # set(CMAKE_CXX_STANDARD 11)

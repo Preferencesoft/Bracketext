@@ -518,6 +518,35 @@ function outTd(pa, ar)
 end
 -- >>>>>>
 -- <<<<<<
+-- ||||||6|table+|C|R|/table-
+function outTablePM(pa, ar, po)
+        local oList = {}
+    if type(po) == "table" and #po > 0 then
+    for i=1, #po do
+       if type(po[i]) == "string" then
+          table.insert(oList,"-")
+          table.insert(oList,po[i])
+          table.insert(oList,"-")
+       end
+    end
+    end
+
+
+    table.insert(oList, '\1<table>++++++++\4')
+    if type(ar) == "table" and #ar > 0  then
+    for i=1, #ar do
+       if type(ar[i])=="string" then
+       table.insert(oList,ar[i])
+       if po[i+1]=='2' then table.insert(oList, '\1<C>\4')
+       elseif po[i+1]=='3' then table.insert(oList, '\1<R>\4') else table.insert(oList, '\1<end>\4') end
+       end
+       end
+    end
+    table.insert(oList, '\1------</table>\4')
+    return oList
+end
+-- >>>>>>
+-- <<<<<<
 -- ||||||3|list|*|/list
 function outList(pa, ar)
         local oList = {}

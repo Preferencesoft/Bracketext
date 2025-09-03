@@ -231,10 +231,10 @@ if (list == 0) {
 
         static std::vector<std::vector<std::string> > GetParameters(const Tags::Entity& tag);
         static std::vector<std::string> GetArguments(const Tags::Entity& tag);
-        static std::vector<std::string> GetInformations(const Tags::Entity &tag);
+        static std::vector<int> GetInformations(const Tags::Entity &tag);
         static void display_parameters(const std::vector<std::vector<std::string> >& p);
         static void display_arguments(const std::vector<std::string>& arguments);
-        static void display_informations(const std::vector<std::string>& informations);
+        static void display_informations(const std::vector<int>& informations);
         static std::string DocumentToHTML();
         static std::string DocumentToFile(const std::string& fileName);
         static void EvalTree();

@@ -4,8 +4,8 @@ lkjljlk
 <a href="mailto:hhhhhhhhhhh">是是是是是是是eeeeeeeeeeee</a>
 <ul><li>qsdqsd</li><li>sdfdsfsdf</li></ul>
 <code>465x4v6 sdfsdf</code>
-<b>dfgfdgfd</b>
-[h1]ddkljdqsk qdjlkqsjdlq[/h1]
+<span style="font-weight:bold">dfgfdgfd</span>
+<h1>ddkljdqsk qdjlkqsjdlq</h1>
 <h2>essai qqqqqqq</h2>
 <blockquote class="bg-gray primary">dfgdfg dfgdfgd</blockquote>
 <a href="PP" rel="nofollow">AAAA</a>
@@ -13,8 +13,8 @@ lkjljlk
 <u>aaaaaaaaaaaa ffffffffffffffff</u>
 <del>ssssssssssssss</del>
 <i>iiiiiiiiiiiiiiiii</i>
-<span style="color: green;">ddddddddddddd</span>
+[color|green]ddddddddddddd[/color]
 [include|C:\Users\user1\source\repos\Bracketext\Bracketext\macros.txt]
-<span style="font-size:12px%;">qsdqsd</span>
--1--3--2--3--2--4-<table>++++++++1111<R>2222<C>3333<R>4444<C><b>5555</b><end>------</table>
+[size|12px]qsdqsd[/size]
+-1--3--2--3--2--4-<table>++++++++1111<R>2222<C>3333<R>4444<C><span style="font-weight:bold">5555</span><end>------</table>
 [/doc]

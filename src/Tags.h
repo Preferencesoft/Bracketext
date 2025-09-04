@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <unistd.h>
+#include <cstdlib>
 
 #include "HTMLEntityTransformer.h"
 

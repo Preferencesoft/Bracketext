@@ -1138,7 +1138,14 @@ std::vector<int> Tags::GetInformations(
                     for (std::vector<Tags::Entity>::size_type j = 0;
                          j < pa.entityList.size(); j++) {
                         Tags::Entity e = pa.entityList[j];
-                        informations.push_back(std::stoi(e.str));
+                        // informations.push_back(std::atoi((e.str).c_str()));
+                        char* endptr;
+                        int value = std::strtol((e.str).c_str(), &endptr, 10);
+                        if (*endptr != '\0') {
+                          informations.push_back(0);
+                        } else {
+                          informations.push_back(value);
+                        }
                     }
                 }
             }

@@ -10,6 +10,14 @@ However, the project can be compiled without modification using a C++11 standard
 
 TODO:
 
+- There is a difficulty concerning the memorization of the position of parameters relating to ‘single tags’.
+The text elements to be processed are sent to the macro command as simple parameters and could be mixed with the
+ (optional) options, which complicates the programming of the macro command.
+To easily find options in the settings, you can group them and place them before or after the text 
+to be processed, or mark the text with content=....  
+I chose to place them before, so developers will have to look for non-optional settings at the end 
+of a Lua function's settings.
+
 - declare macros that allow you to manage counters for automatic numbering.
 
 - Create a generic “official” macro file that can be used to convert to different formats.
@@ -114,7 +122,7 @@ For example:
 
 [MacroName1|param_1_1| ... |param_1_N1] text1 [MacroName2|param_2_1| ... |param_2_N2] text2 [MacroName3|param_3_1| ... |param_3_N3]
 
-Such a macro is represented by Bracketext as a tree and transformed into a call to a PowerShell function:
+Such a macro is represented by Bracketext as a tree and transformed into a call to a `Lua` function:
 
     MacroName1
         |                        \        \           \

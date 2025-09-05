@@ -1,32 +1,73 @@
 [doc]
-lkjljlk
-[img|src|alt]
-[@|hhhhhhhhhhh]是是是是是是是eeeeeeeeeeee[/@]
-[!|1]qsdqsd[*]sdfdsfsdf[/!]
-[code]465x4v6 sdfsdf[/code]
-[br]
+[==|1]Title of the document[/==]
+
+[p]
+The macros defined in the [``|macros.txt] file will become the standard macros for [**|Bracketext].
+[br] Many macros have names consisting of symbols so as not to clutter the text.
+[/p]
+
+[==|2]Subtitle[/==]
+
+[==|6]Inferior levels[/==]
+
+[==|2]Inline or Block – Comment[/==]
+[p]
+Comments can be used, for example, to add information to the document (such as the date) that will not appear in the generated text.
+[/p]
+
 [%|comment]
-[br]
-[//|1-111 22222222222222222222 2-2222]
-[br]
-[**|1-111 22222222222222222222 2-2222]
-[br]
-[__|1-111 22222222222222222222 2-2222]
-[br]
-[--|1-111 22222222222222222222 2-2222]
-[br]
-[``|1-111 22222222222222222222 2-2222]
-[br]
-[''|This is inline tagged text.] on the same line
-[br]
-[==|1]ddkljdqsk qdjlkqsjdlq[/==]
-[==|2]essai qqqqqqq[/==]
-[''']dfgdfg dfgdfgd[/''']
-[nofollow|PP]AAAA[/nofollow]
-[br]
-[__|aaaaaaaaaaaa ffffffffffffffff]
-[--|ssssssssssssss]
-[//|iiiiiiiiiiiiiiiii]
+
+[%|This is a block of comment text.
+This is only visible in the source file.]
+
+[==|2]Inline – bold[/==]
+
+[**|This is bold text.]
+
+[==|2]Inline – italic[/==]
+
+[//|This is italic text.]
+
+[==|2]Inline – underlined[/==]
+
+[__|This is underlined text.]
+
+[==|2]Inline - mixed[/==]
+
+[**|[//|[__|This is strike-through text.]]]
+
+[==|2]Inline Strike-through[/==]
+
+[--|This is strike-through text.]
+
+[==|2]Inline – verbatim[/==]
+
+[``|This is verbatim text.]
+
+[==|2]Inline – tagged[/==]
+
+[''|This is inline tagged text.]
+
+[==|2]Text color[/==]
+
+[color|green]ddddddddddddd[/color]
+
+[==|2]Text size[/==]
+
+[size|12px]qsdqsd[/size]
+
+[==|2]Image[/==]
+
+[img|src|alt]
+
+[==|2]Email[/==]
+
+[@|hhhhhhhhhhh]是是是是是是是eeeeeeeeeeee[/@]
+
+[==|2]List[/==]
+
+[!|1]qsdqsd[*]sdfdsfsdf[/!]
+
 [!]
 [*]sdfdsfsdf
    [!|a]
@@ -39,8 +80,17 @@ lkjljlk
    [*]sdfdsfsdf
    [/!]
 [/!]
-[color|green]ddddddddddddd[/color]
-[size|12px]qsdqsd[/size]
+
+[==|2]Code[/==]
+
+[code]465x4v6 sdfsdf[/code]
+
+[==|2]Line break[/==]
+
+text1 [br] text2 [br] text3
+
+[==|2]Table[/==]
+
 [###|style=border:1px solid black;width:100%]
    1111
    [##|thead=1] [#|id=1|h|style=border:1px solid black;]2222[#|id=2|h|style=border:1px solid black;]3333
@@ -49,4 +99,28 @@ lkjljlk
    [##|tfoot=<] [#|id=7|style=border:1px solid black;] 4444[#|id=8|style=border:1px solid black;]
    [##|tfoot=>] [#|id=9|style=border:1px solid black;] 77777[#|id=10|style=border:1px solid black;]
 [/###]
+
+[==|2]Any[/==]
+
+[//|1-111 22222222222222222222 2-2222]
+[br]
+[**|1-111 22222222222222222222 2-2222]
+[br]
+[__|1-111 22222222222222222222 2-2222]
+[br]
+[--|1-111 22222222222222222222 2-2222]
+[br]
+[``|1-111 22222222222222222222 2-2222]
+[br]
+[''|This is inline tagged text.] on the same line
+[br]
+
+
+[''']dfgdfg dfgdfgd[/''']
+[nofollow|PP]AAAA[/nofollow]
+[br]
+[__|aaaaaaaaaaaa ffffffffffffffff]
+[--|ssssssssssssss]
+[//|iiiiiiiiiiiiiiiii]
+
 [/doc]

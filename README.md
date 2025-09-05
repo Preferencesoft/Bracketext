@@ -15,17 +15,19 @@ TODO:
 - Create a generic “official” macro file that can be used to convert to different formats.
 Create a macro file more specialized in HTML production (and Bootstrap, for example).
 
-- Update the explanations in this README and create detailed documentation.
+- more documentation and examples
 
 Progress:
-
-- I simplified the calling of Lua routines. Now the pa and ar parameters are respectively tables of tables of character strings and tables of character strings.
 
 - All macro and example files have been moved to the macros directory.
 
 - The `bbcode` macro file named `macros-bbcode-to-html.txt is located in the macros directory.
 
-- The `macros.txt` macro command file (macros.txt) has finally been translated into the Lua language and needs to be checked further.
+- The `macros.txt` macro command file (macros.txt) is becoming more complete, 
+and the lists and tables have been checked. The tables have the main HTML5 attributes.
+But I also don't want to get too close to HTML, or I'll have trouble converting to other languages.   
+
+- I still need to create a .css style sheet file, mainly to avoid cluttering up the tags with style=... parameters.
 
 - You can now declare global variables in the macros.txt file by placing them in a field of the form below.
 
@@ -34,7 +36,8 @@ Progress:
 The tags [line] and [col] must not, of course, be used as command tags or as intermediate tags for other commands. 
 But the difficulty that arises is being able to find the type of intermediate tag (in the example [col] or [line]) in the parameters and
  I will explain how to program using the index information in the association table.
- 
+
+
     -- <<<<<<
     -- ||||||v|
     local counter=1
@@ -44,7 +47,7 @@ But the difficulty that arises is being able to find the type of intermediate ta
 ## Software overview
 
 Bracketext is a macro language using only 4 symbols [ | ] and \ acting on the text in which the macros are placed when they are interpreted.
-efl
+
 These symbols are used to form tags. These are always in the form:
 
 [tag_name] or [tag_name|param1|...|param_n].
@@ -107,35 +110,29 @@ We suppose that MacroName1, MacroName2 and MacroName3 are linked in the macros.t
 
 The number 3 indicates that MacroName2 can be repeated between MacroName1 and MacroName3.
 
+For example:
+
+[MacroName1|param_1_1| ... |param_1_N1] text1 [MacroName2|param_2_1| ... |param_2_N2] text2 [MacroName3|param_3_1| ... |param_3_N3]
+
 Such a macro is represented by Bracketext as a tree and transformed into a call to a PowerShell function:
 
     MacroName1
         |                        \        \           \
       param1                    param2   param3     arguments
         |      |    \            /|\      /|\       /   |   \
-    param_1_1 ... param_1_N      ...      ...    text1 text1 text3
+    param_1_1 ... param_1_N1     ...      ...    text1 text2 ...
 
 So MacroName2 and MacroName3 disappear, they have a delimiter role to the macro MacroName1, the text placed between the tags is found as an argument of MacroName1 and the possible parameters of MacroName1, MacroName2 and MacroName3 are grouped together.
 
 This tree is then transformed into a call to the MacroName1 function whose parameters are strings:
 
-    function Function1(...params)
-    
-    var pa = getParameters(params);
-    var p=p[0];
-    var a=p[1];
-    var t=p[2];
+    function Function1(pa, ar)
+    -- 
+    end
 
-* p is of type string[][][]; it represents the list of groups of parameters for each tag, each parameter being represented by a list of text parts.
-* a is of type string[][]; it represents the list of arguments of the macro. Each argument is a list of text parts
-* t is of type string[]; corresponds to the list of tag types of the macro (useful when the macro consists of several intermediate tags)
-
-The list of text parts is passed to the JavaScript functions in the form:
-
-"-1", "characters_1", "-2", "characters_2", "-1", "characters_3", ..., "-2", "characters_n".
-
-* "-1" means that the following characters have not yet been processed. 
-* "-2" means the opposite to avoid applying the same conversion (to HTML for example) several times.
+* pa is of type string[][]; it represents the list of groups of parameters for each tag, each parameter being a string.
+* ar is of type string[]; it represents the list of arguments of the macro. Each argument is a text
+* optionnaly po is of type string[]; corresponds to the list of tag types of the macro (useful when the macro consists of several intermediate tags)
 
 All is said for the representation of the parameters.
 
@@ -183,12 +180,12 @@ The representation in memory:
       |                   |                  |
     blue                  X            the world is blue 
 
+The invisible characters \1 and \4 are used in HTML code generation to protect special characters <, >, etc., which will not be converted into HTML entities at the end of the process if they are placed between \1 and \4.
+
 
 ## Compilation
 
-This first version works. 
-
-To compile the project, you need ``Visual Studio`` and install the ``JavaScriptEngineSwitcher`` and ``ChakraCore`` Nugets.
+The compilation works with clang or gcc on Linux. You need to install the cpp-utf8 and lua-dev libraries from version 5.1 (on GitHub, it installs version 5.3).
 
 ## Use
 
@@ -199,13 +196,3 @@ Locate a macro file and in a command shell type:
 The required options `-m` `-f` `-o` specify the location of the macro, text input, and output files.
 
 It should be noted that all paths must be absolute.
-
-## To Do
-
-* More macro files (``BBcode``)
-
-* HTML Templates
-
-* Calls to external JavaScript libraries 
-
-* some converters to ``Markdown`` for example.

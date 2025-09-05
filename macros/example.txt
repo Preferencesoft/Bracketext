@@ -41,10 +41,12 @@ lkjljlk
 [/!]
 [color|green]ddddddddddddd[/color]
 [size|12px]qsdqsd[/size]
-[###]
+[###|style=border:1px solid black;width:100%]
    1111
-   [##] [#]2222[#]3333
-   [##] [#] 4444[#]
-   [##] [#] [**|5555] [#] jjjjjjj
+   [##|thead=1] [#|id=1|h|style=border:1px solid black;]2222[#|id=2|h|style=border:1px solid black;]3333
+   [##|tbody=<] [#|id=3|style=border:1px solid black;] 4444[#|id=4|style=border:1px solid black;]
+   [##|tbody=>] [#|id=5] [**|5555] [#|id=6] jjjjjjj
+   [##|tfoot=<] [#|id=7|style=border:1px solid black;] 4444[#|id=8|style=border:1px solid black;]
+   [##|tfoot=>] [#|id=9|style=border:1px solid black;] 77777[#|id=10|style=border:1px solid black;]
 [/###]
 [/doc]

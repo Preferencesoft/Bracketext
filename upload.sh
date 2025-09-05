@@ -1,6 +1,6 @@
 # Create first commit
 git add .
-git commit -m "Macro modifications and fixes"
+git commit -m "Adding macros (tables and lists)"
 
 # Then push
 git push -u origin master

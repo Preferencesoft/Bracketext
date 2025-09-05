@@ -549,17 +549,130 @@ function outList(pa, ar)
 end
 -- >>>>>>
 -- <<<<<<
--- ||||||6|###|##|#|/###
-function outTable(pa, ar, po)
-        local oList = {}
-    -- Validate input
-    if not po or #po == 0 or po[1] ~= 1 or po[#po] ~= 4 then
-        -- return "Invalid input: must start with 1 and end with 4"
-        return oList
-        -- table.insert(oList, '++' .. tostring(#po) .. '++' .. tostring(po[1]) .. '++' .. tostring(po[#po]) .. '++')
+-- ||||||g|
+function options_from_parameters(parameters, element_type)
+    -- Define valid options for each element type
+    local valid_options = {
+        table = { tborder = true},
+        tr = { tbody = true, thead = true, tfoot = true },
+        td = { h = true }
+    }
+    
+    -- Get the valid options for this element type, or empty table if not found
+    local options_lookup = valid_options[element_type] or {}
+    local result = {}
+    
+    -- If parameters is not a table, return empty result
+    if type(parameters) ~= "table" then
+        return result
+    end
+    
+    -- Process each parameter
+    for _, param in ipairs(parameters) do
+        -- Split on first equals sign
+        local key, value = param:match("^([^=]*)=?(.*)$")
+        
+        if key and key ~= "" then
+            -- Trim whitespace from key and value
+            key = key:match("^%s*(.-)%s*$") or key
+            value = value:match("^%s*(.-)%s*$") or value
+            
+            -- Check if this is a valid option for the element type
+            if options_lookup[key] then
+                -- If no value after =, set to true (or 1)
+                if value == "" then
+                    result[key] = true
+                else
+                    result[key] = value
+                end
+            end
+        end
+    end
+    
+    return result
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function split_on_first_equals(input_str)
+    -- Handle nil or empty input
+    if not input_str or input_str == "" then
+        return nil, nil
     end
 
-    
+    -- Find the first occurrence of '=' in the string.
+    -- `string.find` returns the start and end index of the found pattern.
+    local first_equals_pos = string.find(input_str, "=", 1, true) -- The 'true' enables plain search, no patterns.
+
+    if first_equals_pos == nil then
+        -- If no '=' is found, return the whole string and an empty string for the right part.
+        return input_str, ""
+    else
+        -- Extract the part to the left of the '=' (from start to pos-1)
+        local left_part = string.sub(input_str, 1, first_equals_pos - 1)
+        -- Extract the part to the right of the '=' (from pos+1 to the end)
+        local right_part = string.sub(input_str, first_equals_pos + 1)
+        return left_part, right_part
+    end
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||v|
+valid_attributes = {
+    td = {
+        colspan = true, rowspan = true, style = true, id = true,
+        class = true, title = true, headers = true, scope = true
+    },
+    tr = {
+        style = true, id = true, class = true, title = true,
+        lang = true, dir = true, hidden = true, tabindex = true
+    },
+    table = {
+        style = true, id = true, class = true, title = true,
+        border = true, cellpadding = true, cellspacing = true,
+        width = true, height = true, summary = true
+    }
+}
+-- >>>>>>
+-- <<<<<<
+-- ||||||g|
+function string_from_parameters(parameters, element_type)
+    local valid_attrs = valid_attributes[element_type] or {}
+    local attr_table = {}
+
+    if type(parameters) ~= "table" or #parameters == 0 then
+        return ""
+    end
+
+    for _, param in ipairs(parameters) do
+        local key, value = split_on_first_equals(param)
+        
+        if key and value then
+            key = key:match("^%s*(.-)%s*$") or ""
+            value = value:match("^%s*(.-)%s*$") or ""
+            
+            if key ~= "" and value ~= "" and valid_attrs[key] then
+                table.insert(attr_table, key .. '="' .. value .. '"')
+            end
+        end
+    end
+
+    if #attr_table > 0 then
+        return " " .. table.concat(attr_table, " ")
+    else
+        return ""
+    end
+end
+-- >>>>>>
+-- <<<<<<
+-- ||||||6|###|##|#|/###
+function outTable(pa, ar, po)
+    local oList = {}
+    -- Validate input
+    if not po or #po == 0 or po[1] ~= 1 or po[#po] ~= 4 then
+        return oList
+    end
+
     local total_twos = 0
     local total_threes = 0
     local threes_after_twos = {}
@@ -596,33 +709,117 @@ function outTable(pa, ar, po)
             max_threes = threes_after_twos[i]
         end
     end
-    
-    -- return total_twos, threes_after_twos, max_threes
-    -- table.insert(oList, '++' .. total_twos .. '++' .. total_threes .. '++' .. max_threes .. '++')
-table.insert(oList, '\1<table>\4')
-if type(ar) == "table" and #ar > total_threes + 1 then
-local i
-local j
-local k=1
-for i=1, total_twos do
-  table.insert(oList, '\1<tr>\4')
-  k = k + 1
-  for j=1, max_threes do
-    if j<= threes_after_twos[i] then
-      table.insert(oList, '\1<td>\4')
-      k = k +1
-      if type(ar[k]) == "string" then
-        table.insert(oList, ar[k])
-      end
-      table.insert(oList, '\1</td>\4')    
-    else
-       table.insert(oList, '\1<td>\4')
-       table.insert(oList, '\1</td>\4')    
+
+    local is_pa_table = pa and type(pa)=="table" and #pa>0
+    table.insert(oList, '\1<table')
+    if is_pa_table and pa[1] and type(pa[1])=="table" and #pa[1]>0 then
+        local str_table = string_from_parameters(pa[1], "table")
+        table.insert(oList, str_table)
     end
-  end
-  table.insert(oList, '\1</tr>\4')    
-end
-end
+    table.insert(oList, '>\4')
+
+if type(ar) == "table" and #ar > total_threes + 1 then
+        if is_pa_table then 
+            local i, j, k = 1, 1, 1
+            local current_section = nil
+            
+            for i = 1, total_twos do
+                k = k + 1
+                local current_options = options_from_parameters(pa[two_positions[i]], "tr")
+                
+                -- ?1: Handle section starts BEFORE the current row (same as before)
+                if current_options["thead"] then
+                    if current_options["thead"] == "<" or current_options["thead"] == "1" then
+                        if current_section then
+                            table.insert(oList, "\1</" .. current_section .. ">\4")
+                        end
+                        table.insert(oList, "\1<thead>\4")
+                        current_section = "thead"
+                    end
+                end
+                
+                if current_options["tbody"] then
+                    if current_options["tbody"] == "<" or current_options["tbody"] == "1" then
+                        if current_section then
+                            table.insert(oList, "\1</" .. current_section .. ">\4")
+                        end
+                        table.insert(oList, "\1<tbody>\4")
+                        current_section = "tbody"
+                    end
+                end
+                
+                if current_options["tfoot"] then
+                    if current_options["tfoot"] == "<" or current_options["tfoot"] == "1" then
+                        if current_section then
+                            table.insert(oList, "\1</" .. current_section .. ">\4")
+                        end
+                        table.insert(oList, "\1<tfoot>\4")
+                        current_section = "tfoot"
+                    end
+                end
+                
+                -- Print the current row (same as before)
+                table.insert(oList, '\1<tr>\4')
+                for j = 1, max_threes do
+                    if j <= threes_after_twos[i] then
+                        k = k + 1
+                        local td = '\1<td'
+                        local tdb = '>\4'
+                        local tde = '\1</td>\4'
+                        local str_td = ""
+                        
+                        if pa[k] and type(pa[k])=="table" and #pa[k]>0 then
+                            local td_options = options_from_parameters(pa[k], "td")
+                            if td_options["h"] ~= nil then
+                                td = '\1<th'
+                                tde = '\1</th>\4'
+                            end
+                            str_td = string_from_parameters(pa[k], "td")
+                        end
+                        
+                        table.insert(oList, td)
+                        if str_td ~= "" then
+                            table.insert(oList, str_td)
+                        end
+                        table.insert(oList, tdb)
+                        
+                        if type(ar[k]) == "string" then
+                            table.insert(oList, ar[k])
+                        end
+                        
+                        table.insert(oList, tde)
+                    else
+                        table.insert(oList, '\1<td>\4')
+                        table.insert(oList, '\1</td>\4')    
+                    end
+                end
+                table.insert(oList, '\1</tr>\4')
+                
+                -- ?2: NEW - Handle section ends AFTER the current row's content
+                -- This makes the end markers inclusive (the row is inside the section)
+                if current_options["thead"] and current_options["thead"] == ">" and current_section == "thead" then
+                    table.insert(oList, "\1</thead>\4")
+                    current_section = nil
+                end
+                
+                if current_options["tbody"] and current_options["tbody"] == ">" and current_section == "tbody" then
+                    table.insert(oList, "\1</tbody>\4")
+                    current_section = nil
+                end
+                
+                if current_options["tfoot"] and current_options["tfoot"] == ">" and current_section == "tfoot" then
+                    table.insert(oList, "\1</tfoot>\4")
+                    current_section = nil
+                end
+            end
+            
+            -- After processing all rows, close any remaining open section
+            if current_section then
+                table.insert(oList, "\1</" .. current_section .. ">\4")
+            end
+        end
+    end
+    
     table.insert(oList, '\1</table>\4')    
     return oList
 end
